@@ -335,18 +335,6 @@ struct mtr_t {
 	@return true if the mini-transaction is active */
 	bool is_active() const { return m_state == MTR_STATE_ACTIVE; }
 
-	/** Get flush observer
-	@return flush observer */
-	FlushObserver* get_flush_observer() const { return m_flush_observer; }
-
-	/** Set flush observer
-	@param[in]	observer	flush observer */
-	void set_flush_observer(FlushObserver*	observer)
-	{
-		ut_ad(observer == NULL || m_log_mode == MTR_LOG_NO_REDO);
-		m_flush_observer = observer;
-	}
-
 #ifdef UNIV_DEBUG
 	/** Check if memo contains the given item.
 	@param memo	memo stack
@@ -529,9 +517,6 @@ private:
 
 	/** State of the transaction */
 	mtr_state_t	m_state;
-
-	/** Flush Observer */
-	FlushObserver*	m_flush_observer;
 
 	/** LSN at commit time */
 	lsn_t		m_commit_lsn;
