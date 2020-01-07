@@ -160,9 +160,48 @@ int pthread_cancel(pthread_t thread);
 #include <synch.h>
 #endif
 
+#if __STDC_VERSION__ >= 201112L
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) &&                           \
+        ((__GNUC__ * 100) + __GNUC_MINOR__) >= 409
+#define THREAD_LOCAL_SUPPORTED
+#endif
+
+#if defined(__clang__)
+#define THREAD_LOCAL_SUPPORTED
+#endif
+#endif
+
+#if __cplusplus >= 201103L
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) &&                           \
+        ((__GNUC__ * 100) + __GNUC_MINOR__) >= 408
+#define THREAD_LOCAL_SUPPORTED
+#endif
+
+#if defined(__clang__)
+#define THREAD_LOCAL_SUPPORTED
+#endif
+#endif
+
+
+#ifdef THREAD_LOCAL_SUPPORTED
+#ifdef __cplusplus
+#define pthread_key(T, V) thread_local T V;
+#else
+#define pthread_key(T, V) _Thread_local T V;
+#endif
+#define my_pthread_getspecific_ptr(T,V) V
+#define my_pthread_setspecific_ptr(T, V)                                      \
+  T= V, 0 /* expression value is 0 due to comma hack */
+#define pthread_getspecific(T) T
+#define pthread_setspecific(T,V) T = V
+#define pthread_key_create(A, B) 0
+#define mypthread_key_create(A, B) 0
+#define pthread_key_delete(A) 0
+#else
 #define pthread_key(T,V) pthread_key_t V
 #define my_pthread_getspecific_ptr(T,V) my_pthread_getspecific(T,(V))
 #define my_pthread_setspecific_ptr(T,V) pthread_setspecific(T,(void*) (V))
+#endif
 #define pthread_detach_this_thread()
 #define pthread_handler_t EXTERNC void *
 typedef void *(* pthread_handler)(void *);
@@ -228,7 +267,11 @@ int sigwait(sigset_t *setp, int *sigp);		/* Use our implemention */
 #undef	HAVE_GETHOSTBYADDR_R			/* No definition */
 #endif
 
+#ifdef THREAD_LOCAL_SUPPORTED
+#define my_pthread_getspecific(A,B) (B)
+#else
 #define my_pthread_getspecific(A,B) ((A) pthread_getspecific(B))
+#endif
 
 #ifndef HAVE_LOCALTIME_R
 struct tm *localtime_r(const time_t *clock, struct tm *res);
@@ -734,6 +777,7 @@ extern void **my_thread_var_dbug(void);
 extern safe_mutex_t **my_thread_var_mutex_in_use(void);
 extern uint my_thread_end_wait_time;
 extern my_bool safe_mutex_deadlock_detector;
+extern int set_mysys_var(struct st_my_thread_var *mysys_var);
 #define my_thread_var (_my_thread_var())
 #define my_errno my_thread_var->thr_errno
 /*
