@@ -9366,7 +9366,7 @@ static bool wait_for_master(THD *thd, char* send_query)
   //issue here
 //  thd->rgi_slave->mark_start_commit();
 //  thd->wakeup_subsequent_commits(0);
-  thd->transaction.stmt.unmark_trans_did_ddl();
+//  thd->transaction.stmt.unmark_trans_did_ddl();
   // We can use the same condition because while loop will be different
   mysql_mutex_lock(&mi->start_alter_lock);
   while (info->state == start_alter_state::WAITING)
@@ -9380,7 +9380,7 @@ static bool wait_for_master(THD *thd, char* send_query)
   sql_print_information("Setiya  Elements %d wait_for_master commited id %d ", mi->start_alter_list.elements,
                                                          info->thread_id);
 
-    thd->transaction.stmt.mark_trans_did_ddl();
+//    thd->transaction.stmt.mark_trans_did_ddl();
     thd->variables.gtid_seq_no= info->seq_no;
     sprintf(send_query, "/*!100001 COMMIT %d */ %s", info->thread_id,  alter_location);
     return false;

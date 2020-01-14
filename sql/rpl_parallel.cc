@@ -2162,6 +2162,7 @@ rpl_parallel_entry::choose_thread(rpl_group_info *rgi, bool *did_enter_cond,
 
   idx= rpl_thread_idx;
  // DBUG_ASSERT((require_special_worker && !reuse) || !require_special_worker);
+// /*
   if (require_special_worker)
   {
     if (!reuse)
@@ -2174,6 +2175,7 @@ rpl_parallel_entry::choose_thread(rpl_group_info *rgi, bool *did_enter_cond,
     thr->current_entry= this;
     return thr;
   }
+//  */
   if (!reuse)
   {
     ++idx;
