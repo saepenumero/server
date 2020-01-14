@@ -1,0 +1,3 @@
+break choose_thread(rpl_group_info*, bool*, PSI_stage_info_v1*, bool, bool)
+break rpl_parallel_add_extra_worker(rpl_parallel_thread_pool*)
+break log_event_server.cc:3361

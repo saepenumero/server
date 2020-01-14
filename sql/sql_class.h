@@ -2601,6 +2601,7 @@ public:
     bool on;                            // see ha_enable_transaction()
     XID_STATE xid_state;
     XID implicit_xid;
+    bool start_alter;
     WT_THD wt;                          ///< for deadlock detection
     Rows_log_event *m_pending_rows_event;
 

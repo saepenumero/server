@@ -54,6 +54,7 @@
 #include "sql_audit.h"
 #include "sql_sequence.h"
 #include "tztime.h"
+#include "rpl_mi.h"
 
 
 #ifdef __WIN__
@@ -79,6 +80,8 @@ static uint blob_length_by_type(enum_field_types type);
 static bool fix_constraints_names(THD *thd, List<Virtual_column_info>
                                   *check_constraint_list,
                                   const HA_CREATE_INFO *create_info);
+static bool write_start_alter(THD *thd, bool* partial_alter, char * send_query);
+static bool wait_for_master(THD *thd, char* send_query);
 
 /**
   @brief Helper function for explain_filename
@@ -7580,7 +7583,8 @@ static bool mysql_inplace_alter_table(THD *thd,
                                       Alter_inplace_info *ha_alter_info,
                                       enum_alter_inplace_result inplace_supported,
                                       MDL_request *target_mdl_request,
-                                      Alter_table_ctx *alter_ctx)
+                                      Alter_table_ctx *alter_ctx,
+                                      bool *partial_alter, char *send_query)
 {
   Open_table_context ot_ctx(thd, MYSQL_OPEN_REOPEN | MYSQL_OPEN_IGNORE_KILLED);
   handlerton *db_type= table->s->db_type();
@@ -7670,6 +7674,9 @@ static bool mysql_inplace_alter_table(THD *thd,
   // It's now safe to take the table level lock.
   if (lock_tables(thd, table_list, alter_ctx->tables_opened, 0))
     goto cleanup;
+  if (write_start_alter(thd, partial_alter, send_query))
+    DBUG_RETURN(true);
+  my_sleep(10000000);
 
   DEBUG_SYNC(thd, "alter_table_inplace_after_lock_upgrade");
   THD_STAGE_INFO(thd, stage_alter_inplace_prepare);
@@ -7703,6 +7710,7 @@ static bool mysql_inplace_alter_table(THD *thd,
   if (table->file->ha_prepare_inplace_alter_table(altered_table,
                                                   ha_alter_info))
     goto rollback;
+  //OLTODO
 
   /*
     Downgrade the lock if storage engine has told us that exclusive lock was
@@ -7814,6 +7822,11 @@ static bool mysql_inplace_alter_table(THD *thd,
       my_error(HA_ERR_INCOMPATIBLE_DEFINITION, MYF(0));
       DBUG_RETURN(true);
     }
+  }
+  if (thd->lex->previous_commit_id)
+  {
+    DBUG_ASSERT(thd->slave_thread);
+    wait_for_master(thd, send_query);
   }
 
   close_all_tables_for_name(thd, table->s,
@@ -9333,6 +9346,82 @@ static int create_table_for_inplace_alter(THD *thd,
 }
 
 
+static bool wait_for_master(THD *thd, char* send_query)
+{
+  char temp[thd->query_length()+ 10];
+  Master_info *mi= thd->rgi_slave->rli->mi;
+  mysql_mutex_lock(&mi->start_alter_list_lock);
+  start_alter_info *info= (start_alter_info *)thd->alloc(sizeof(start_alter_info));
+  info->error= 0;
+  info->thread_id= thd->lex->previous_commit_id;
+  info->state= start_alter_state::WAITING;
+  mi->start_alter_list.push_back(info, thd->mem_root);
+  mysql_mutex_unlock(&mi->start_alter_list_lock);
+  mysql_cond_broadcast(&mi->start_alter_list_cond);
+    sql_print_information("Setiya alter list Added into list ===  previous_commit_id %d ",
+               thd->lex->previous_commit_id);
+    sql_print_information("Setiya list Elements %d", mi->start_alter_list.elements);
+  strcpy(temp, thd->query());
+  char* alter_location= strcasestr(temp, "ALTER");
+  //issue here
+//  thd->rgi_slave->mark_start_commit();
+//  thd->wakeup_subsequent_commits(0);
+  thd->transaction.stmt.unmark_trans_did_ddl();
+  // We can use the same condition because while loop will be different
+  mysql_mutex_lock(&mi->start_alter_lock);
+  while (info->state == start_alter_state::WAITING)
+  {
+    mysql_cond_wait(&mi->start_alter_cond, &mi->start_alter_lock);
+  }
+  mysql_mutex_unlock(&mi->start_alter_lock);
+
+  if (info->state == start_alter_state::COMMIT_ALTER)
+  {
+  sql_print_information("Setiya  Elements %d wait_for_master commited id %d ", mi->start_alter_list.elements,
+                                                         info->thread_id);
+
+    thd->transaction.stmt.mark_trans_did_ddl();
+    thd->variables.gtid_seq_no= info->seq_no;
+    sprintf(send_query, "/*!100001 COMMIT %d */ %s", info->thread_id,  alter_location);
+    return false;
+  }
+  else
+  {
+    assert(info->state == start_alter_state::ROLLBACK_ALTER);
+    sprintf(send_query, "/*!100001 ROLLBACK %d */ %s", info->thread_id, alter_location);
+    return true;
+  }
+}
+
+static bool write_start_alter(THD *thd, bool* partial_alter, char *send_query)
+{
+  thd->transaction.start_alter= true;
+  if (!thd->lex->previous_commit_id)
+  {
+    sprintf(send_query, "/*!100001 START %lld %s */",thd->thread_id,  thd->query());
+    thd->transaction.stmt.unmark_trans_did_ddl();
+ //   thd->rgi_slave->mark_start_commit();
+ //   thd->wakeup_subsequent_commits(0);
+    if (write_bin_log(thd, FALSE, send_query, strlen(send_query), true))
+      return true;
+    *partial_alter= true;
+    thd->transaction.stmt.mark_trans_did_ddl();
+ //   thd->rgi_slave->mark_start_commit();
+ //   thd->wakeup_subsequent_commits(0);
+    return false;
+  }
+  else
+  {
+    if (write_bin_log(thd, true, thd->query(), thd->query_length(), true) && ha_commit_trans(thd, true))
+      return true;
+    Master_info *mi= thd->rgi_slave->rli->mi;
+    thd->rgi_slave->mark_start_commit();
+    thd->wakeup_subsequent_commits(0);
+    return false;
+  }
+  thd->transaction.start_alter= false;
+}
+
 /**
   Alter table
 
@@ -9379,6 +9468,8 @@ bool mysql_alter_table(THD *thd, const LEX_CSTRING *new_db,
                        uint order_num, ORDER *order, bool ignore)
 {
   bool engine_changed;
+  char send_query[thd->query_length() + 20];
+  bool partial_alter= false;
   DBUG_ENTER("mysql_alter_table");
 
   /*
@@ -10103,7 +10194,8 @@ do_continue:;
       thd->count_cuted_fields = CHECK_FIELD_WARN;
       int res= mysql_inplace_alter_table(thd, table_list, table, &altered_table,
                                          &ha_alter_info, inplace_supported,
-                                         &target_mdl_request, &alter_ctx);
+                                         &target_mdl_request, &alter_ctx,
+                                         &partial_alter, send_query);
       thd->count_cuted_fields= save_count_cuted_fields;
       my_free(const_cast<uchar*>(frm.str));
 
@@ -10161,7 +10253,10 @@ do_continue:;
   if (lock_tables(thd, table_list, alter_ctx.tables_opened,
                   MYSQL_LOCK_USE_MALLOC))
     goto err_new_table_cleanup;
-
+  //If issues by binlog/master complete the prepare phase of alter and then commit
+  if (write_start_alter(thd, &partial_alter ,send_query))
+    DBUG_RETURN(true);
+  my_sleep(10000000);
   if (ha_create_table(thd, alter_ctx.get_tmp_path(),
                       alter_ctx.new_db.str, alter_ctx.new_name.str,
                       create_info, &frm))
@@ -10258,9 +10353,20 @@ do_continue:;
                                     &alter_ctx.new_name))
       goto err_new_table_cleanup;
     /* We don't replicate alter table statement on temporary tables */
-    if (!thd->is_current_stmt_binlog_format_row() &&
+    if (!thd->is_current_stmt_binlog_format_row() && !partial_alter &&
         write_bin_log(thd, true, thd->query(), thd->query_length()))
       DBUG_RETURN(true);
+    if (partial_alter)
+    {
+      sprintf(send_query, "/*!100001 COMMIT %lld  */ %s", thd->thread_id, thd->query());
+      if(write_bin_log(thd, FALSE, send_query, strlen(send_query), true))
+        DBUG_RETURN(true);
+    }
+    if (thd->lex->previous_commit_id)
+    {
+      DBUG_ASSERT(thd->slave_thread);
+      wait_for_master(thd, send_query);
+    }
     my_free(const_cast<uchar*>(frm.str));
     goto end_temporary;
   }
@@ -10275,6 +10381,11 @@ do_continue:;
     - Neither old or new engine uses files from another engine
       The above is mainly true for the sequence and the partition engine.
   */
+  if (thd->lex->previous_commit_id)
+  {
+    DBUG_ASSERT(thd->slave_thread);
+    wait_for_master(thd, send_query);
+  }
   engine_changed= ((new_table->file->ht != table->file->ht) &&
                    (((!(new_table->file->ha_table_flags() & HA_FILE_BASED) ||
                       !(table->file->ha_table_flags() & HA_FILE_BASED))) ||
@@ -10441,7 +10552,18 @@ end_inplace:
   DBUG_ASSERT(!(mysql_bin_log.is_open() &&
                 thd->is_current_stmt_binlog_format_row() &&
                 (create_info->tmp_table())));
-  if (write_bin_log(thd, true, thd->query(), thd->query_length()))
+  if (partial_alter)
+  {
+    sprintf(send_query, "/*!100001 COMMIT %lld */ %s", thd->thread_id, thd->query());
+    if(write_bin_log(thd, FALSE, send_query, strlen(send_query), true))
+      DBUG_RETURN(true);
+  }
+  else if(thd->lex->previous_commit_id)
+  {
+    if(write_bin_log(thd, FALSE, send_query, strlen(send_query), true))
+      DBUG_RETURN(true);
+  }
+  else if (write_bin_log(thd, true, thd->query(), thd->query_length()))
     DBUG_RETURN(true);
 
   table_list->table= NULL;			// For query cache
@@ -10504,6 +10626,7 @@ err_with_mdl_after_alter:
     expects that error is set
   */
   write_bin_log(thd, FALSE, thd->query(), thd->query_length());
+//OLTODO
 
 err_with_mdl:
   /*

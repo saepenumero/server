@@ -230,9 +230,14 @@ struct rpl_parallel_thread {
 struct rpl_parallel_thread_pool {
   struct rpl_parallel_thread **threads;
   struct rpl_parallel_thread *free_list;
+  //Not accessable by normal events only special events can access these
+  //threads
+  struct rpl_parallel_thread *extra_worker_list;
+  struct rpl_parallel_thread *last_extra_worker;
   mysql_mutex_t LOCK_rpl_thread_pool;
   mysql_cond_t COND_rpl_thread_pool;
   uint32 count;
+  uint32 extra;
   bool inited;
   /*
     While FTWRL runs, this counter is incremented to make SQL thread or
@@ -345,7 +350,8 @@ struct rpl_parallel_entry {
   group_commit_orderer *current_gco;
 
   rpl_parallel_thread * choose_thread(rpl_group_info *rgi, bool *did_enter_cond,
-                                      PSI_stage_info *old_stage, bool reuse);
+                                      PSI_stage_info *old_stage, bool reuse,
+                                      bool require_special_worker= false);
   int queue_master_restart(rpl_group_info *rgi,
                            Format_description_log_event *fdev);
 };
