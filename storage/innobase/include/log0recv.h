@@ -104,20 +104,6 @@ recv_sys.parse_start_lsn is non-zero.
 @return true if more data added */
 bool recv_sys_add_to_parsing_buf(const byte* log_block, lsn_t scanned_lsn);
 
-/** Parse log records from a buffer and optionally store them to recv_sys.pages
-to wait merging to file pages.
-@param[in]	checkpoint_lsn		the LSN of the latest checkpoint
-@param[in]	store			whether to store page operations
-@param[in]	available_memory	memory to read the redo logs
-@param[in]	apply			whether to apply the records
-@return whether MLOG_CHECKPOINT record was seen the first time,
-or corruption was noticed */
-bool recv_parse_log_recs(
-	lsn_t		checkpoint_lsn,
-	store_t*	store,
-	ulint		available_memory,
-	bool		apply);
-
 /** Moves the parsing buffer data left to the buffer start */
 void recv_sys_justify_left_parsing_buf();
 
@@ -276,7 +262,7 @@ struct recv_sys_t{
 				the file system contents is detected
 				during log scan or apply */
 	lsn_t		mlog_checkpoint_lsn;
-				/*!< the LSN of a MLOG_CHECKPOINT
+				/*!< the LSN of a FILE_CHECKPOINT
 				record, or 0 if none was parsed */
 	/** the time when progress was last reported */
 	time_t		progress_time;
@@ -299,7 +285,7 @@ struct recv_sys_t{
 	/** Undo tablespaces for which truncate has been logged
 	(indexed by id - srv_undo_space_id_start) */
 	struct trunc {
-		/** log sequence number of MLOG_FILE_CREATE2, or 0 if none */
+		/** log sequence number of FILE_CREATE, or 0 if none */
 		lsn_t		lsn;
 		/** truncated size of the tablespace, or 0 if not truncated */
 		unsigned	pages;
@@ -320,17 +306,6 @@ struct recv_sys_t{
 	void close();
 
 	bool is_initialised() const { return buf_size != 0; }
-
-	/** Store a redo log record for applying.
-	@param type	record type
-	@param page_id	page identifier
-	@param body	record body
-	@param rec_end	end of record
-	@param lsn	start LSN of the mini-transaction
-	@param end_lsn	end LSN of the mini-transaction */
-	inline void add(mlog_id_t type, const page_id_t page_id,
-			const byte* body, const byte* rec_end, lsn_t lsn,
-			lsn_t end_lsn);
 
 #if 1 /* MDEV-21351 FIXME: remove this */
 	/** Register a redo log snippet for a page.
@@ -356,9 +331,9 @@ struct recv_sys_t{
 	@param checkpoint_lsn  the log sequence number of the latest checkpoint
 	@param store           whether to store the records
 	@param apply           whether to apply file-level log records
-	@return whether MLOG_CHECKPOINT record was seen the first time,
+	@return whether FILE_CHECKPOINT record was seen the first time,
 	or corruption was noticed */
-        inline bool parse(lsn_t checkpoint_lsn, store_t store, bool apply);
+        bool parse(lsn_t checkpoint_lsn, store_t store, bool apply);
 
 	/** Clear a fully processed set of stored redo log records. */
 	inline void clear();
