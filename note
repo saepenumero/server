@@ -322,3 +322,16 @@ commited/rollbacked
 
 rpl_parallel_add_extra_worker()
 thd::transaction add START_ALTER
+
+
+Next sub id
+(gdb) bt
+#0  event_group_new_gtid (rgi=0x7fffb0031eb0, gev=0x7fffb003bbb0) at /home/sachin/10.5/server/sql/rpl_rli.cc:2135
+#1  0x0000555555fed12f in rpl_parallel_thread::get_rgi (this=0x7fffb00295b8, rli=0x5555586f3898, gtid_ev=0x7fffb003bbb0, e=0x7fffb00314e0, event_size=42) at /home/sachin/10.5/server/sql/rpl_parallel.cc:1907
+#2  0x0000555555fef1f7 in rpl_parallel::do_event (this=0x5555586f6ab0, serial_rgi=0x7fffb00008d0, ev=0x7fffb003bbb0, event_size=42) at /home/sachin/10.5/server/sql/rpl_parallel.cc:2745
+#3  0x0000555555cc249c in exec_relay_log_event (thd=0x7fffb0001690, rli=0x5555586f3898, serial_rgi=0x7fffb00008d0) at /home/sachin/10.5/server/sql/slave.cc:4381
+#4  0x0000555555cc60aa in handle_slave_sql (arg=0x5555586f1bd0) at /home/sachin/10.5/server/sql/slave.cc:5633
+#5  0x00005555564bf70c in pfs_spawn_thread (arg=0x7fffa401b360) at /home/sachin/10.5/server/storage/perfschema/pfs.cc:1862
+#6  0x00007ffff6e0e6db in start_thread (arg=0x7ffff0191700) at pthread_create.c:463
+#7  0x00007ffff5ff488f in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
+(gdb) 

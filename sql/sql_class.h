@@ -79,6 +79,7 @@ class Wsrep_applier_service;
 class Reprepare_observer;
 class Relay_log_info;
 struct rpl_group_info;
+struct rpl_parallel_thread;
 class Rpl_filter;
 class Query_log_event;
 class Load_log_event;
@@ -2197,6 +2198,7 @@ public:
   rpl_group_info* rgi_fake;
   /* Slave applier execution context */
   rpl_group_info* rgi_slave;
+  rpl_parallel_thread *rpt;
 
   union {
     rpl_io_thread_info *rpl_io_info;

@@ -1161,6 +1161,7 @@ handle_rpl_parallel_thread(void *arg)
       DBUG_ASSERT(qev->typ==rpl_parallel_thread::queued_event::QUEUED_EVENT);
 
       thd->rgi_slave= rgi;
+      thd->rpt= rpt;
       gco= rgi->gco;
       /* Handle a new event group, which will be initiated by a GTID event. */
       if ((event_type= qev->ev->get_type_code()) == GTID_EVENT)
@@ -2039,6 +2040,13 @@ rpl_parallel_thread::loc_free_gco(group_commit_orderer *gco)
   loc_gco_list= gco;
 }
 
+void
+rpl_parallel_thread::__finish_event_group(rpl_group_info *group_rgi)
+{
+  finish_event_group(this, group_rgi->gtid_sub_id,
+                             group_rgi->parallel_entry, group_rgi);
+
+}
 
 rpl_parallel_thread_pool::rpl_parallel_thread_pool()
   : threads(0), free_list(0), count(0), inited(false), busy(false)

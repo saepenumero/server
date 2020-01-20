@@ -9371,6 +9371,7 @@ static bool wait_for_master(THD *thd, char* send_query)
   mysql_mutex_lock(&mi->start_alter_lock);
   while (info->state == start_alter_state::WAITING)
   {
+    //thd->wakeup_subsequent_commits(0);
     mysql_cond_wait(&mi->start_alter_cond, &mi->start_alter_lock);
   }
   mysql_mutex_unlock(&mi->start_alter_lock);
@@ -9399,13 +9400,13 @@ static bool write_start_alter(THD *thd, bool* partial_alter, char *send_query)
   if (!thd->lex->previous_commit_id)
   {
     sprintf(send_query, "/*!100001 START %lld %s */",thd->thread_id,  thd->query());
-    thd->transaction.stmt.unmark_trans_did_ddl();
+ //   thd->transaction.stmt.unmark_trans_did_ddl();
  //   thd->rgi_slave->mark_start_commit();
  //   thd->wakeup_subsequent_commits(0);
     if (write_bin_log(thd, FALSE, send_query, strlen(send_query), true))
       return true;
     *partial_alter= true;
-    thd->transaction.stmt.mark_trans_did_ddl();
+ //   thd->transaction.stmt.mark_trans_did_ddl();
  //   thd->rgi_slave->mark_start_commit();
  //   thd->wakeup_subsequent_commits(0);
     return false;
@@ -9414,9 +9415,17 @@ static bool write_start_alter(THD *thd, bool* partial_alter, char *send_query)
   {
     if (write_bin_log(thd, true, thd->query(), thd->query_length(), true) && ha_commit_trans(thd, true))
       return true;
+    /*
     Master_info *mi= thd->rgi_slave->rli->mi;
     thd->rgi_slave->mark_start_commit();
+    rpl_global_gtid_slave_state->next_sub_id(thd->variables.gtid_domain_id);
     thd->wakeup_subsequent_commits(0);
+    //*/
+    // /*
+    //*/
+    //Finish event group
+    thd->rpt->__finish_event_group(thd->rgi_slave);
+
     return false;
   }
   thd->transaction.start_alter= false;
