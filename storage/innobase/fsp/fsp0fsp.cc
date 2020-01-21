@@ -1,7 +1,7 @@
 /*****************************************************************************
 
 Copyright (c) 1995, 2016, Oracle and/or its affiliates. All Rights Reserved.
-Copyright (c) 2017, 2019, MariaDB Corporation.
+Copyright (c) 2017, 2020, MariaDB Corporation.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -1274,11 +1274,7 @@ static void fsp_free_page(fil_space_t* space, page_no_t offset, mtr_t* mtr)
 		return;
 	}
 
-	if (byte* log_ptr = mlog_open(mtr, 11)) {
-		log_ptr = mlog_write_initial_log_record_low(
-			MLOG_INIT_FREE_PAGE, space->id, offset, log_ptr, mtr);
-		mlog_close(mtr, log_ptr);
-	}
+	mtr->free(page_id_t(space->id, offset));
 
 	const ulint	bit = offset % FSP_EXTENT_SIZE;
 
