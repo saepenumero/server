@@ -1775,6 +1775,7 @@ rpl_parallel_add_extra_worker(rpl_parallel_thread_pool *pool)
   pthread_t th;
   rpt_thread->next= NULL;
   rpt_thread->delay_start= true;
+  rpt_thread->special_worker= true;
   mysql_mutex_init(key_LOCK_rpl_thread, &rpt_thread->LOCK_rpl_thread,
                    MY_MUTEX_INIT_SLOW);
   mysql_cond_init(key_COND_rpl_thread, &rpt_thread->COND_rpl_thread, NULL);

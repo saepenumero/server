@@ -9376,6 +9376,13 @@ static bool wait_for_master(THD *thd, char* send_query)
   }
   mysql_mutex_unlock(&mi->start_alter_lock);
 
+  if (thd->rpt->special_worker)
+  {
+    mysql_mutex_lock(&thd->rpt->LOCK_rpl_thread);
+    thd->rpt->stop= true;
+    mysql_cond_signal(&thd->rpt->COND_rpl_thread);
+    mysql_mutex_unlock(&thd->rpt->LOCK_rpl_thread);
+  }
   if (info->state == start_alter_state::COMMIT_ALTER)
   {
   sql_print_information("Setiya  Elements %d wait_for_master commited id %d ", mi->start_alter_list.elements,
@@ -9409,6 +9416,7 @@ static bool write_start_alter(THD *thd, bool* partial_alter, char *send_query)
  //   thd->transaction.stmt.mark_trans_did_ddl();
  //   thd->rgi_slave->mark_start_commit();
  //   thd->wakeup_subsequent_commits(0);
+    thd->transaction.start_alter= false;
     return false;
   }
   else
@@ -9425,10 +9433,9 @@ static bool write_start_alter(THD *thd, bool* partial_alter, char *send_query)
     //*/
     //Finish event group
     thd->rpt->__finish_event_group(thd->rgi_slave);
-
+    thd->transaction.start_alter= false;
     return false;
   }
-  thd->transaction.start_alter= false;
 }
 
 /**

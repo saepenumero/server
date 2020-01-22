@@ -98,6 +98,7 @@ struct rpl_parallel_thread {
   bool running;
   bool stop;
   bool pause_for_ftwrl;
+  bool special_worker;
   mysql_mutex_t LOCK_rpl_thread;
   mysql_cond_t COND_rpl_thread;
   mysql_cond_t COND_rpl_thread_queue;

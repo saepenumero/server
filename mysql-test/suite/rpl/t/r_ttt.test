@@ -72,9 +72,8 @@ show binlog events;
 #show create table t1;
 
 --connection slave
---sleep 30
-show binlog events;
---sleep 60000
+--sleep 50
+show create table t5;
 
 
 --connection master
