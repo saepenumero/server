@@ -1,7 +1,7 @@
 /*****************************************************************************
 
 Copyright (c) 1997, 2016, Oracle and/or its affiliates. All Rights Reserved.
-Copyright (c) 2017, 2019, MariaDB Corporation.
+Copyright (c) 2017, 2020, MariaDB Corporation.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -53,8 +53,10 @@ This function should called when srv_force_recovery > 0.
 ATTRIBUTE_COLD void recv_recover_corrupt_page(page_id_t page_id);
 
 /** Apply any buffered redo log to a page that was just read from a data file.
+@param[in,out]	space	tablespace
 @param[in,out]	bpage	buffer pool page */
-ATTRIBUTE_COLD void recv_recover_page(buf_page_t* bpage);
+ATTRIBUTE_COLD void recv_recover_page(fil_space_t* space, buf_page_t* bpage)
+	MY_ATTRIBUTE((nonnull));
 
 /** Start recovering from a redo log checkpoint.
 @see recv_recovery_from_checkpoint_finish
@@ -121,12 +123,12 @@ void recv_sys_justify_left_parsing_buf();
 
 /** Report an operation to create, delete, or rename a file during backup.
 @param[in]	space_id	tablespace identifier
-@param[in]	flags		tablespace flags (NULL if not create)
+@param[in]	create		whether the file is being created
 @param[in]	name		file name (not NUL-terminated)
 @param[in]	len		length of name, in bytes
 @param[in]	new_name	new file name (NULL if not rename)
 @param[in]	new_len		length of new_name, in bytes (0 if NULL) */
-extern void (*log_file_op)(ulint space_id, const byte* flags,
+extern void (*log_file_op)(ulint space_id, bool create,
 			   const byte* name, ulint len,
 			   const byte* new_name, ulint new_len);
 
@@ -329,6 +331,34 @@ struct recv_sys_t{
 	inline void add(mlog_id_t type, const page_id_t page_id,
 			const byte* body, const byte* rec_end, lsn_t lsn,
 			lsn_t end_lsn);
+
+#if 1 /* MDEV-21351 FIXME: remove this */
+	/** Register a redo log snippet for a page.
+	@param page_id  page identifier
+	@param start_lsn start LSN of the mini-transaction
+	@param lsn      @see mtr_t::commit_lsn()
+	@param l        redo log snippet @see log_t::FORMAT_10_5
+	@param len      length of l, in bytes */
+	inline void add(const page_id_t page_id, lsn_t start_lsn, lsn_t lsn,
+			const byte* l, size_t len);
+#else
+	/** Register a redo log snippet for a page.
+	@param page_id  page identifier
+	@param start_lsn start LSN of the mini-transaction
+	@param lsn      @see mtr_t::commit_lsn()
+	@param l        redo log snippet @see log_t::FORMAT_10_5 */
+	inline void add(const page_id_t page_id, lsn_t start_lsn, lsn_t lsn,
+			const byte* l);
+#endif
+
+	/**
+	Parse and register one mini-transaction in log_t::FORMAT_10_5.
+	@param checkpoint_lsn  the log sequence number of the latest checkpoint
+	@param store           whether to store the records
+	@param apply           whether to apply file-level log records
+	@return whether MLOG_CHECKPOINT record was seen the first time,
+	or corruption was noticed */
+        inline bool parse(lsn_t checkpoint_lsn, store_t store, bool apply);
 
 	/** Clear a fully processed set of stored redo log records. */
 	inline void clear();
