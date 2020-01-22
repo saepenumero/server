@@ -2,7 +2,7 @@
 
 Copyright (c) 1997, 2017, Oracle and/or its affiliates. All Rights Reserved.
 Copyright (c) 2012, Facebook Inc.
-Copyright (c) 2013, 2019, MariaDB Corporation.
+Copyright (c) 2013, 2020, MariaDB Corporation.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -312,7 +312,6 @@ public:
 	void mark_ibuf_exist(mtr_t& mtr)
 	{
 		ut_ad(mutex_own(&recv_sys.mutex));
-		ut_ad(!recv_no_ibuf_operations);
 		mtr.start();
 
 		for (const map::value_type& i : inits) {
@@ -323,6 +322,21 @@ public:
 				    i.first, 0, RW_X_LATCH, NULL,
 				    BUF_GET_IF_IN_POOL, __FILE__, __LINE__,
 				    &mtr)) {
+				if (UNIV_LIKELY_NULL(block->page.zip.data)
+				    && fil_page_type_is_index(
+					    fil_page_get_type(
+						    block->page.zip.data))
+				    && !page_zip_decompress(&block->page.zip,
+							    block->frame,
+							    true)) {
+					ib::error() << "corrupted page "
+						    << block->page.id;
+				}
+				if (recv_no_ibuf_operations) {
+					mtr.commit();
+					mtr.start();
+					continue;
+				}
 				mutex_exit(&recv_sys.mutex);
 				block->page.ibuf_exist = ibuf_page_exists(
 					block->page);
@@ -1468,6 +1482,13 @@ parse_log:
 		}
 		break;
 	case MLOG_REC_INSERT: case MLOG_COMP_REC_INSERT:
+		if (!page_zip) {
+		} else if (!page_zip_decompress(page_zip, page, true)) {
+			ib::error() << "corrupted page " << block->page.id;
+		} else {
+			ut_d(page_type = fil_page_get_type(page));
+		}
+
 		ut_ad(!page || fil_page_type_is_index(page_type));
 
 		if (NULL != (ptr = mlog_parse_index(
@@ -1501,6 +1522,13 @@ parse_log:
 							 page, page_zip, mtr);
 		break;
 	case MLOG_REC_UPDATE_IN_PLACE: case MLOG_COMP_REC_UPDATE_IN_PLACE:
+		if (!page_zip) {
+		} else if (!page_zip_decompress(page_zip, page, true)) {
+			ib::error() << "corrupted page " << block->page.id;
+		} else {
+			ut_d(page_type = fil_page_get_type(page));
+		}
+
 		ut_ad(!page || fil_page_type_is_index(page_type));
 
 		if (NULL != (ptr = mlog_parse_index(
@@ -1997,21 +2025,9 @@ static void recv_recover_page(buf_block_t* block, mtr_t& mtr,
 				memcpy_aligned<8>(FIL_PAGE_LSN
 						  + page_zip->data,
 						  FIL_PAGE_LSN + page, 8);
-				if (fil_page_index_page_check(page)
-				    && !page_zip_decompress(page_zip, page,
-							    true)) {
-					ib::error() << "corrupted page "
-						    << block->page.id;
-				}
 			}
 		}
 	}
-
-#ifdef UNIV_ZIP_DEBUG
-	ut_ad(!fil_page_index_page_check(page)
-	      || !page_zip
-	      || page_zip_validate_low(page_zip, page, NULL, FALSE));
-#endif /* UNIV_ZIP_DEBUG */
 
 	if (start_lsn) {
 		buf_block_modify_clock_inc(block);
@@ -2351,7 +2367,7 @@ done:
 		log_mutex_enter();
 		mutex_enter(&(recv_sys.mutex));
 		mlog_init.reset();
-	} else if (!recv_no_ibuf_operations) {
+	} else {
 		/* We skipped this in buf_page_create(). */
 		mlog_init.mark_ibuf_exist(mtr);
 	}
