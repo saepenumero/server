@@ -179,7 +179,7 @@ the first record in the list of records. */
 #define	PAGE_DIR		FIL_PAGE_DATA_END
 
 /* We define a slot in the page directory as two bytes */
-#define	PAGE_DIR_SLOT_SIZE	2
+constexpr uint16_t PAGE_DIR_SLOT_SIZE= 2;
 
 /* The offset of the physically lower end of the directory, counted from
 page end, when the page is empty */

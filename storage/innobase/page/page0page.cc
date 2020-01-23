@@ -902,12 +902,9 @@ delete_all:
 	buf_block_modify_clock_inc(block);
 
 	const bool is_leaf = page_is_leaf(block->frame);
-	byte* last_insert = my_assume_aligned<2>(PAGE_LAST_INSERT + PAGE_HEADER
-						 + block->frame);
-	if (mach_read_from_2(last_insert)) {
-		memset(last_insert, 0, 2);
-		mtr->memset(*block, PAGE_LAST_INSERT + PAGE_HEADER, 2, 0);
-	}
+	mtr->write<2,mtr_t::OPT>(*block, my_assume_aligned<2>
+				 (PAGE_LAST_INSERT + PAGE_HEADER
+				  + block->frame), 0U);
 
 	if (UNIV_LIKELY_NULL(page_zip)) {
 		ut_ad(page_is_comp(block->frame));

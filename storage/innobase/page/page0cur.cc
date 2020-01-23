@@ -917,7 +917,9 @@ static void page_dir_split_slot(buf_block_t *block, ulint s, mtr_t* mtr)
   }
   else
   {
-    mtr->memcpy(*block, page_offset(last_slot), slot - last_slot);
+    mtr->memmove(*block, page_offset(last_slot),
+                 page_offset(last_slot) + PAGE_DIR_SLOT_SIZE,
+                 slot - last_slot);
     mtr->write<2>(*block, slot, page_offset(rec));
     const bool comp= page_is_comp(block->frame) != 0;
     page_rec_set_n_owned<false>(block, page_dir_slot_get_rec(slot), half_owned,
@@ -981,10 +983,10 @@ static void page_dir_balance_slot(buf_block_t *block, ulint s, mtr_t *mtr)
 			memcpy_aligned<2>(n_slots_f + block->page.zip.data,
 					  n_slots_p, 2);
 		} else {
-			mtr->memset(block, page_offset(last_slot), 2, 0);
-			mtr->memcpy(*block, page_offset(last_slot)
-				    + PAGE_DIR_SLOT_SIZE,
-				    slot - last_slot);
+			mtr->memmove(*block, PAGE_DIR_SLOT_SIZE
+				     + page_offset(last_slot),
+				     page_offset(last_slot), slot - last_slot);
+			mtr->write<2>(*block, last_slot, 0U);
 		}
 
 		return;
@@ -1597,14 +1599,20 @@ too_small:
 		}
 
 		heap_no = rec_get_heap_no_new(page + free_rec);
-		if (const rec_t* next = rec_get_next_ptr_const(page + free_rec,
-							       true)) {
-			mtr->write<2>(*cursor->block, page_free,
-				      page_offset(next));
-		} else {
-			mtr->memset(cursor->block, page_free_f, 2, 0);
+		int16_t next_rec = mach_read_from_2(page + free_rec - REC_NEXT);
+		/* We assume that int16_t is safe to use here.
+		With innodb_page_size=64k it would be unsafe,
+		but that cannot be used with ROW_FORMAT=COMPRESSED. */
+		static_assert(UNIV_ZIP_SIZE_SHIFT_MAX == 14, "compatibility");
+		if (next_rec) {
+			next_rec += free_rec;
+			ut_ad(int{PAGE_NEW_SUPREMUM_END + REC_N_NEW_EXTRA_BYTES}
+			      <= next_rec);
+			ut_ad(static_cast<uint16_t>(next_rec) < srv_page_size);
 		}
-		byte* garbage = page_free + 2;
+		mtr->write<2>(*cursor->block, page_free,
+			      static_cast<uint16_t>(next_rec));
+		byte* garbage = my_assume_aligned<2>(page_free + 2);
 		ut_ad(mach_read_from_2(garbage) >= rec_size);
 		mtr->write<2>(*cursor->block, garbage,
 			      mach_read_from_2(garbage) - rec_size);
