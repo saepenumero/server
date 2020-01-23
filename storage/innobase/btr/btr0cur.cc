@@ -4138,10 +4138,13 @@ void btr_cur_upd_rec_in_place(rec_t *rec, const dict_index_t *index,
 		if (UNIV_UNLIKELY(dfield_is_null(&uf->new_val))) {
 			ut_ad(!rec_offs_nth_sql_null(offsets, n));
 			ut_ad(!index->table->not_redundant());
-			mtr->memset(block,
-				    page_offset(rec + rec_get_field_start_offs(
-							rec, n)),
-				    rec_get_nth_field_size(rec, n), 0);
+			if (ulint size = rec_get_nth_field_size(rec, n)) {
+				mtr->memset(
+					block,
+					page_offset(rec_get_field_start_offs(
+							    rec, n) + rec),
+					size, 0);
+			}
 			ulint l = rec_get_1byte_offs_flag(rec)
 				? (n + 1) : (n + 1) * 2;
 			byte* b = &rec[-REC_N_OLD_EXTRA_BYTES - l];
@@ -4174,7 +4177,10 @@ void btr_cur_upd_rec_in_place(rec_t *rec, const dict_index_t *index,
 				      byte(*b & ~REC_1BYTE_SQL_NULL_MASK));
 		}
 
-		mtr->memcpy<mtr_t::OPT>(*block, data, uf->new_val.data, len);
+		if (len) {
+			mtr->memcpy<mtr_t::OPT>(*block, data, uf->new_val.data,
+						len);
+		}
 	}
 
 	if (UNIV_LIKELY_NULL(block->page.zip.data)) {

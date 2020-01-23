@@ -4155,7 +4155,7 @@ void page_zip_rec_set_deleted(buf_block_t *block, rec_t *rec, bool flag,
     b&= ~(PAGE_ZIP_DIR_SLOT_DEL >> 8);
   mtr->zmemcpy<mtr_t::OPT>(block->page, slot, &b, 1);
 #ifdef UNIV_ZIP_DEBUG
-  ut_a(page_zip_validate(page_zip, page_align(rec), NULL));
+  ut_a(page_zip_validate(&block->page.zip, block->frame, nullptr));
 #endif /* UNIV_ZIP_DEBUG */
 }
 
@@ -4313,7 +4313,7 @@ void page_zip_dir_delete(buf_block_t *block, byte *rec,
   /* This could not be done before page_zip_dir_find(). */
   byte *page_n_recs= my_assume_aligned<2>(PAGE_N_RECS + PAGE_HEADER +
                                           block->frame);
-  mtr->write<2>(*block, page_n_recs, n_recs - 1);
+  mtr->write<2>(*block, page_n_recs, n_recs - 1U);
   memcpy_aligned<2>(PAGE_N_RECS + PAGE_HEADER + page_zip->data, page_n_recs,
                     2);
 
