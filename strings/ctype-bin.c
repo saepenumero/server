@@ -586,19 +586,21 @@ struct charset_info_st my_charset_bin =
     "binary",			/* name          */
     "",				/* comment       */
     NULL,			/* tailoring     */
-    ctype_bin,			/* ctype         */
-    bin_char_array,		/* to_lower      */
-    bin_char_array,		/* to_upper      */
     NULL,			/* sort_order    */
     NULL,			/* uca           */
-    NULL,			/* tab_to_uni    */
-    NULL,			/* tab_from_uni  */
-    &my_unicase_default,        /* caseinfo     */
     NULL,			/* state_map    */
     NULL,			/* ident_map    */
     0,				/* min_sort_char */
     255,			/* max_sort_char */
     1,                          /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_binary_handler
+    &my_collation_binary_handler,
+    {
+      &my_charset_handler,
+      ctype_bin,                /* ctype         */
+      bin_char_array,		/* to_lower      */
+      bin_char_array,           /* to_upper      */
+      NULL,                     /* tab_to_uni    */
+      NULL,                     /* tab_from_uni  */
+      &my_unicase_default
+    }
 };

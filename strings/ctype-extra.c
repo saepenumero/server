@@ -26,6 +26,7 @@
 #include "strings_def.h"
 #include <m_ctype.h>
 
+#if 0
 #ifdef HAVE_CHARSET_dec8
 static const uchar ctype_dec8_swedish_ci[] = {
 0x00,
@@ -3672,8 +3673,10 @@ static const uchar sort_order_cp1250_polish_ci[] = {
 
 #ifdef HAVE_CHARSET_geostd8
 #endif
+#endif
 
 struct charset_info_st compiled_charsets[] = {
+#if 0
 #ifdef HAVE_CHARSET_dec8
 {
   3,0,0,
@@ -6456,6 +6459,7 @@ struct charset_info_st compiled_charsets[] = {
 }
 ,
 #endif
+#endif /* if 0*/
 {
   0,0,0,
   MY_CS_COMPILED,
@@ -6463,20 +6467,22 @@ struct charset_info_st compiled_charsets[] = {
   NULL,                       /* coll name     */
   NULL,                       /* comment       */
   NULL,                       /* tailoging     */
-  NULL,                       /* ctype         */
-  NULL,                       /* lower         */
-  NULL,                       /* upper         */
   NULL,                       /* sort order    */
   NULL,                       /* uca           */
-  NULL,                       /* to_uni        */
-  NULL,                       /* from_uni      */
-  &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
   1,                          /* levels_for_order   */
-  &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
+  {
+    &my_charset_8bit_handler,
+    NULL,                       /* ctype         */
+    NULL,                       /* lower         */
+    NULL,                       /* upper         */
+    NULL,                       /* to_uni        */
+    NULL,                       /* from_uni      */
+    &my_unicase_default,        /* caseinfo      */
+  }
 }
 };

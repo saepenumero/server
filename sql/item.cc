@@ -1100,9 +1100,9 @@ void Item::set_name(THD *thd, const char *str, size_t length, CHARSET_INFO *cs)
   }
 
   const char *str_start= str;
-  if (!cs->ctype || my_mbminlen(cs) > 1)
+  if (!cs->cs.ctype || my_mbminlen(cs) > 1)
   {
-    str+= cs->cset->scan(cs, str, str + length, MY_SEQ_SPACES);
+    str+= cs->cs.ha->scan(cs, str, str + length, MY_SEQ_SPACES);
     length-= (uint)(str - str_start);
   }
   else

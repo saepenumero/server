@@ -50,7 +50,7 @@ ulonglong find_set(const TYPELIB *lib,
                    char **err_pos, uint *err_len, bool *set_warning)
 {
   CHARSET_INFO *strip= cs ? cs : &my_charset_latin1;
-  const char *end= str + strip->cset->lengthsp(strip, str, length);
+  const char *end= str + strip->cs.ha->lengthsp(strip, str, length);
   ulonglong found= 0;
   *err_pos= 0;                  // No error yet
   *err_len= 0;
@@ -68,7 +68,7 @@ ulonglong find_set(const TYPELIB *lib,
         for ( ; pos < end; pos+= mblen)
         {
           my_wc_t wc;
-          if ((mblen= cs->cset->mb_wc(cs, &wc, (const uchar *) pos, 
+          if ((mblen= cs->cs.ha->mb_wc(cs, &wc, (const uchar *) pos, 
                                                (const uchar *) end)) < 1)
             mblen= 1; // Not to hang on a wrong multibyte sequence
           if (wc == (my_wc_t) field_separator)
@@ -275,8 +275,8 @@ uint strconvert(CHARSET_INFO *from_cs, const char *from, size_t from_length,
   char *to_start= to;
   uchar *to_end= (uchar*) to + to_length - 1;
   const uchar *from_end= (const uchar*) from + from_length;
-  my_charset_conv_mb_wc mb_wc= from_cs->cset->mb_wc;
-  my_charset_conv_wc_mb wc_mb= to_cs->cset->wc_mb;
+  my_charset_conv_mb_wc mb_wc= from_cs->cs.ha->mb_wc;
+  my_charset_conv_wc_mb wc_mb= to_cs->cs.ha->wc_mb;
   uint error_count= 0;
 
   while (1)

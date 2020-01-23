@@ -434,7 +434,7 @@ scan_one_character(const char *s, const char *e, my_wc_t *wc)
   }
   else /* Non-escaped character */
   {
-    int rc= cs->cset->mb_wc(cs, wc, (uchar *) s, (uchar *) e);
+    int rc= cs->cs.ha->mb_wc(cs, wc, (uchar *) s, (uchar *) e);
     if (rc > 0)
       return (size_t) rc;
   }
@@ -623,15 +623,15 @@ static int cs_value(MY_XML_PARSER *st,const char *attr, size_t len)
     break;
   case _CS_UPPERMAP:
     fill_uchar(i->to_upper,MY_CS_TO_UPPER_TABLE_SIZE,attr,len);
-    i->cs.to_upper=i->to_upper;
+    i->cs.cs.to_upper=i->to_upper;
     break;
   case _CS_LOWERMAP:
     fill_uchar(i->to_lower,MY_CS_TO_LOWER_TABLE_SIZE,attr,len);
-    i->cs.to_lower=i->to_lower;
+    i->cs.cs.to_lower=i->to_lower;
     break;
   case _CS_UNIMAP:
     fill_uint16(i->tab_to_uni,MY_CS_TO_UNI_TABLE_SIZE,attr,len);
-    i->cs.tab_to_uni=i->tab_to_uni;
+    i->cs.cs.tab_to_uni=i->tab_to_uni;
     break;
   case _CS_COLLMAP:
     fill_uchar(i->sort_order,MY_CS_SORT_ORDER_TABLE_SIZE,attr,len);
@@ -639,7 +639,7 @@ static int cs_value(MY_XML_PARSER *st,const char *attr, size_t len)
     break;
   case _CS_CTYPEMAP:
     fill_uchar(i->ctype,MY_CS_CTYPE_TABLE_SIZE,attr,len);
-    i->cs.ctype=i->ctype;
+    i->cs.cs.ctype=i->ctype;
     break;
 
   /* Special purpose commands */
@@ -867,8 +867,8 @@ my_string_metadata_get_mb(MY_STRING_METADATA *metadata,
        metadata->char_length++)
   {
     my_wc_t wc;
-    int mblen= cs->cset->mb_wc(cs, &wc, (const uchar *) str,
-                                        (const uchar *) strend);
+    int mblen= cs->cs.ha->mb_wc(cs, &wc, (const uchar *) str,
+                                         (const uchar *) strend);
     if (mblen > 0) /* Assigned character */
     {
       if (wc > 0x7F)
@@ -929,7 +929,7 @@ my_string_repertoire(CHARSET_INFO *cs, const char *str, size_t length)
     my_wc_t wc;
     int chlen;
     for (;
-         (chlen= cs->cset->mb_wc(cs, &wc, (uchar*) str, (uchar*) strend)) > 0;
+         (chlen= cs->cs.ha->mb_wc(cs, &wc, (uchar*) str, (uchar*) strend)) > 0;
          str+= chlen)
     {
       if (wc > 0x7F)
@@ -980,7 +980,7 @@ my_bool
 my_charset_is_ascii_based(CHARSET_INFO *cs)
 {
   return 
-    (my_mbmaxlen(cs) == 1 && cs->tab_to_uni && cs->tab_to_uni['{'] == '{') ||
+    (my_mbmaxlen(cs) == 1 && cs->cs.tab_to_uni && cs->cs.tab_to_uni['{'] == '{') ||
     (my_mbminlen(cs) == 1 && my_mbmaxlen(cs) > 1);
 }
 
@@ -1054,7 +1054,7 @@ my_wc_to_printable_generic(CHARSET_INFO *cs, my_wc_t wc,
 
   if (my_is_printable(wc))
   {
-    int mblen= cs->cset->wc_mb(cs, wc, str, end);
+    int mblen= cs->cs.ha->wc_mb(cs, wc, str, end);
     if (mblen > 0)
       return mblen;
   }
@@ -1070,7 +1070,7 @@ my_wc_to_printable_generic(CHARSET_INFO *cs, my_wc_t wc,
   str0= str;
   for (i= 0; i < length; i++)
   {
-    if (cs->cset->wc_mb(cs, tmp[i], str, end) != (int) mbminlen)
+    if (cs->cs.ha->wc_mb(cs, tmp[i], str, end) != (int) mbminlen)
     {
       DBUG_ASSERT(0);
       return MY_CS_ILSEQ;
@@ -1185,9 +1185,9 @@ my_convert(char *to, uint32 to_length, CHARSET_INFO *to_cs,
   */
   if ((to_cs->state | from_cs->state) & MY_CS_NONASCII)
     return my_convert_using_func(to, to_length,
-                                 to_cs, to_cs->cset->wc_mb,
+                                 to_cs, to_cs->cs.ha->wc_mb,
                                  from, from_length,
-                                 from_cs, from_cs->cset->mb_wc,
+                                 from_cs, from_cs->cs.ha->mb_wc,
                                  errors);
 
   length= length2= MY_MIN(to_length, from_length);
@@ -1221,9 +1221,9 @@ my_convert(char *to, uint32 to_length, CHARSET_INFO *to_cs,
       to_length-= copied_length;
       from_length-= copied_length;
       return copied_length + my_convert_using_func(to, to_length, to_cs,
-                                                   to_cs->cset->wc_mb,
+                                                   to_cs->cs.ha->wc_mb,
                                                    from, from_length, from_cs,
-                                                   from_cs->cset->mb_wc,
+                                                   from_cs->cs.ha->mb_wc,
                                                    errors);
     }
   }
@@ -1242,8 +1242,8 @@ my_convert_fix(CHARSET_INFO *to_cs, char *to, size_t to_length,
 {
   int cnvres;
   my_wc_t wc;
-  my_charset_conv_mb_wc mb_wc= from_cs->cset->mb_wc;
-  my_charset_conv_wc_mb wc_mb= to_cs->cset->wc_mb;
+  my_charset_conv_mb_wc mb_wc= from_cs->cs.ha->mb_wc;
+  my_charset_conv_wc_mb wc_mb= to_cs->cs.ha->wc_mb;
   const uchar *from_end= (const uchar*) from + from_length;
   uchar *to_end= (uchar*) to + to_length;
   char *to_start= to;

@@ -2122,13 +2122,13 @@ int Rdb_key_def::unpack_utf8_str(
   while (src < src_end) {
     my_wc_t wc = (src[0] << 8) | src[1];
     src += 2;
-    int res = cset->cset->wc_mb(cset, wc, dst, dst_end);
+    int res = cset->cs.ha->wc_mb(cset, wc, dst, dst_end);
     DBUG_ASSERT(res > 0 && res <= 3);
     if (res < 0) return UNPACK_FAILURE;
     dst += res;
   }
 
-  cset->cset->fill(cset, reinterpret_cast<char *>(dst), dst_end - dst,
+  cset->cs.ha->fill(cset, reinterpret_cast<char *>(dst), dst_end - dst,
                    my_pad_char(cset));
   return UNPACK_SUCCESS;
 }
@@ -2364,7 +2364,7 @@ void Rdb_key_def::pack_with_varchar_space_pad(
                                   ? (uint)*field->ptr
                                   : uint2korr(field->ptr);
 
-  const size_t trimmed_len = charset->cset->lengthsp(
+  const size_t trimmed_len = charset->cs.ha->lengthsp(
       charset, (const char *)field_var->ptr + field_var->length_bytes,
       value_length);
   const size_t xfrm_len = charset->coll->strnxfrm(
@@ -2500,7 +2500,7 @@ static int unpack_charset(
 
   for (uint ii = 0; ii < src_len; ii += 2) {
     my_wc_t wc = (src[ii] << 8) | src[ii + 1];
-    int res = cset->cset->wc_mb(cset, wc, dst + used, dst_end);
+    int res = cset->cs.ha->wc_mb(cset, wc, dst + used, dst_end);
     DBUG_ASSERT(res > 0 && res <= 3);
     if (res < 0) {
       return UNPACK_FAILURE;
@@ -2656,7 +2656,7 @@ int Rdb_key_def::unpack_binary_or_utf8_varchar_space_pad(
         my_wc_t wc = (src[0] << 8) | src[1];
         src += 2;
         const CHARSET_INFO *cset = fpi->m_varchar_charset;
-        int res = cset->cset->wc_mb(cset, wc, dst, dst_end);
+        int res = cset->cs.ha->wc_mb(cset, wc, dst, dst_end);
         DBUG_ASSERT(res <= 3);
         if (res <= 0) return UNPACK_FAILURE;
         dst += res;
@@ -3054,7 +3054,7 @@ static void rdb_get_mem_comparable_space(const CHARSET_INFO *const cs,
       // multi-byte form of the ' ' (space) character
       uchar space_mb[MAX_MULTI_BYTE_CHAR_SIZE];
 
-      const size_t space_mb_len = cs->cset->wc_mb(
+      const size_t space_mb_len = cs->cs.ha->wc_mb(
           cs, (my_wc_t) my_pad_char(cs), space_mb, space_mb + sizeof(space_mb));
 
       // mem-comparable image of the space character

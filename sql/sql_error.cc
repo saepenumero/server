@@ -916,7 +916,7 @@ char *err_conv(char *buff, uint to_length, const char *from,
     res= my_convert_using_func(to, to_length, system_charset_info,
                                my_wc_mb_utf8_null_terminated,
                                from, from_length, from_cs,
-                               from_cs->cset->mb_wc,
+                               from_cs->cs.ha->mb_wc,
                                &errors);
     to[res]= 0;
   }
@@ -953,7 +953,7 @@ size_t convert_error_message(char *to, size_t to_length, CHARSET_INFO *to_cs,
                                            to_cs,
                                            my_wc_to_printable_generic,
                                            from, from_length,
-                                           from_cs, from_cs->cset->mb_wc,
+                                           from_cs, from_cs->cs.ha->mb_wc,
                                            errors);
   DBUG_ASSERT(to_length >= cnv_length);
   to[cnv_length]= '\0';

@@ -3613,7 +3613,7 @@ print_table_data(MYSQL_RES *result)
     for (uint off=0; (field = mysql_fetch_field(result)) ; off++)
     {
       size_t name_length= (uint) strlen(field->name);
-      size_t numcells= charset_info->cset->numcells(charset_info,
+      size_t numcells= charset_info->cs.ha->numcells(charset_info,
                                                   field->name,
                                                   field->name + name_length);
       size_t display_length= field->max_length + name_length - numcells;
@@ -3664,7 +3664,7 @@ print_table_data(MYSQL_RES *result)
        We need to find how much screen real-estate we will occupy to know how 
        many extra padding-characters we should send with the printing function.
       */
-      size_t visible_length= charset_info->cset->numcells(charset_info, buffer, buffer + data_length);
+      size_t visible_length= charset_info->cs.ha->numcells(charset_info, buffer, buffer + data_length);
       extra_padding= (uint) (data_length - visible_length);
 
       if (opt_binhex && is_binary_field(field))

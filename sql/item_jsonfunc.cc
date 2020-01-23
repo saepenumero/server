@@ -36,7 +36,7 @@ static bool eq_ascii_string(const CHARSET_INFO *cs,
     my_wc_t wc;
     int wc_len;
 
-    wc_len= cs->cset->mb_wc(cs, &wc, (uchar *) s, (uchar *) s_end);
+    wc_len= cs->cs.ha->mb_wc(cs, &wc, (uchar *) s, (uchar *) s_end);
     if (wc_len <= 0 || (wc | 0x20) != (my_wc_t) *ascii)
       return 0;
 

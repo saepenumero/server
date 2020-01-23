@@ -411,7 +411,7 @@ int spider_db_mbase_row::store_to_field(
       DBUG_PRINT("info", ("spider blob field"));
       if (
         field->charset() == &my_charset_bin ||
-        field->charset()->cset == access_charset->cset
+        field->charset()->cs.ha == access_charset->cs.ha
       )
         ((Field_blob *)field)->set_ptr(*lengths, (uchar *) *row);
       else {
@@ -7596,7 +7596,7 @@ int spider_mbase_share::convert_key_hint_str()
   int roop_count;
   TABLE_SHARE *table_share = spider_share->table_share;
   DBUG_ENTER("spider_mbase_share::convert_key_hint_str");
-  if (spider_share->access_charset->cset != system_charset_info->cset)
+  if (spider_share->access_charset->cs.ha != system_charset_info->cs.ha)
   {
     /* need conversion */
     for (roop_count = 0, tmp_key_hint = key_hint;
@@ -11641,12 +11641,12 @@ int spider_mbase_handler::append_limit(
     str->q_append(SPIDER_SQL_LIMIT_STR, SPIDER_SQL_LIMIT_LEN);
     if (offset)
     {
-      length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+      length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
         &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, offset);
       str->q_append(buf, length);
       str->q_append(SPIDER_SQL_COMMA_STR, SPIDER_SQL_COMMA_LEN);
     }
-    length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+    length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
       &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
     str->q_append(buf, length);
   }
@@ -15783,12 +15783,12 @@ int spider_mbase_copy_table::append_limit(
     sql.q_append(SPIDER_SQL_LIMIT_STR, SPIDER_SQL_LIMIT_LEN);
     if (offset)
     {
-      length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+      length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
         &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, offset);
       sql.q_append(buf, length);
       sql.q_append(SPIDER_SQL_COMMA_STR, SPIDER_SQL_COMMA_LEN);
     }
-    length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+    length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
       &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
     sql.q_append(buf, length);
   }

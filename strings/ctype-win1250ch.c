@@ -707,21 +707,23 @@ struct charset_info_st my_charset_cp1250_czech_ci =
   "cp1250_czech_cs",                          /* name      */
   "",                                         /* comment   */
   NULL,                                       /* tailoring */
-  ctype_win1250ch,
-  to_lower_win1250ch,
-  to_upper_win1250ch,
   sort_order_win1250ch,
   NULL,				/* uca          */
-  tab_cp1250_uni,		/* tab_to_uni   */
-  idx_uni_cp1250,		/* tab_from_uni */
-  &my_unicase_default,          /* caseinfo     */
   NULL,				/* state_map    */
   NULL,				/* ident_map    */
   0,				/* min_sort_char */
   0,				/* max_sort_char */
   2,                            /* levels_for_order   */
-  &my_charset_8bit_handler,
-  &my_collation_czech_ci_handler
+  &my_collation_czech_ci_handler,
+  {
+    &my_charset_8bit_handler,
+    ctype_win1250ch,
+    to_lower_win1250ch,
+    to_upper_win1250ch,
+    tab_cp1250_uni,		/* tab_to_uni   */
+    idx_uni_cp1250,		/* tab_from_uni */
+    &my_unicase_default,          /* caseinfo     */
+  }
 };
 
 

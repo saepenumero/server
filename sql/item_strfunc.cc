@@ -1331,7 +1331,7 @@ bool Item_func_regexp_replace::append_replacement(String *str,
     my_wc_t wc;
     int cnv, n;
 
-    if ((cnv= cs->cset->mb_wc(cs, &wc, (const uchar *) beg,
+    if ((cnv= cs->cs.ha->mb_wc(cs, &wc, (const uchar *) beg,
                                        (const uchar *) end)) < 1)
       break; /* End of line */
     beg+= cnv;
@@ -1343,7 +1343,7 @@ bool Item_func_regexp_replace::append_replacement(String *str,
       continue;
     }
 
-    if ((cnv= cs->cset->mb_wc(cs, &wc, (const uchar *) beg,
+    if ((cnv= cs->cs.ha->mb_wc(cs, &wc, (const uchar *) beg,
                                        (const uchar *) end)) < 1)
       break; /* End of line */
     beg+= cnv;
@@ -1593,7 +1593,7 @@ bool Item_func_lcase::fix_length_and_dec()
     return TRUE;
   DBUG_ASSERT(collation.collation != NULL);
   multiply= my_casedn_multiply(collation.collation);
-  converter= collation.collation->cset->casedn;
+  converter= collation.collation->cs.ha->casedn;
   fix_char_length_ulonglong((ulonglong) args[0]->max_char_length() * multiply);
   return FALSE;
 }
@@ -1604,7 +1604,7 @@ bool Item_func_ucase::fix_length_and_dec()
     return TRUE;
   DBUG_ASSERT(collation.collation != NULL);
   multiply= my_caseup_multiply(collation.collation);
-  converter= collation.collation->cset->caseup;
+  converter= collation.collation->cs.ha->caseup;
   fix_char_length_ulonglong((ulonglong) args[0]->max_char_length() * multiply);
   return FALSE;
 }
@@ -2412,7 +2412,7 @@ bool Item_func_user::init(const char *user, const char *host)
       return TRUE;
     }
 
-    res_length=cs->cset->snprintf(cs, (char*)str_value.ptr(), (uint) res_length,
+    res_length=cs->cs.ha->snprintf(cs, (char*)str_value.ptr(), (uint) res_length,
                                   "%s@%s", user, host);
     str_value.length((uint) res_length);
     str_value.mark_as_const();
@@ -2553,10 +2553,10 @@ String *Item_func_soundex::val_str(String *str)
   
   for ( ; ; ) /* Skip pre-space */
   {
-    if ((rc= cs->cset->mb_wc(cs, &wc, (uchar*) from, (uchar*) end)) <= 0)
+    if ((rc= cs->cs.ha->mb_wc(cs, &wc, (uchar*) from, (uchar*) end)) <= 0)
       return make_empty_result(); /* EOL or invalid byte sequence */
     
-    if (rc == 1 && cs->ctype)
+    if (rc == 1 && cs->cs.ctype)
     {
       /* Single byte letter found */
       if (my_isalpha(cs, *from))
@@ -2575,7 +2575,7 @@ String *Item_func_soundex::val_str(String *str)
         /* Multibyte letter found */
         wc= soundex_toupper(wc);
         last_ch= get_scode(wc);     // Code of the first letter
-        if ((rc= cs->cset->wc_mb(cs, wc, (uchar*) to, (uchar*) to_end)) <= 0)
+        if ((rc= cs->cs.ha->wc_mb(cs, wc, (uchar*) to, (uchar*) to_end)) <= 0)
         {
           /* Extra safety - should not really happen */
           DBUG_ASSERT(false);
@@ -2593,10 +2593,10 @@ String *Item_func_soundex::val_str(String *str)
   */
   for (nchars= 1 ; ; )
   {
-    if ((rc= cs->cset->mb_wc(cs, &wc, (uchar*) from, (uchar*) end)) <= 0)
+    if ((rc= cs->cs.ha->mb_wc(cs, &wc, (uchar*) from, (uchar*) end)) <= 0)
       break; /* EOL or invalid byte sequence */
 
-    if (rc == 1 && cs->ctype)
+    if (rc == 1 && cs->cs.ctype)
     {
       if (!my_isalpha(cs, *from++))
         continue;
@@ -2612,7 +2612,7 @@ String *Item_func_soundex::val_str(String *str)
     if ((ch != '0') && (ch != last_ch)) // if not skipped or double
     {
       // letter, copy to output
-      if ((rc= cs->cset->wc_mb(cs, (my_wc_t) ch,
+      if ((rc= cs->cs.ha->wc_mb(cs, (my_wc_t) ch,
                                (uchar*) to, (uchar*) to_end)) <= 0)
       {
         // Extra safety - should not really happen
@@ -2629,7 +2629,7 @@ String *Item_func_soundex::val_str(String *str)
   if (nchars < 4) 
   {
     uint nbytes= (4 - nchars) * my_mbminlen(cs);
-    cs->cset->fill(cs, to, nbytes, '0');
+    cs->cs.ha->fill(cs, to, nbytes, '0');
     to+= nbytes;
   }
 
@@ -3127,7 +3127,7 @@ String *Item_func_space::val_str(String *str)
     goto err;
   str->length(tot_length);
   str->set_charset(cs);
-  cs->cset->fill(cs, (char*) str->ptr(), tot_length, ' ');
+  cs->cs.ha->fill(cs, (char*) str->ptr(), tot_length, ' ');
   return str;
 
 err:
@@ -4053,7 +4053,7 @@ String *Item_func_quote::val_str(String *str)
     to_end= (uchar*) to + new_length;
 
     /* Put leading quote */
-    if ((mblen= cs->cset->wc_mb(cs, '\'', (uchar *) to, to_end)) <= 0)
+    if ((mblen= cs->cs.ha->wc_mb(cs, '\'', (uchar *) to, to_end)) <= 0)
       goto toolong;
     to+= mblen;
 
@@ -4061,7 +4061,7 @@ String *Item_func_quote::val_str(String *str)
     {
       my_wc_t wc;
       bool escape;
-      if ((mblen= cs->cset->mb_wc(cs, &wc, (uchar*) start, (uchar*) end)) <= 0)
+      if ((mblen= cs->cs.ha->mb_wc(cs, &wc, (uchar*) start, (uchar*) end)) <= 0)
         goto null;
       start+= mblen;
       switch (wc) {
@@ -4073,17 +4073,17 @@ String *Item_func_quote::val_str(String *str)
       }
       if (escape)
       {
-        if ((mblen= cs->cset->wc_mb(cs, '\\', (uchar*) to, to_end)) <= 0)
+        if ((mblen= cs->cs.ha->wc_mb(cs, '\\', (uchar*) to, to_end)) <= 0)
           goto toolong;
         to+= mblen;
       }
-      if ((mblen= cs->cset->wc_mb(cs, wc, (uchar*) to, to_end)) <= 0)
+      if ((mblen= cs->cs.ha->wc_mb(cs, wc, (uchar*) to, to_end)) <= 0)
         goto toolong;
       to+= mblen;
     }
 
     /* Put trailing quote */
-    if ((mblen= cs->cset->wc_mb(cs, '\'', (uchar *) to, to_end)) <= 0)
+    if ((mblen= cs->cs.ha->wc_mb(cs, '\'', (uchar *) to, to_end)) <= 0)
       goto toolong;
     to+= mblen;
     new_length= (uint)(to - str->ptr());

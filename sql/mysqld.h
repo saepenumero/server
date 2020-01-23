@@ -788,8 +788,8 @@ extern "C" void unireg_clear(int exit_code);
 inline void table_case_convert(char * name, uint length)
 {
   if (lower_case_table_names)
-    files_charset_info->cset->casedn(files_charset_info,
-                                     name, length, name, length);
+    files_charset_info->cs.ha->casedn(files_charset_info,
+                                      name, length, name, length);
 }
 
 extern void set_server_version(char *buf, size_t size);

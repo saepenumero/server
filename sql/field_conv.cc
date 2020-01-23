@@ -465,7 +465,7 @@ static void do_cut_string(Copy_field *copy)
   memcpy(copy->to_ptr,copy->from_ptr,copy->to_length);
 
   /* Check if we loosed any important characters */
-  if (cs->cset->scan(cs,
+  if (cs->cs.ha->scan(cs,
                      (char*) copy->from_ptr + copy->to_length,
                      (char*) copy->from_ptr + copy->from_length,
                      MY_SEQ_SPACES) < copy->from_length - copy->to_length)
@@ -496,7 +496,7 @@ static void do_cut_string_complex(Copy_field *copy)
 
   /* Check if we lost any important characters */
   if (unlikely(prefix.well_formed_error_pos() ||
-               cs->cset->scan(cs, (char*) copy->from_ptr + copy_length,
+               cs->cs.ha->scan(cs, (char*) copy->from_ptr + copy_length,
                               (char*) from_end,
                               MY_SEQ_SPACES) <
                (copy->from_length - copy_length)))
@@ -506,7 +506,7 @@ static void do_cut_string_complex(Copy_field *copy)
   }
 
   if (copy_length < copy->to_length)
-    cs->cset->fill(cs, (char*) copy->to_ptr + copy_length,
+    cs->cs.ha->fill(cs, (char*) copy->to_ptr + copy_length,
                    copy->to_length - copy_length, ' ');
 }
 
@@ -517,7 +517,7 @@ static void do_expand_binary(Copy_field *copy)
 {
   CHARSET_INFO *cs= copy->from_field->charset();
   memcpy(copy->to_ptr,copy->from_ptr,copy->from_length);
-  cs->cset->fill(cs, (char*) copy->to_ptr+copy->from_length,
+  cs->cs.ha->fill(cs, (char*) copy->to_ptr+copy->from_length,
                      copy->to_length-copy->from_length, '\0');
 }
 
@@ -527,7 +527,7 @@ static void do_expand_string(Copy_field *copy)
 {
   CHARSET_INFO *cs= copy->from_field->charset();
   memcpy(copy->to_ptr,copy->from_ptr,copy->from_length);
-  cs->cset->fill(cs, (char*) copy->to_ptr+copy->from_length,
+  cs->cs.ha->fill(cs, (char*) copy->to_ptr+copy->from_length,
                      copy->to_length-copy->from_length, ' ');
 }
 

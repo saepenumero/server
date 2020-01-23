@@ -125,7 +125,7 @@ bool String::set_int(longlong num, bool unsigned_flag, CHARSET_INFO *cs)
 
   if (alloc(l))
     return TRUE;
-  str_length=(uint32) (cs->cset->longlong10_to_str)(cs,Ptr,l,base,num);
+  str_length=(uint32) (cs->cs.ha->longlong10_to_str)(cs,Ptr,l,base,num);
   set_charset(cs);
   return FALSE;
 }
@@ -794,7 +794,7 @@ bool Binary_string::copy_printable_hhhh(CHARSET_INFO *to_cs,
                                     my_wc_to_printable_generic,
                                     from, from_length,
                                     from_cs,
-                                    from_cs->cset->mb_wc,
+                                    from_cs->cs.ha->mb_wc,
                                     &errors);
   return false;
 }
@@ -1099,7 +1099,7 @@ String_copier::well_formed_copy(CHARSET_INFO *to_cs,
       my_charset_same(from_cs, to_cs))
   {
     m_cannot_convert_error_pos= NULL;
-    return (uint) to_cs->cset->copy_fix(to_cs, to, to_length, from, from_length,
+    return (uint) to_cs->cs.ha->copy_fix(to_cs, to, to_length, from, from_length,
                                  nchars, this);
   }
   return (uint) my_convert_fix(to_cs, to, to_length, from_cs, from, from_length,

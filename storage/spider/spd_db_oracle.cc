@@ -182,7 +182,7 @@ int spider_db_oracle_get_error(
       OCIErrorGet(hndlp, 1, NULL, &error_code, (OraText *) buf, sizeof(buf),
         OCI_HTYPE_ERROR);
       DBUG_PRINT("info",("spider error_code=%d error='%s'",error_code ,buf));
-      if (access_charset && access_charset->cset != system_charset_info->cset)
+      if (access_charset && access_charset->cs.ha != system_charset_info->cs.ha)
       {
         tmp_str.append(buf, strlen(buf), access_charset);
       } else {
@@ -223,7 +223,7 @@ int spider_db_oracle_get_error(
           my_error(error_num, MYF(0));
         }
       }
-      if (access_charset && access_charset->cset != system_charset_info->cset)
+      if (access_charset && access_charset->cs.ha != system_charset_info->cs.ha)
       {
         tmp_str.append(buf, strlen(buf), access_charset);
       } else {
@@ -4946,7 +4946,7 @@ int spider_oracle_share::convert_key_hint_str()
   int roop_count;
   TABLE_SHARE *table_share = spider_share->table_share;
   DBUG_ENTER("spider_oracle_share::convert_key_hint_str");
-  if (spider_share->access_charset->cset != system_charset_info->cset)
+  if (spider_share->access_charset->cs.ha != system_charset_info->cs.ha)
   {
     /* need conversion */
     for (roop_count = 0, tmp_key_hint = key_hint;
@@ -9109,11 +9109,11 @@ int spider_oracle_handler::append_limit(
         ((SPIDER_LONGLONG_LEN) * 2)))
         DBUG_RETURN(HA_ERR_OUT_OF_MEM);
       str->q_append(SPIDER_SQL_BETWEEN_STR, SPIDER_SQL_BETWEEN_LEN);
-      length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+      length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
         &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, offset + 1);
       str->q_append(buf, length);
       str->q_append(SPIDER_SQL_AND_STR, SPIDER_SQL_AND_LEN);
-      length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+      length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
         &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, limit + offset);
       str->q_append(buf, length);
     } else {
@@ -9121,7 +9121,7 @@ int spider_oracle_handler::append_limit(
         (SPIDER_LONGLONG_LEN)))
         DBUG_RETURN(HA_ERR_OUT_OF_MEM);
       str->q_append(SPIDER_SQL_HS_LTEQUAL_STR, SPIDER_SQL_HS_LTEQUAL_LEN);
-      length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+      length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
         &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
       str->q_append(buf, length);
     }
@@ -13401,11 +13401,11 @@ int spider_oracle_copy_table::append_limit(
         ((SPIDER_LONGLONG_LEN) * 2)))
         DBUG_RETURN(HA_ERR_OUT_OF_MEM);
       sql.q_append(SPIDER_SQL_BETWEEN_STR, SPIDER_SQL_BETWEEN_LEN);
-      length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+      length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
         &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, offset);
       sql.q_append(buf, length);
       sql.q_append(SPIDER_SQL_AND_STR, SPIDER_SQL_AND_LEN);
-      length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+      length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
         &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
       sql.q_append(buf, length);
     } else {
@@ -13413,7 +13413,7 @@ int spider_oracle_copy_table::append_limit(
         (SPIDER_LONGLONG_LEN)))
         DBUG_RETURN(HA_ERR_OUT_OF_MEM);
       sql.q_append(SPIDER_SQL_HS_LTEQUAL_STR, SPIDER_SQL_HS_LTEQUAL_LEN);
-      length = (uint32) (my_charset_bin.cset->longlong10_to_str)(
+      length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
         &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
       sql.q_append(buf, length);
     }

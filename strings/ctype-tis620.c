@@ -613,7 +613,7 @@ my_strnxfrm_tis620(CHARSET_INFO *cs,
   if ((flags & MY_STRXFRM_PAD_TO_MAXLEN) && len < dstlen0)
   {
     size_t fill_length= dstlen0 - len;
-    cs->cset->fill(cs, (char*) dst + len, fill_length, my_pad_char(cs));
+    cs->cs.ha->fill(cs, (char*) dst + len, fill_length, my_pad_char(cs));
     len= dstlen0;
   }
   return len;
@@ -937,21 +937,23 @@ struct charset_info_st my_charset_tis620_thai_ci=
     "tis620_thai_ci",	/* name      */
     "",			/* comment   */
     NULL,		/* tailoring */
-    ctype_tis620,
-    to_lower_tis620,
-    to_upper_tis620,
     sort_order_tis620,
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_unicase_default,/* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     255,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_ci_handler
+    &my_collation_ci_handler,
+    {
+      &my_charset_handler,
+      ctype_tis620,
+      to_lower_tis620,
+      to_upper_tis620,
+      NULL,               /* tab_to_uni   */
+      NULL,               /* tab_from_uni */
+      &my_unicase_default
+    }
 };
 
 struct charset_info_st my_charset_tis620_bin=
@@ -962,21 +964,23 @@ struct charset_info_st my_charset_tis620_bin=
     "tis620_bin",	/* name      */
     "",			/* comment   */
     NULL,		/* tailoring */
-    ctype_tis620,
-    to_lower_tis620,
-    to_upper_tis620,
     NULL,		/* sort_order   */
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_unicase_default,/* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     255,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_8bit_bin_handler
+    &my_collation_8bit_bin_handler,
+    {
+      &my_charset_handler,
+      ctype_tis620,
+      to_lower_tis620,
+      to_upper_tis620,
+      NULL,               /* tab_to_uni   */
+      NULL,               /* tab_from_uni */
+      &my_unicase_default
+    }
 };
 
 
@@ -988,21 +992,23 @@ struct charset_info_st my_charset_tis620_thai_nopad_ci=
     "tis620_thai_nopad_ci",/* name             */
     "",                    /* comment          */
     NULL,                  /* tailoring        */
-    ctype_tis620,
-    to_lower_tis620,
-    to_upper_tis620,
     sort_order_tis620,
     NULL,                  /* uca              */
-    NULL,                  /* tab_to_uni       */
-    NULL,                  /* tab_from_uni     */
-    &my_unicase_default,   /* caseinfo         */
     NULL,                  /* state_map        */
     NULL,                  /* ident_map        */
     0,                     /* min_sort_char    */
     255,                   /* max_sort_char    */
     1,                     /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_nopad_ci_handler
+    &my_collation_nopad_ci_handler,
+    {
+      &my_charset_handler,
+      ctype_tis620,
+      to_lower_tis620,
+      to_upper_tis620,
+      NULL,               /* tab_to_uni   */
+      NULL,               /* tab_from_uni */
+      &my_unicase_default
+    }
 };
 
 
@@ -1014,21 +1020,23 @@ struct charset_info_st my_charset_tis620_nopad_bin=
     "tis620_nopad_bin",    /* name             */
     "",                    /* comment          */
     NULL,                  /* tailoring        */
-    ctype_tis620,
-    to_lower_tis620,
-    to_upper_tis620,
     NULL,                  /* sort_order       */
     NULL,                  /* uca              */
-    NULL,                  /* tab_to_uni       */
-    NULL,                  /* tab_from_uni     */
-    &my_unicase_default,   /* caseinfo         */
     NULL,                  /* state_map        */
     NULL,                  /* ident_map        */
     0,                     /* min_sort_char    */
     255,                   /* max_sort_char    */
     1,                     /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_8bit_nopad_bin_handler
+    &my_collation_8bit_nopad_bin_handler,
+    {
+      &my_charset_handler,
+      ctype_tis620,
+      to_lower_tis620,
+      to_upper_tis620,
+      NULL,               /* tab_to_uni   */
+      NULL,               /* tab_from_uni */
+      &my_unicase_default
+    }
 };
 
 

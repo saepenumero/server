@@ -257,7 +257,7 @@ uint my_casedn_multiply_simple(CHARSET_INFO *cs)
 
 size_t my_caseup_str_8bit(CHARSET_INFO * cs,char *str)
 {
-  register const uchar *map= cs->to_upper;
+  register const uchar *map= cs->cs.to_upper;
   char *str_orig= str;
   while ((*str= (char) map[(uchar) *str]) != 0)
     str++;
@@ -267,7 +267,7 @@ size_t my_caseup_str_8bit(CHARSET_INFO * cs,char *str)
 
 size_t my_casedn_str_8bit(CHARSET_INFO * cs,char *str)
 {
-  register const uchar *map= cs->to_lower;
+  register const uchar *map= cs->cs.to_lower;
   char *str_orig= str;
   while ((*str= (char) map[(uchar) *str]) != 0)
     str++;
@@ -279,7 +279,7 @@ size_t my_caseup_8bit(CHARSET_INFO * cs, const char *src, size_t srclen,
                       char *dst, size_t dstlen)
 {
   const char *end= src + srclen;
-  register const uchar *map= cs->to_upper;
+  register const uchar *map= cs->cs.to_upper;
   DBUG_ASSERT(srclen <= dstlen);
   for ( ; src != end ; src++)
     *dst++= (char) map[(uchar) *src];
@@ -291,7 +291,7 @@ size_t my_casedn_8bit(CHARSET_INFO * cs, const char *src, size_t srclen,
                       char *dst, size_t dstlen)
 {
   const char *end= src + srclen;
-  register const uchar *map=cs->to_lower;
+  register const uchar *map=cs->cs.to_lower;
   DBUG_ASSERT(srclen <= dstlen);
   for ( ; src != end ; src++)
     *dst++= (char) map[(uchar) *src];
@@ -300,7 +300,7 @@ size_t my_casedn_8bit(CHARSET_INFO * cs, const char *src, size_t srclen,
 
 int my_strcasecmp_8bit(CHARSET_INFO * cs,const char *s, const char *t)
 {
-  register const uchar *map=cs->to_upper;
+  register const uchar *map=cs->cs.to_upper;
   while (map[(uchar) *s] == map[(uchar) *t++])
     if (!*s++) return 0;
   return ((int) map[(uchar) s[0]] - (int) map[(uchar) t[-1]]);
@@ -321,7 +321,7 @@ int my_mb_wc_8bit(CHARSET_INFO *cs,my_wc_t *wc,
   if (str >= end)
     return MY_CS_TOOSMALL;
   
-  *wc=cs->tab_to_uni[*str];
+  *wc=cs->cs.tab_to_uni[*str];
   return (!wc[0] && str[0]) ? -1 : 1;
 }
 
@@ -334,7 +334,7 @@ int my_wc_mb_8bit(CHARSET_INFO *cs,my_wc_t wc,
   if (str >= end)
     return MY_CS_TOOSMALL;
   
-  for (idx=cs->tab_from_uni; idx->tab ; idx++)
+  for (idx=cs->cs.tab_from_uni; idx->tab ; idx++)
   {
     if (idx->from <= wc && idx->to >= wc)
     {
@@ -1315,7 +1315,7 @@ create_fromuni(struct charset_info_st *cs,
     listed in Index.xml but not specified
     in the character set specific XML file.
   */
-  if (!cs->tab_to_uni)
+  if (!cs->cs.tab_to_uni)
     return TRUE;
   
   /* Clear plane statistics */
@@ -1324,7 +1324,7 @@ create_fromuni(struct charset_info_st *cs,
   /* Count number of characters in each plane */
   for (i=0; i< 0x100; i++)
   {
-    uint16 wc=cs->tab_to_uni[i];
+    uint16 wc=cs->cs.tab_to_uni[i];
     int pl= PLANE_NUMBER(wc);
     
     if (wc || !i)
@@ -1364,7 +1364,7 @@ create_fromuni(struct charset_info_st *cs,
     
     for (ch=1; ch < PLANE_SIZE; ch++)
     {
-      uint16 wc=cs->tab_to_uni[ch];
+      uint16 wc= cs->cs.tab_to_uni[ch];
       if (wc >= idx[i].uidx.from && wc <= idx[i].uidx.to && wc)
       {
         int ofs= wc - idx[i].uidx.from;
@@ -1396,15 +1396,15 @@ create_fromuni(struct charset_info_st *cs,
   
   /* Allocate and fill reverse table for each plane */
   n=i;
-  if (!(cs->tab_from_uni= (MY_UNI_IDX *)
-                          (loader->once_alloc)(sizeof(MY_UNI_IDX) * (n + 1))))
+  if (!(cs->cs.tab_from_uni= (MY_UNI_IDX *)
+                             (loader->once_alloc)(sizeof(MY_UNI_IDX) * (n + 1))))
     return TRUE;
 
   for (i=0; i< n; i++)
-    ((struct my_uni_idx_st*)cs->tab_from_uni)[i]= idx[i].uidx;
+    ((struct my_uni_idx_st*)cs->cs.tab_from_uni)[i]= idx[i].uidx;
   
   /* Set end-of-list marker */
-  bzero((char*) &cs->tab_from_uni[i],sizeof(MY_UNI_IDX));
+  bzero((char*) &cs->cs.tab_from_uni[i],sizeof(MY_UNI_IDX));
   return FALSE;
 }
 
@@ -1420,11 +1420,11 @@ static my_bool
 my_charset_is_8bit_pure_ascii(CHARSET_INFO *cs)
 {
   size_t code;
-  if (!cs->tab_to_uni)
+  if (!cs->cs.tab_to_uni)
     return 0;
   for (code= 0; code < 256; code++)
   {
-    if (cs->tab_to_uni[code] > 0x7F)
+    if (cs->cs.tab_to_uni[code] > 0x7F)
       return 0;
   }
   return 1;
@@ -1440,11 +1440,11 @@ static my_bool
 my_charset_is_ascii_compatible(CHARSET_INFO *cs)
 {
   uint i;
-  if (!cs->tab_to_uni)
+  if (!cs->cs.tab_to_uni)
     return 1;
   for (i= 0; i < 128; i++)
   {
-    if (cs->tab_to_uni[i] != i)
+    if (cs->cs.tab_to_uni[i] != i)
       return 0;
   }
   return 1;
@@ -1482,7 +1482,7 @@ static my_bool
 my_cset_init_8bit(struct charset_info_st *cs, MY_CHARSET_LOADER *loader)
 {
   cs->state|= my_8bit_charset_flags_from_data(cs);
-  if (!cs->to_lower || !cs->to_upper || !cs->ctype || !cs->tab_to_uni)
+  if (!cs->cs.to_lower || !cs->cs.to_upper || !cs->cs.ctype || !cs->cs.tab_to_uni)
     return TRUE;
   return create_fromuni(cs, loader);
 }
@@ -1532,7 +1532,7 @@ int my_mb_ctype_8bit(CHARSET_INFO *cs, int *ctype,
     *ctype= 0;
     return MY_CS_TOOSMALL;
   }
-  *ctype= cs->ctype[*s + 1];
+  *ctype= cs->cs.ctype[*s + 1];
   return 1;
 }
 
@@ -2058,14 +2058,14 @@ my_strxfrm_pad_desc_and_reverse(CHARSET_INFO *cs,
   if (nweights && frmend < strend && (flags & MY_STRXFRM_PAD_WITH_SPACE))
   {
     uint fill_length= MY_MIN((uint) (strend - frmend), nweights * my_mbminlen(cs));
-    cs->cset->fill(cs, (char*) frmend, fill_length, my_pad_char(cs));
+    cs->cs.ha->fill(cs, (char*) frmend, fill_length, my_pad_char(cs));
     frmend+= fill_length;
   }
   my_strxfrm_desc_and_reverse(str, frmend, flags, level);
   if ((flags & MY_STRXFRM_PAD_TO_MAXLEN) && frmend < strend)
   {
     size_t fill_length= strend - frmend;
-    cs->cset->fill(cs, (char*) frmend, fill_length, my_pad_char(cs));
+    cs->cs.ha->fill(cs, (char*) frmend, fill_length, my_pad_char(cs));
     frmend= strend;
   }
   return frmend - str;

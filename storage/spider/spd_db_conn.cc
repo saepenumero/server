@@ -923,7 +923,7 @@ int spider_db_set_names_internal(
     DBUG_ASSERT(conn->mta_conn_mutex_file_pos.file_name);
     if (
       !conn->access_charset ||
-      share->access_charset->cset != conn->access_charset->cset
+      share->access_charset->cs.ha != conn->access_charset->cs.ha
     ) {
       tmp_mta_conn_mutex_lock_already = conn->mta_conn_mutex_lock_already;
       conn->mta_conn_mutex_lock_already = TRUE;
@@ -8864,7 +8864,7 @@ int spider_db_print_item_type_default(
     DBUG_RETURN(ER_SPIDER_COND_SKIP_NUM);
   if (str)
   {
-    if (spider->share->access_charset->cset == system_charset_info->cset)
+    if (spider->share->access_charset->cs.ha == system_charset_info->cs.ha)
     {
 #if MYSQL_VERSION_ID < 50500
       item->print(str->get_str(), QT_IS);
@@ -9084,7 +9084,7 @@ int spider_db_open_item_ident(
 #endif
     else
       field_name_length = 0;
-    if (share->access_charset->cset == system_charset_info->cset)
+    if (share->access_charset->cs.ha == system_charset_info->cs.ha)
     {
       if (str->reserve(alias_length +
         field_name_length + /* SPIDER_SQL_NAME_QUOTE_LEN */ 2))
@@ -10489,7 +10489,7 @@ int spider_db_udf_direct_sql_set_names(
     DBUG_ASSERT(conn->mta_conn_mutex_file_pos.file_name);
     if (
       !conn->access_charset ||
-      trx->udf_access_charset->cset != conn->access_charset->cset
+      trx->udf_access_charset->cs.ha != conn->access_charset->cs.ha
     ) {
       tmp_mta_conn_mutex_lock_already = conn->mta_conn_mutex_lock_already;
       conn->mta_conn_mutex_lock_already = TRUE;
@@ -10531,8 +10531,8 @@ int spider_db_udf_check_and_set_set_names(
   DBUG_ENTER("spider_db_udf_check_and_set_set_names");
   if (
     !trx->udf_access_charset ||
-    trx->udf_access_charset->cset !=
-      trx->thd->variables.character_set_client->cset)
+    trx->udf_access_charset->cs.ha !=
+      trx->thd->variables.character_set_client->cs.ha)
   {
     trx->udf_access_charset = trx->thd->variables.character_set_client;
     if ((error_num = spider_db_udf_append_set_names(trx)))

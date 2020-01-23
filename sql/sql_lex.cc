@@ -1134,7 +1134,7 @@ void Lex_input_stream::body_utf8_append_escape(THD *thd,
                                            &my_charset_utf8mb3_general_ci,
                                            get_escape_func(thd, sep),
                                            txt->str, txt->length,
-                                           cs, cs->cset->mb_wc,
+                                           cs, cs->cs.ha->mb_wc,
                                            &errors);
   m_body_utf8_ptr+= cnv_length;
   *m_body_utf8_ptr= 0;

@@ -67608,21 +67608,23 @@ struct charset_info_st my_charset_eucjpms_japanese_ci=
     "eucjpms_japanese_ci",	/* name         */
     "",			/* comment      */
     NULL,		/* tailoring    */
-    ctype_eucjpms,
-    to_lower_eucjpms,
-    to_upper_eucjpms,
     sort_order_eucjpms,
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_eucjpms,/* caseinfo    */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFEFE,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_eucjpms_japanese_ci_handler
+    &my_collation_eucjpms_japanese_ci_handler,
+    {
+      &my_charset_handler,
+      ctype_eucjpms,
+      to_lower_eucjpms,
+      to_upper_eucjpms,
+      NULL,                /* tab_to_uni   */
+      NULL,                /* tab_from_uni */
+      &my_caseinfo_eucjpms
+    }
 };
 
 
@@ -67634,21 +67636,23 @@ struct charset_info_st my_charset_eucjpms_bin=
     "eucjpms_bin",		/* name         */
     "",			/* comment      */
     NULL,		/* tailoring    */
-    ctype_eucjpms,
-    to_lower_eucjpms,
-    to_upper_eucjpms,
     NULL,		/* sort_order   */
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_eucjpms,/* caseinfo    */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFEFE,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_eucjpms_bin_handler
+    &my_collation_eucjpms_bin_handler,
+    {
+      &my_charset_handler,
+      ctype_eucjpms,
+      to_lower_eucjpms,
+      to_upper_eucjpms,
+      NULL,                /* tab_to_uni   */
+      NULL,                /* tab_from_uni */
+      &my_caseinfo_eucjpms
+    }
 };
 
 
@@ -67660,21 +67664,23 @@ struct charset_info_st my_charset_eucjpms_japanese_nopad_ci=
     "eucjpms_japanese_nopad_ci", /* name     */
     "",                  /* comment          */
     NULL,                /* tailoring        */
-    ctype_eucjpms,
-    to_lower_eucjpms,
-    to_upper_eucjpms,
     sort_order_eucjpms,
     NULL,                /* uca              */
-    NULL,                /* tab_to_uni       */
-    NULL,                /* tab_from_uni     */
-    &my_caseinfo_eucjpms,/* caseinfo         */
     NULL,                /* state_map        */
     NULL,                /* ident_map        */
     0,                   /* min_sort_char    */
     0xFEFE,              /* max_sort_char    */
     1,                   /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_eucjpms_japanese_nopad_ci_handler
+    &my_collation_eucjpms_japanese_nopad_ci_handler,
+    {
+      &my_charset_handler,
+      ctype_eucjpms,
+      to_lower_eucjpms,
+      to_upper_eucjpms,
+      NULL,                /* tab_to_uni   */
+      NULL,                /* tab_from_uni */
+      &my_caseinfo_eucjpms
+    }
 };
 
 
@@ -67686,21 +67692,23 @@ struct charset_info_st my_charset_eucjpms_nopad_bin=
     "eucjpms_nopad_bin", /* name             */
     "",                  /* comment          */
     NULL,                /* tailoring        */
-    ctype_eucjpms,
-    to_lower_eucjpms,
-    to_upper_eucjpms,
     NULL,                /* sort_order       */
     NULL,                /* uca              */
-    NULL,                /* tab_to_uni       */
-    NULL,                /* tab_from_uni     */
-    &my_caseinfo_eucjpms,/* caseinfo         */
     NULL,                /* state_map        */
     NULL,                /* ident_map        */
     0,                   /* min_sort_char    */
     0xFEFE,              /* max_sort_char    */
     1,                   /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_eucjpms_nopad_bin_handler
+    &my_collation_eucjpms_nopad_bin_handler,
+    {
+      &my_charset_handler,
+      ctype_eucjpms,
+      to_lower_eucjpms,
+      to_upper_eucjpms,
+      NULL,                /* tab_to_uni   */
+      NULL,                /* tab_from_uni */
+      &my_caseinfo_eucjpms
+    }
 };
 
 

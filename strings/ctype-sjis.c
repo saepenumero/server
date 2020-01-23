@@ -34164,21 +34164,23 @@ struct charset_info_st my_charset_sjis_japanese_ci=
     "sjis_japanese_ci",	/* name */
     "",			/* comment    */
     NULL,		/* tailoring */
-    ctype_sjis,
-    to_lower_sjis,
-    to_upper_sjis,
     sort_order_sjis,
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_sjis,  /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFCFC,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_handler_sjis_japanese_ci
+    &my_collation_handler_sjis_japanese_ci,
+    {
+      &my_charset_handler,
+      ctype_sjis,
+      to_lower_sjis,
+      to_upper_sjis,
+      NULL,             /* tab_to_uni   */
+      NULL,             /* tab_from_uni */
+      &my_caseinfo_sjis
+    }
 };
 
 struct charset_info_st my_charset_sjis_bin=
@@ -34189,21 +34191,23 @@ struct charset_info_st my_charset_sjis_bin=
     "sjis_bin",		/* name */
     "",			/* comment    */
     NULL,		/* tailoring */
-    ctype_sjis,
-    to_lower_sjis,
-    to_upper_sjis,
     NULL,		/* sort_order   */
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_sjis,  /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFCFC,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_handler_sjis_bin
+    &my_collation_handler_sjis_bin,
+    {
+      &my_charset_handler,
+      ctype_sjis,
+      to_lower_sjis,
+      to_upper_sjis,
+      NULL,             /* tab_to_uni   */
+      NULL,             /* tab_from_uni */
+      &my_caseinfo_sjis
+    }
 };
 
 
@@ -34215,21 +34219,23 @@ struct charset_info_st my_charset_sjis_japanese_nopad_ci=
     "sjis_japanese_nopad_ci", /* name        */
     "",                  /* comment          */
     NULL,                /* tailoring        */
-    ctype_sjis,
-    to_lower_sjis,
-    to_upper_sjis,
     sort_order_sjis,
     NULL,                /* uca              */
-    NULL,                /* tab_to_uni       */
-    NULL,                /* tab_from_uni     */
-    &my_caseinfo_sjis,   /* caseinfo         */
     NULL,                /* state_map        */
     NULL,                /* ident_map        */
     0,                   /* min_sort_char    */
     0xFCFC,              /* max_sort_char    */
     1,                   /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_handler_sjis_japanese_nopad_ci
+    &my_collation_handler_sjis_japanese_nopad_ci,
+    {
+      &my_charset_handler,
+      ctype_sjis,
+      to_lower_sjis,
+      to_upper_sjis,
+      NULL,             /* tab_to_uni   */
+      NULL,             /* tab_from_uni */
+      &my_caseinfo_sjis
+    }
 };
 
 struct charset_info_st my_charset_sjis_nopad_bin=
@@ -34240,21 +34246,23 @@ struct charset_info_st my_charset_sjis_nopad_bin=
     "sjis_nopad_bin",    /* name             */
     "",                  /* comment          */
     NULL,                /* tailoring        */
-    ctype_sjis,
-    to_lower_sjis,
-    to_upper_sjis,
     NULL,                /* sort_order       */
     NULL,                /* uca              */
-    NULL,                /* tab_to_uni       */
-    NULL,                /* tab_from_uni     */
-    &my_caseinfo_sjis,   /* caseinfo         */
     NULL,                /* state_map        */
     NULL,                /* ident_map        */
     0,                   /* min_sort_char    */
     0xFCFC,              /* max_sort_char    */
     1,                   /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_handler_sjis_nopad_bin
+    &my_collation_handler_sjis_nopad_bin,
+    {
+      &my_charset_handler,
+      ctype_sjis,
+      to_lower_sjis,
+      to_upper_sjis,
+      NULL,             /* tab_to_uni   */
+      NULL,             /* tab_from_uni */
+      &my_caseinfo_sjis
+    }
 };
 
 #endif

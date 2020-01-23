@@ -34785,21 +34785,23 @@ struct charset_info_st my_charset_cp932_japanese_ci=
     "cp932_japanese_ci",	/* name */
     "",			/* comment    */
     NULL,		/* tailoring */
-    ctype_cp932,
-    to_lower_cp932,
-    to_upper_cp932,
     sort_order_cp932,
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_cp932, /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFCFC,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_handler_cp932_japanese_ci
+    &my_collation_handler_cp932_japanese_ci,
+    {
+      &my_charset_handler,
+      ctype_cp932,
+      to_lower_cp932,
+      to_upper_cp932,
+      NULL,               /* tab_to_uni   */
+      NULL,               /* tab_from_uni */
+      &my_caseinfo_cp932
+    }
 };
 
 struct charset_info_st my_charset_cp932_bin=
@@ -34810,21 +34812,23 @@ struct charset_info_st my_charset_cp932_bin=
     "cp932_bin",		/* name */
     "",			/* comment    */
     NULL,		/* tailoring */
-    ctype_cp932,
-    to_lower_cp932,
-    to_upper_cp932,
     NULL,		/* sort_order   */
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_cp932, /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFCFC,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_handler_cp932_bin
+    &my_collation_handler_cp932_bin,
+    {
+      &my_charset_handler,
+      ctype_cp932,
+      to_lower_cp932,
+      to_upper_cp932,
+      NULL,               /* tab_to_uni   */
+      NULL,               /* tab_from_uni */
+      &my_caseinfo_cp932
+    }
 };
 
 
@@ -34836,21 +34840,23 @@ struct charset_info_st my_charset_cp932_japanese_nopad_ci=
     "cp932_japanese_nopad_ci",/* name    */
     "",                  /* comment      */
     NULL,                /* tailoring    */
-    ctype_cp932,
-    to_lower_cp932,
-    to_upper_cp932,
     sort_order_cp932,
     NULL,                /* uca           */
-    NULL,                /* tab_to_uni    */
-    NULL,                /* tab_from_uni  */
-    &my_caseinfo_cp932,  /* caseinfo      */
     NULL,                /* state_map     */
     NULL,                /* ident_map     */
     0,                   /* min_sort_char */
     0xFCFC,              /* max_sort_char */
     1,                   /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_handler_cp932_japanese_nopad_ci
+    &my_collation_handler_cp932_japanese_nopad_ci,
+    {
+      &my_charset_handler,
+      ctype_cp932,
+      to_lower_cp932,
+      to_upper_cp932,
+      NULL,               /* tab_to_uni   */
+      NULL,               /* tab_from_uni */
+      &my_caseinfo_cp932
+    }
 };
 
 struct charset_info_st my_charset_cp932_nopad_bin=
@@ -34861,21 +34867,23 @@ struct charset_info_st my_charset_cp932_nopad_bin=
     "cp932_nopad_bin",   /* name          */
     "",                  /* comment       */
     NULL,                /* tailoring     */
-    ctype_cp932,
-    to_lower_cp932,
-    to_upper_cp932,
     NULL,                /* sort_order    */
     NULL,                /* uca           */
-    NULL,                /* tab_to_uni    */
-    NULL,                /* tab_from_uni  */
-    &my_caseinfo_cp932,  /* caseinfo      */
     NULL,                /* state_map     */
     NULL,                /* ident_map     */
     0,                   /* min_sort_char */
     0xFCFC,              /* max_sort_char */
     1,                   /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_handler_cp932_nopad_bin
+    &my_collation_handler_cp932_nopad_bin,
+    {
+      &my_charset_handler,
+      ctype_cp932,
+      to_lower_cp932,
+      to_upper_cp932,
+      NULL,               /* tab_to_uni   */
+      NULL,               /* tab_from_uni */
+      &my_caseinfo_cp932
+    }
 };
 
 #endif

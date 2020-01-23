@@ -5700,7 +5700,7 @@ bool fix_escape_item(THD *thd, Item *escape_item, String *tmp_str,
       {
         CHARSET_INFO *cs= escape_str->charset();
         my_wc_t wc;
-        int rc= cs->cset->mb_wc(cs, &wc,
+        int rc= cs->cs.ha->mb_wc(cs, &wc,
                                 (const uchar*) escape_str_ptr,
                                 (const uchar*) escape_str_ptr +
                                 escape_str->length());
@@ -6018,7 +6018,7 @@ bool Regexp_processor_pcre::exec(String *str, int offset,
       /*
         Convert byte offset into character offset.
       */
-      m_SubStrVec[i]= (int) str->charset()->cset->numchars(str->charset(),
+      m_SubStrVec[i]= (int) str->charset()->cs.ha->numchars(str->charset(),
                                                            str->ptr(),
                                                            str->ptr() +
                                                            m_SubStrVec[i]);

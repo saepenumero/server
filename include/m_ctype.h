@@ -563,6 +563,19 @@ extern MY_CHARSET_HANDLER my_charset_utf8mb3_handler;
 */
 #define CHARSET_INFO_DEFINED
 
+struct my_charset_st
+{
+  MY_CHARSET_HANDLER *ha;
+  const uchar *ctype;
+  const uchar *to_lower;
+  const uchar *to_upper;
+  const uint16 *tab_to_uni;
+  MY_UNI_IDX  *tab_from_uni;
+  MY_UNICASE_INFO *caseinfo;
+};
+
+typedef struct my_charset_st my_charset_t;
+
 /* See strings/CHARSET_INFO.txt about information on this structure  */
 struct charset_info_st
 {
@@ -574,23 +587,15 @@ struct charset_info_st
   const char *name;
   const char *comment;
   const char *tailoring;
-  const uchar *ctype;
-  const uchar *to_lower;
-  const uchar *to_upper;
   const uchar *sort_order;
   MY_UCA_INFO *uca;
-  const uint16 *tab_to_uni;
-  MY_UNI_IDX  *tab_from_uni;
-  MY_UNICASE_INFO *caseinfo;
   const uchar  *state_map;
   const uchar  *ident_map;
   my_wc_t   min_sort_char;
   my_wc_t   max_sort_char; /* For LIKE optimization */
   uchar     levels_for_order;
-  
-  MY_CHARSET_HANDLER *cset;
-  MY_COLLATION_HANDLER *coll;
-  
+  MY_COLLATION_HANDLER *coll; 
+  my_charset_t cs;
 };
 #define ILLEGAL_CHARSET_INFO_NUMBER (~0U)
 
@@ -1029,19 +1034,19 @@ size_t my_convert_fix(CHARSET_INFO *dstcs, char *dst, size_t dst_length,
 #define	my_toascii(c)	((c) & 0177)
 #define my_tocntrl(c)	((c) & 31)
 #define my_toprint(c)	((c) | 64)
-#define my_toupper(s,c)	(char) ((s)->to_upper[(uchar) (c)])
-#define my_tolower(s,c)	(char) ((s)->to_lower[(uchar) (c)])
-#define	my_isalpha(s, c)  (((s)->ctype+1)[(uchar) (c)] & (_MY_U | _MY_L))
-#define	my_isupper(s, c)  (((s)->ctype+1)[(uchar) (c)] & _MY_U)
-#define	my_islower(s, c)  (((s)->ctype+1)[(uchar) (c)] & _MY_L)
-#define	my_isdigit(s, c)  (((s)->ctype+1)[(uchar) (c)] & _MY_NMR)
-#define	my_isxdigit(s, c) (((s)->ctype+1)[(uchar) (c)] & _MY_X)
-#define	my_isalnum(s, c)  (((s)->ctype+1)[(uchar) (c)] & (_MY_U | _MY_L | _MY_NMR))
-#define	my_isspace(s, c)  (((s)->ctype+1)[(uchar) (c)] & _MY_SPC)
-#define	my_ispunct(s, c)  (((s)->ctype+1)[(uchar) (c)] & _MY_PNT)
-#define	my_isprint(s, c)  (((s)->ctype+1)[(uchar) (c)] & (_MY_PNT | _MY_U | _MY_L | _MY_NMR | _MY_B))
-#define	my_isgraph(s, c)  (((s)->ctype+1)[(uchar) (c)] & (_MY_PNT | _MY_U | _MY_L | _MY_NMR))
-#define	my_iscntrl(s, c)  (((s)->ctype+1)[(uchar) (c)] & _MY_CTR)
+#define my_toupper(s,c)	(char) ((s)->cs.to_upper[(uchar) (c)])
+#define my_tolower(s,c)	(char) ((s)->cs.to_lower[(uchar) (c)])
+#define	my_isalpha(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & (_MY_U | _MY_L))
+#define	my_isupper(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & _MY_U)
+#define	my_islower(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & _MY_L)
+#define	my_isdigit(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & _MY_NMR)
+#define	my_isxdigit(s, c) (((s)->cs.ctype+1)[(uchar) (c)] & _MY_X)
+#define	my_isalnum(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & (_MY_U | _MY_L | _MY_NMR))
+#define	my_isspace(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & _MY_SPC)
+#define	my_ispunct(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & _MY_PNT)
+#define	my_isprint(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & (_MY_PNT | _MY_U | _MY_L | _MY_NMR | _MY_B))
+#define	my_isgraph(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & (_MY_PNT | _MY_U | _MY_L | _MY_NMR))
+#define	my_iscntrl(s, c)  (((s)->cs.ctype+1)[(uchar) (c)] & _MY_CTR)
 
 /* Some macros that should be cleaned up a little */
 #define my_isvar(s,c)                 (my_isalnum(s,c) || (c) == '_')
@@ -1056,16 +1061,16 @@ size_t my_convert_fix(CHARSET_INFO *dstcs, char *dst, size_t dst_length,
    ((s)->coll->like_range((s), (a), (b), (c), (d), (e), (f), (g), (h), (i), (j)))
 #define my_wildcmp(cs,s,se,w,we,e,o,m) ((cs)->coll->wildcmp((cs),(s),(se),(w),(we),(e),(o),(m)))
 #define my_strcasecmp(s, a, b)        ((s)->coll->strcasecmp((s), (a), (b)))
-#define my_charpos(cs, b, e, num)     (cs)->cset->charpos((cs), (const char*) (b), (const char *)(e), (num))
-#define my_caseup_multiply(cs)        (cs)->cset->caseup_multiply(cs)
-#define my_casedn_multiply(cs)        (cs)->cset->casedn_multiply(cs)
-#define my_escape_with_backslash_is_dangerous(cs) \
-    (cs)->cset->escape_with_backslash_is_dangerous(cs)
-#define my_pad_char(cs)               (cs)->cset->pad_char(cs)
-#define my_strnxfrm_multiply(cs)      (cs)->coll->strnxfrm_multiply(cs)
-#define my_mbminlen(cs)               (cs)->cset->mbminlen(cs)
-#define my_mbmaxlen(cs)               (cs)->cset->mbmaxlen(cs)
-#define use_mb(cs)                    ((cs)->cset->mbmaxlen(cs) > 1)
+#define my_charpos(ci, b, e, num)     (ci)->cs.ha->charpos((ci), (const char*) (b), (const char *)(e), (num))
+#define my_caseup_multiply(ci)        (ci)->cs.ha->caseup_multiply(ci)
+#define my_casedn_multiply(ci)        (ci)->cs.ha->casedn_multiply(ci)
+#define my_escape_with_backslash_is_dangerous(ci) \
+    (ci)->cs.ha->escape_with_backslash_is_dangerous(ci)
+#define my_pad_char(ci)               (ci)->cs.ha->pad_char(ci)
+#define my_strnxfrm_multiply(ci)      (ci)->coll->strnxfrm_multiply(ci)
+#define my_mbminlen(ci)               (ci)->cs.ha->mbminlen(ci)
+#define my_mbmaxlen(ci)               (ci)->cs.ha->mbmaxlen(ci)
+#define use_mb(ci)                    ((ci)->cs.ha->mbmaxlen(ci) > 1)
 /**
   Detect if the leftmost character in a string is a valid multi-byte character
   and return its length, or return 0 otherwise.
@@ -1078,8 +1083,8 @@ size_t my_convert_fix(CHARSET_INFO *dstcs, char *dst, size_t dst_length,
 static inline
 uint my_ismbchar(CHARSET_INFO *cs, const char *str, const char *end)
 {
-  int char_length= (cs->cset->charlen)(cs, (const uchar *) str,
-                                           (const uchar *) end);
+  int char_length= (cs->cs.ha->charlen)(cs, (const uchar *) str,
+                                             (const uchar *) end);
   return char_length > 1 ? (uint) char_length : 0U;
 }
 
@@ -1098,8 +1103,8 @@ uint my_ismbchar(CHARSET_INFO *cs, const char *str, const char *end)
 static inline
 int my_charlen(CHARSET_INFO *cs, const char *str, const char *end)
 {
-  return (cs->cset->charlen)(cs, (const uchar *) str,
-                                 (const uchar *) end);
+  return (cs->cs.ha->charlen)(cs, (const uchar *) str,
+                                  (const uchar *) end);
 }
 
 
@@ -1125,19 +1130,19 @@ my_well_formed_length(CHARSET_INFO *cs, const char *b, const char *e,
                       size_t nchars, int *error)
 {
   MY_STRCOPY_STATUS status;
-  (void) cs->cset->well_formed_char_length(cs, b, e, nchars, &status);
+  (void) cs->cs.ha->well_formed_char_length(cs, b, e, nchars, &status);
   *error= status.m_well_formed_error_pos == NULL ? 0 : 1;
   return (size_t) (status.m_source_end_pos - b);
 }
 
 
-#define my_caseup_str(s, a)           ((s)->cset->caseup_str((s), (a)))
-#define my_casedn_str(s, a)           ((s)->cset->casedn_str((s), (a)))
-#define my_strntol(s, a, b, c, d, e)  ((s)->cset->strntol((s),(a),(b),(c),(d),(e)))
-#define my_strntoul(s, a, b, c, d, e) ((s)->cset->strntoul((s),(a),(b),(c),(d),(e)))
-#define my_strntoll(s, a, b, c, d, e) ((s)->cset->strntoll((s),(a),(b),(c),(d),(e)))
-#define my_strntoull(s, a, b, c,d, e) ((s)->cset->strntoull((s),(a),(b),(c),(d),(e)))
-#define my_strntod(s, a, b, c, d)     ((s)->cset->strntod((s),(a),(b),(c),(d)))
+#define my_caseup_str(s, a)           ((s)->cs.ha->caseup_str((s), (a)))
+#define my_casedn_str(s, a)           ((s)->cs.ha->casedn_str((s), (a)))
+#define my_strntol(s, a, b, c, d, e)  ((s)->cs.ha->strntol((s),(a),(b),(c),(d),(e)))
+#define my_strntoul(s, a, b, c, d, e) ((s)->cs.ha->strntoul((s),(a),(b),(c),(d),(e)))
+#define my_strntoll(s, a, b, c, d, e) ((s)->cs.ha->strntoll((s),(a),(b),(c),(d),(e)))
+#define my_strntoull(s, a, b, c,d, e) ((s)->cs.ha->strntoull((s),(a),(b),(c),(d),(e)))
+#define my_strntod(s, a, b, c, d)     ((s)->cs.ha->strntod((s),(a),(b),(c),(d)))
 
 
 /* XXX: still need to take care of this one */

@@ -45,7 +45,7 @@ StringPack::pack(uchar *to, const uchar *from, uint max_length) const
       length --;
   }
   else
-    length= charset()->cset->lengthsp(charset(), (const char*) from, length);
+    length= charset()->cs.ha->lengthsp(charset(), (const char*) from, length);
 
   // Length always stored little-endian
   *to++= (uchar) length;
@@ -98,7 +98,7 @@ StringPack::unpack(uchar *to, const uchar *from, const uchar *from_end,
 
   memcpy(to, from, length);
   // Pad the string with the pad character of the fields charset
-  charset()->cset->fill(charset(),
+  charset()->cs.ha->fill(charset(),
                         (char*) to + length,
                         m_octet_length - length,
                         my_pad_char(charset()));

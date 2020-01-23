@@ -241,7 +241,7 @@ protected:
     Converter_strtoll10(CHARSET_INFO *cs, const char *str, size_t length)
     {
       m_end_of_num= (char *) str + length;
-      m_result= (*(cs->cset->strtoll10))(cs, str, &m_end_of_num, &m_error);
+      m_result= (*(cs->cs.ha->strtoll10))(cs, str, &m_end_of_num, &m_error);
       /*
         Negative error means "good negative number".
         Only a positive m_error value means a real error.
@@ -3927,7 +3927,7 @@ public:
   Copy_func *get_copy_func(const Field *from) const override;
   int reset() override
   {
-    charset()->cset->fill(charset(),(char*) ptr, field_length,
+    charset()->cs.ha->fill(charset(),(char*) ptr, field_length,
                           (has_charset() ? ' ' : 0));
     return 0;
   }
@@ -5021,7 +5021,7 @@ class Column_definition: public Sql_alloc,
     for (pos= interval->type_names, len= interval->type_lengths;
          *pos ; pos++, len++)
     {
-      size_t length= charset->cset->numchars(charset, *pos, *pos + *len);
+      size_t length= charset->cs.ha->numchars(charset, *pos, *pos + *len);
       DBUG_ASSERT(length < UINT_MAX32);
       *tot_length+= (uint) length;
       set_if_bigger(*max_length, (uint32)length);

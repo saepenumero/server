@@ -238,7 +238,7 @@ MARIA_KEY *_ma_make_key(MARIA_HA *info, MARIA_KEY *int_key, uint keynr,
     {
       if (type != HA_KEYTYPE_NUM)
       {
-        length= (uint) cs->cset->lengthsp(cs, (const char*)pos, length);
+        length= (uint) cs->cs.ha->lengthsp(cs, (const char*)pos, length);
       }
       else
       {
@@ -313,7 +313,7 @@ MARIA_KEY *_ma_make_key(MARIA_HA *info, MARIA_KEY *int_key, uint keynr,
     FIX_LENGTH(cs, pos, length, char_length);
     memcpy(key, pos, char_length);
     if (length > char_length)
-      cs->cset->fill(cs, (char*) key+char_length, length-char_length, ' ');
+      cs->cs.ha->fill(cs, (char*) key+char_length, length-char_length, ' ');
     key+= length;
   }
   _ma_dpointer(info->s, key, filepos);
@@ -440,7 +440,7 @@ MARIA_KEY *_ma_pack_key(register MARIA_HA *info, MARIA_KEY *int_key,
     FIX_LENGTH(cs, pos, length, char_length);
     memcpy(key, pos, char_length);
     if (length > char_length)
-      cs->cset->fill(cs, (char*) key+char_length, length-char_length, ' ');
+      cs->cs.ha->fill(cs, (char*) key+char_length, length-char_length, ' ');
     key+= length;
   }
   if (last_used_keyseg)
@@ -547,7 +547,7 @@ static int _ma_put_key_in_record(register MARIA_HA *info, uint keynr,
       if (keyseg->type != (int) HA_KEYTYPE_NUM)
       {
         memcpy(pos,key,(size_t) length);
-        keyseg->charset->cset->fill(keyseg->charset,
+        keyseg->charset->cs.ha->fill(keyseg->charset,
                                     (char*) pos + length,
                                     keyseg->length - length,
                                     ' ');

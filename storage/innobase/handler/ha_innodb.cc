@@ -6486,7 +6486,7 @@ innobase_fts_casedn_str(
 
 		return(strlen(dst));
 	} else {
-		return(cs->cset->casedn(cs, src, src_len, dst, dst_len));
+		return(cs->cs.ha->casedn(cs, src, src_len, dst, dst_len));
 	}
 }
 
@@ -6523,7 +6523,7 @@ innobase_mysql_fts_get_token(
 
 		int	ctype;
 
-		mbl = cs->cset->ctype(
+		mbl = cs->cs.ha->ctype(
 			cs, &ctype, doc, (const uchar*) end);
 
 		if (true_word_char(ctype, *doc)) {
@@ -6542,7 +6542,7 @@ innobase_mysql_fts_get_token(
 
 		int	ctype;
 
-		mbl = cs->cset->ctype(
+		mbl = cs->cs.ha->ctype(
 			cs, &ctype, (uchar*) doc, (uchar*) end);
 		if (true_word_char(ctype, *doc)) {
 			mwc = 0;

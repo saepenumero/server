@@ -681,7 +681,7 @@ uint hp_rb_make_key(HP_KEYDEF *keydef, uchar *key,
                               char_length / my_mbmaxlen(seg->charset));
       set_if_smaller(char_length, seg->length); /* QQ: ok to remove? */
       if (char_length < seg->length)
-        seg->charset->cset->fill(seg->charset, (char*) key + char_length,
+        seg->charset->cs.ha->fill(seg->charset, (char*) key + char_length,
                                  seg->length - char_length, ' ');
     }
     if (seg->type == HA_KEYTYPE_BIT && seg->bit_length)
@@ -754,7 +754,7 @@ uint hp_rb_pack_key(HP_KEYDEF *keydef, uchar *key, const uchar *old,
                               char_length / my_mbmaxlen(seg->charset));
       set_if_smaller(char_length, seg->length); /* QQ: ok to remove? */
       if (char_length < seg->length)
-        seg->charset->cset->fill(seg->charset, (char*) key + char_length, 
+        seg->charset->cs.ha->fill(seg->charset, (char*) key + char_length, 
                                  seg->length - char_length, ' ');
     }
     memcpy(key, old, (size_t) char_length);

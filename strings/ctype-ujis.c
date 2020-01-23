@@ -67154,7 +67154,7 @@ static MY_UNICASE_CHARACTER*
 get_case_info_for_ch(CHARSET_INFO *cs, uint plane, uint page, uint offs)
 {
   MY_UNICASE_CHARACTER *p;
-  return (p= cs->caseinfo->page[page + plane * 256]) ? &p[offs & 0xFF] : NULL;
+  return (p= cs->cs.caseinfo->page[page + plane * 256]) ? &p[offs & 0xFF] : NULL;
 }
 
 
@@ -67215,7 +67215,7 @@ my_casedn_ujis(CHARSET_INFO * cs, const char *src, size_t srclen,
 {
   DBUG_ASSERT(dstlen >= srclen * my_casedn_multiply(cs));
   DBUG_ASSERT(src != dst || my_casedn_multiply(cs) == 1);
-  return my_casefold_ujis(cs, src, srclen, dst, dstlen, cs->to_lower, 0);
+  return my_casefold_ujis(cs, src, srclen, dst, dstlen, cs->cs.to_lower, 0);
 }
 
 
@@ -67228,7 +67228,7 @@ my_caseup_ujis(CHARSET_INFO * cs, const char *src, size_t srclen,
 {
   DBUG_ASSERT(dstlen >= srclen * my_caseup_multiply(cs));
   DBUG_ASSERT(src != dst || my_caseup_multiply(cs) == 1);
-  return my_casefold_ujis(cs, src, srclen, dst, dstlen, cs->to_upper, 1);
+  return my_casefold_ujis(cs, src, srclen, dst, dstlen, cs->cs.to_upper, 1);
 }
 #endif /* defined(HAVE_CHARSET_ujis) || defined(HAVE_CHARSET_eucjpms) */
 
@@ -67343,6 +67343,17 @@ static MY_CHARSET_HANDLER my_charset_handler=
 };
 
 
+#define MY_CS_UJIS \
+{ \
+  &my_charset_handler, \
+  ctype_ujis, \
+  to_lower_ujis, \
+  to_upper_ujis, \
+  NULL,              /* tab_to_uni   */ \
+  NULL,              /* tab_from_uni */ \
+  &my_caseinfo_ujis \
+}
+
 
 struct charset_info_st my_charset_ujis_japanese_ci=
 {
@@ -67352,21 +67363,15 @@ struct charset_info_st my_charset_ujis_japanese_ci=
     "ujis_japanese_ci",	/* name         */
     "",			/* comment      */
     NULL,		/* tailoring    */
-    ctype_ujis,
-    to_lower_ujis,
-    to_upper_ujis,
     sort_order_ujis,
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_ujis,  /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFEFE,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_ujis_japanese_ci_handler
+    &my_collation_ujis_japanese_ci_handler,
+    MY_CS_UJIS
 };
 
 
@@ -67378,21 +67383,15 @@ struct charset_info_st my_charset_ujis_bin=
     "ujis_bin",		/* name         */
     "",			/* comment      */
     NULL,		/* tailoring    */
-    ctype_ujis,
-    to_lower_ujis,
-    to_upper_ujis,
     NULL,		/* sort_order   */
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_ujis,  /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFEFE,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_ujis_bin_handler
+    &my_collation_ujis_bin_handler,
+    MY_CS_UJIS
 };
 
 
@@ -67404,21 +67403,15 @@ struct charset_info_st my_charset_ujis_japanese_nopad_ci=
     "ujis_japanese_nopad_ci", /* name       */
     "",                 /* comment          */
     NULL,               /* tailoring        */
-    ctype_ujis,
-    to_lower_ujis,
-    to_upper_ujis,
     sort_order_ujis,
     NULL,               /* uca              */
-    NULL,               /* tab_to_uni       */
-    NULL,               /* tab_from_uni     */
-    &my_caseinfo_ujis,  /* caseinfo         */
     NULL,               /* state_map        */
     NULL,               /* ident_map        */
     0,                  /* min_sort_char    */
     0xFEFE,             /* max_sort_char    */
     1,                  /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_ujis_japanese_nopad_ci_handler
+    &my_collation_ujis_japanese_nopad_ci_handler,
+    MY_CS_UJIS
 };
 
 
@@ -67430,21 +67423,15 @@ struct charset_info_st my_charset_ujis_nopad_bin=
     "ujis_nopad_bin",   /* name             */
     "",                 /* comment          */
     NULL,               /* tailoring        */
-    ctype_ujis,
-    to_lower_ujis,
-    to_upper_ujis,
     NULL,               /* sort_order       */
     NULL,               /* uca              */
-    NULL,               /* tab_to_uni       */
-    NULL,               /* tab_from_uni     */
-    &my_caseinfo_ujis,  /* caseinfo         */
     NULL,               /* state_map        */
     NULL,               /* ident_map        */
     0,                  /* min_sort_char    */
     0xFEFE,             /* max_sort_char    */
     1,                  /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_ujis_nopad_bin_handler
+    &my_collation_ujis_nopad_bin_handler,
+    MY_CS_UJIS
 };
 
 

@@ -3790,7 +3790,7 @@ public:
                           const char *src, size_t src_length);
   /*
     If either "dstcs" or "srccs" is &my_charset_bin,
-    then performs native copying using cs->cset->copy_fix().
+    then performs native copying using cs->cs.ha->copy_fix().
     Otherwise, performs Unicode conversion using convert_fix().
   */
   bool copy_fix(CHARSET_INFO *dstcs, LEX_STRING *dst,
@@ -4447,8 +4447,8 @@ private:
                 sql_errno == ER_WRONG_VALUE);
     char buff[MYSQL_ERRMSG_SIZE];
     CHARSET_INFO *cs= &my_charset_latin1;
-    cs->cset->snprintf(cs, buff, sizeof(buff),
-                       ER_THD(this, sql_errno), type_str, val);
+    cs->cs.ha->snprintf(cs, buff, sizeof(buff),
+                        ER_THD(this, sql_errno), type_str, val);
     /*
       Note: the format string can vary between ER_TRUNCATED_WRONG_VALUE
       and ER_WRONG_VALUE, but the code passed to push_warning() is
@@ -4489,10 +4489,10 @@ public:
       db_name= "";
     if (!table_name)
       table_name= "";
-    cs->cset->snprintf(cs, buff, sizeof(buff),
-                       ER_THD(this, ER_TRUNCATED_WRONG_VALUE_FOR_FIELD),
-                       type_str, val, db_name, table_name, name,
-                       (ulong) get_stmt_da()->current_row_for_warning());
+    cs->cs.ha->snprintf(cs, buff, sizeof(buff),
+                        ER_THD(this, ER_TRUNCATED_WRONG_VALUE_FOR_FIELD),
+                        type_str, val, db_name, table_name, name,
+                        (ulong) get_stmt_da()->current_row_for_warning());
     push_warning(this, level, ER_TRUNCATED_WRONG_VALUE, buff);
 
   }

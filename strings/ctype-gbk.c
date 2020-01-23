@@ -10762,21 +10762,23 @@ struct charset_info_st my_charset_gbk_chinese_ci=
     "gbk_chinese_ci",	/* name */
     "",			/* comment    */
     NULL,		/* tailoring */
-    ctype_gbk,
-    to_lower_gbk,
-    to_upper_gbk,
     sort_order_gbk,
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_gbk,   /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xA967,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_handler_gbk_chinese_ci
+    &my_collation_handler_gbk_chinese_ci,
+    {
+      &my_charset_handler,
+      ctype_gbk,
+      to_lower_gbk,
+      to_upper_gbk,
+      NULL,             /* tab_to_uni   */
+      NULL,             /* tab_from_uni */
+      &my_caseinfo_gbk
+    }
 };
 
 struct charset_info_st my_charset_gbk_bin=
@@ -10787,21 +10789,23 @@ struct charset_info_st my_charset_gbk_bin=
     "gbk_bin",		/* name */
     "",			/* comment    */
     NULL,		/* tailoring */
-    ctype_gbk,
-    to_lower_gbk,
-    to_upper_gbk,
     NULL,		/* sort_order   */
     NULL,		/* uca          */
-    NULL,		/* tab_to_uni   */
-    NULL,		/* tab_from_uni */
-    &my_caseinfo_gbk,   /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
     0,			/* min_sort_char */
     0xFEFE,		/* max_sort_char */
     1,                  /* levels_for_order   */
-    &my_charset_handler,
-    &my_collation_handler_gbk_bin
+    &my_collation_handler_gbk_bin,
+    {
+      &my_charset_handler,
+      ctype_gbk,
+      to_lower_gbk,
+      to_upper_gbk,
+      NULL,             /* tab_to_uni   */
+      NULL,             /* tab_from_uni */
+      &my_caseinfo_gbk
+    }
 };
 
 
@@ -10813,21 +10817,23 @@ struct charset_info_st my_charset_gbk_chinese_nopad_ci=
     "gbk_chinese_nopad_ci",/* name          */
     "",                 /* comment          */
     NULL,               /* tailoring        */
-    ctype_gbk,
-    to_lower_gbk,
-    to_upper_gbk,
     sort_order_gbk,
     NULL,               /* uca              */
-    NULL,               /* tab_to_uni       */
-    NULL,               /* tab_from_uni     */
-    &my_caseinfo_gbk,   /* caseinfo         */
     NULL,               /* state_map        */
     NULL,               /* ident_map        */
     0,                  /* min_sort_char    */
     0xA967,             /* max_sort_char    */
     1,                  /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_handler_gbk_chinese_nopad_ci
+    &my_collation_handler_gbk_chinese_nopad_ci,
+    {
+      &my_charset_handler,
+      ctype_gbk,
+      to_lower_gbk,
+      to_upper_gbk,
+      NULL,             /* tab_to_uni   */
+      NULL,             /* tab_from_uni */
+      &my_caseinfo_gbk
+    }
 };
 
 struct charset_info_st my_charset_gbk_nopad_bin=
@@ -10838,21 +10844,23 @@ struct charset_info_st my_charset_gbk_nopad_bin=
     "gbk_nopad_bin",    /* name             */
     "",                 /* comment          */
     NULL,               /* tailoring        */
-    ctype_gbk,
-    to_lower_gbk,
-    to_upper_gbk,
     NULL,               /* sort_order       */
     NULL,               /* uca              */
-    NULL,               /* tab_to_uni       */
-    NULL,               /* tab_from_uni     */
-    &my_caseinfo_gbk,   /* caseinfo         */
     NULL,               /* state_map        */
     NULL,               /* ident_map        */
     0,                  /* min_sort_char    */
     0xFEFE,             /* max_sort_char    */
     1,                  /* levels_for_order */
-    &my_charset_handler,
-    &my_collation_handler_gbk_nopad_bin
+    &my_collation_handler_gbk_nopad_bin,
+    {
+      &my_charset_handler,
+      ctype_gbk,
+      to_lower_gbk,
+      to_upper_gbk,
+      NULL,             /* tab_to_uni   */
+      NULL,             /* tab_from_uni */
+      &my_caseinfo_gbk
+    }
 };
 
 #endif

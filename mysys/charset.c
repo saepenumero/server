@@ -143,7 +143,7 @@ static MY_COLLATION_HANDLER *get_simple_collation_handler_by_flags(uint flags)
 static void simple_cs_init_functions(struct charset_info_st *cs)
 {
   cs->coll= get_simple_collation_handler_by_flags(cs->state);
-  cs->cset= &my_charset_8bit_handler;
+  cs->cs.ha= &my_charset_8bit_handler;
 }
 
 
@@ -164,23 +164,23 @@ static int cs_copy_data(struct charset_info_st *to, CHARSET_INFO *from)
     if (!(to->comment= my_once_strdup(from->comment,MYF(MY_WME))))
       goto err;
   
-  if (from->ctype)
+  if (from->cs.ctype)
   {
-    if (!(to->ctype= (uchar*) my_once_memdup((char*) from->ctype,
-					     MY_CS_CTYPE_TABLE_SIZE,
+    if (!(to->cs.ctype= (uchar*) my_once_memdup((char*) from->cs.ctype,
+		   		             MY_CS_CTYPE_TABLE_SIZE,
 					     MYF(MY_WME))))
       goto err;
     if (init_state_maps(to))
       goto err;
   }
-  if (from->to_lower)
-    if (!(to->to_lower= (uchar*) my_once_memdup((char*) from->to_lower,
+  if (from->cs.to_lower)
+    if (!(to->cs.to_lower= (uchar*) my_once_memdup((char*) from->cs.to_lower,
 						MY_CS_TO_LOWER_TABLE_SIZE,
 						MYF(MY_WME))))
       goto err;
 
-  if (from->to_upper)
-    if (!(to->to_upper= (uchar*) my_once_memdup((char*) from->to_upper,
+  if (from->cs.to_upper)
+    if (!(to->cs.to_upper= (uchar*) my_once_memdup((char*) from->cs.to_upper,
 						MY_CS_TO_UPPER_TABLE_SIZE,
 						MYF(MY_WME))))
       goto err;
@@ -192,10 +192,10 @@ static int cs_copy_data(struct charset_info_st *to, CHARSET_INFO *from)
       goto err;
 
   }
-  if (from->tab_to_uni)
+  if (from->cs.tab_to_uni)
   {
     uint sz= MY_CS_TO_UNI_TABLE_SIZE*sizeof(uint16);
-    if (!(to->tab_to_uni= (uint16*)  my_once_memdup((char*)from->tab_to_uni,
+    if (!(to->cs.tab_to_uni= (uint16*)  my_once_memdup((char*)from->cs.tab_to_uni,
 						    sz, MYF(MY_WME))))
       goto err;
   }
@@ -212,7 +212,7 @@ err:
 
 static my_bool simple_8bit_charset_data_is_full(CHARSET_INFO *cs)
 {
-  return cs->ctype && cs->to_upper && cs->to_lower && cs->tab_to_uni;
+  return cs->cs.ctype && cs->cs.to_upper && cs->cs.to_lower && cs->cs.tab_to_uni;
 }
 
 
@@ -224,14 +224,14 @@ static my_bool simple_8bit_charset_data_is_full(CHARSET_INFO *cs)
 static void
 inherit_charset_data(struct charset_info_st *cs, CHARSET_INFO *refcs)
 {
-  if (!cs->to_upper)
-    cs->to_upper= refcs->to_upper;
-  if (!cs->to_lower)
-    cs->to_lower= refcs->to_lower;
-  if (!cs->ctype)
-    cs->ctype= refcs->ctype;
-  if (!cs->tab_to_uni)
-    cs->tab_to_uni= refcs->tab_to_uni;
+  if (!cs->cs.to_upper)
+    cs->cs.to_upper= refcs->cs.to_upper;
+  if (!cs->cs.to_lower)
+    cs->cs.to_lower= refcs->cs.to_lower;
+  if (!cs->cs.ctype)
+    cs->cs.ctype= refcs->cs.ctype;
+  if (!cs->cs.tab_to_uni)
+    cs->cs.tab_to_uni= refcs->cs.tab_to_uni;
 }
 
 
@@ -274,7 +274,7 @@ static void
 copy_uca_collation(struct charset_info_st *to, CHARSET_INFO *from,
                    CHARSET_INFO *loaded)
 {
-  to->cset= from->cset;
+  to->cs.ha= from->cs.ha;
   to->coll= from->coll;
   to->levels_for_order= loaded->levels_for_order ? loaded->levels_for_order : 1;
   to->min_sort_char= from->min_sort_char;
@@ -332,7 +332,7 @@ static int add_collation(struct charset_info_st *cs)
                                   &my_charset_utf8mb3_unicode_nopad_ci :
                                   &my_charset_utf8mb3_unicode_ci,
                                   cs);
-        newcs->ctype= my_charset_utf8mb3_unicode_ci.ctype;
+        newcs->cs.ctype= my_charset_utf8mb3_unicode_ci.cs.ctype;
         if (init_state_maps(newcs))
           return MY_XML_ERROR;
 #endif
@@ -344,7 +344,7 @@ static int add_collation(struct charset_info_st *cs)
                                   &my_charset_utf8mb4_unicode_nopad_ci :
                                   &my_charset_utf8mb4_unicode_ci,
                                   cs);
-        newcs->ctype= my_charset_utf8mb4_unicode_ci.ctype;
+        newcs->cs.ctype= my_charset_utf8mb4_unicode_ci.cs.ctype;
         newcs->state|= MY_CS_AVAILABLE | MY_CS_LOADED;
 #endif
       }
@@ -604,7 +604,7 @@ static void init_available_charsets(void)
     if (*cs)
     {
       DBUG_ASSERT(my_mbmaxlen(cs[0]) <= MY_CS_MBMAXLEN);
-      if (cs[0]->ctype)
+      if (cs[0]->cs.ctype)
         if (init_state_maps(*cs))
           *cs= NULL;
     }
@@ -781,7 +781,7 @@ get_internal_charset(MY_CHARSET_LOADER *loader, uint cs_number, myf flags)
             inherit_collation_data(cs, refcl);
         }
 
-        if ((cs->cset->init && cs->cset->init(cs, loader)) ||
+        if ((cs->cs.ha->init && cs->cs.ha->init(cs, loader)) ||
             (cs->coll->init && cs->coll->init(cs, loader)))
         {
           cs= NULL;
