@@ -1074,7 +1074,7 @@ Type_handler_string_result::make_sort_key(uchar *to, Item *item,
 #endif
     cs->coll->strnxfrm(cs, to, sort_field->length,
                                    item->max_char_length() *
-                                   cs->strxfrm_multiply,
+                                   cs->coll->strnxfrm_multiply(cs),
                                    (uchar*) res->ptr(), res->length(),
                                    MY_STRXFRM_PAD_WITH_SPACE |
                                    MY_STRXFRM_PAD_TO_MAXLEN);

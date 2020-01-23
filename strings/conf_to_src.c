@@ -398,15 +398,8 @@ void dispcset(FILE *f,CHARSET_INFO *cs)
   fprintf(f,"  &my_unicase_default,        /* caseinfo      */\n");
   fprintf(f,"  NULL,                       /* state map     */\n");
   fprintf(f,"  NULL,                       /* ident map     */\n");
-  fprintf(f,"  1,                          /* strxfrm_multiply*/\n");
-  fprintf(f,"  1,                          /* caseup_multiply*/\n");
-  fprintf(f,"  1,                          /* casedn_multiply*/\n");
-  fprintf(f,"  1,                          /* mbminlen      */\n");
-  fprintf(f,"  1,                          /* mbmaxlen      */\n");
   fprintf(f,"  0,                          /* min_sort_char */\n");
   fprintf(f,"  255,                        /* max_sort_char */\n");
-  fprintf(f,"  ' ',                        /* pad_char      */\n");
-  fprintf(f,"  0,                          /* escape_with_backslash_is_dangerous */\n");
   fprintf(f,"  1,                          /* levels_for_order   */\n");
   fprintf(f,"  &my_charset_8bit_handler,\n");
 

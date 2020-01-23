@@ -21,13 +21,34 @@
 
 #include "stdarg.h"
 
+
+my_bool my_escape_with_backslash_is_dangerous_simple(CHARSET_INFO *cs)
+{
+  return FALSE;
+}
+
+
+uchar my_pad_char_simple(CHARSET_INFO *cs)
+{
+  return ' ';
+}
+
+
 /*
   Returns the number of bytes required for strnxfrm().
 */
 
 size_t my_strnxfrmlen_simple(CHARSET_INFO *cs, size_t len)
 {
-  return len * (cs->strxfrm_multiply ? cs->strxfrm_multiply : 1);
+  uint mul= my_strnxfrm_multiply(cs);
+  DBUG_ASSERT(mul == 1);
+  return len * (mul ? mul : 1);
+}
+
+
+uint my_strnxfrm_multiply_simple(CHARSET_INFO *cs)
+{
+  return 1;
 }
 
 
@@ -48,7 +69,7 @@ size_t my_strnxfrmlen_simple(CHARSET_INFO *cs, size_t len)
      
      Not more than 'dstlen' bytes are written into 'dst'.
      To guarantee that the whole string is transformed, 'dstlen' must be
-     at least srclen*cs->strnxfrm_multiply bytes long. Otherwise,
+     at least srclen*my_strnxfrm_multiply(cs) bytes long. Otherwise,
      consequent memcmp() may return a non-accurate result.
      
      If the source string is too short to fill whole 'dstlen' bytes,
@@ -213,6 +234,24 @@ int my_strnncollsp_simple_nopad(CHARSET_INFO * cs,
                                 const uchar *b, size_t b_length)
 {
   return my_strnncoll_simple(cs, a, a_length, b, b_length, FALSE);
+}
+
+
+uint my_mblen_mb1(CHARSET_INFO *cs)
+{
+  return 1;
+}
+
+
+uint my_caseup_multiply_simple(CHARSET_INFO *cs)
+{
+  return 1;
+}
+
+
+uint my_casedn_multiply_simple(CHARSET_INFO *cs)
+{
+  return 1;
 }
 
 
@@ -1038,7 +1077,7 @@ my_bool my_like_range_simple(CHARSET_INFO *cs,
   const char *end= ptr + ptr_length;
   char *min_org=min_str;
   char *min_end=min_str+res_length;
-  size_t charlen= res_length / cs->mbmaxlen;
+  size_t charlen= res_length / my_mbmaxlen(cs);
 
   for (; ptr != end && min_str != min_end && charlen > 0 ; ptr++, charlen--)
   {
@@ -1443,9 +1482,6 @@ static my_bool
 my_cset_init_8bit(struct charset_info_st *cs, MY_CHARSET_LOADER *loader)
 {
   cs->state|= my_8bit_charset_flags_from_data(cs);
-  cs->caseup_multiply= 1;
-  cs->casedn_multiply= 1;
-  cs->pad_char= ' ';
   if (!cs->to_lower || !cs->to_upper || !cs->ctype || !cs->tab_to_uni)
     return TRUE;
   return create_fromuni(cs, loader);
@@ -2021,15 +2057,15 @@ my_strxfrm_pad_desc_and_reverse(CHARSET_INFO *cs,
 {
   if (nweights && frmend < strend && (flags & MY_STRXFRM_PAD_WITH_SPACE))
   {
-    uint fill_length= MY_MIN((uint) (strend - frmend), nweights * cs->mbminlen);
-    cs->cset->fill(cs, (char*) frmend, fill_length, cs->pad_char);
+    uint fill_length= MY_MIN((uint) (strend - frmend), nweights * my_mbminlen(cs));
+    cs->cset->fill(cs, (char*) frmend, fill_length, my_pad_char(cs));
     frmend+= fill_length;
   }
   my_strxfrm_desc_and_reverse(str, frmend, flags, level);
   if ((flags & MY_STRXFRM_PAD_TO_MAXLEN) && frmend < strend)
   {
     size_t fill_length= strend - frmend;
-    cs->cset->fill(cs, (char*) frmend, fill_length, cs->pad_char);
+    cs->cset->fill(cs, (char*) frmend, fill_length, my_pad_char(cs));
     frmend= strend;
   }
   return frmend - str;
@@ -2043,7 +2079,7 @@ my_strxfrm_pad_desc_and_reverse_nopad(CHARSET_INFO *cs,
 {
   if (nweights && frmend < strend && (flags & MY_STRXFRM_PAD_WITH_SPACE))
   {
-    uint fill_length= MY_MIN((uint) (strend - frmend), nweights * cs->mbminlen);
+    uint fill_length= MY_MIN((uint) (strend - frmend), nweights * my_mbminlen(cs));
     memset(frmend, 0x00, fill_length);
     frmend+= fill_length;
   }
@@ -2088,6 +2124,12 @@ MY_CHARSET_HANDLER my_charset_8bit_handler=
     my_well_formed_char_length_8bit,
     my_copy_8bit,
     my_wc_mb_bin, /* native_to_mb */
+    my_caseup_multiply_simple,
+    my_casedn_multiply_simple,
+    my_escape_with_backslash_is_dangerous_simple,
+    my_pad_char_simple,
+    my_mblen_mb1,
+    my_mblen_mb1
 };
 
 MY_COLLATION_HANDLER my_collation_8bit_simple_ci_handler =
@@ -2097,6 +2139,7 @@ MY_COLLATION_HANDLER my_collation_8bit_simple_ci_handler =
     my_strnncollsp_simple,
     my_strnxfrm_simple,
     my_strnxfrmlen_simple,
+    my_strnxfrm_multiply_simple,
     my_like_range_simple,
     my_wildcmp_8bit,
     my_strcasecmp_8bit,
@@ -2113,6 +2156,7 @@ MY_COLLATION_HANDLER my_collation_8bit_simple_nopad_ci_handler =
     my_strnncollsp_simple_nopad,
     my_strnxfrm_simple_nopad,
     my_strnxfrmlen_simple,
+    my_strnxfrm_multiply_simple,
     my_like_range_simple,
     my_wildcmp_8bit,
     my_strcasecmp_8bit,

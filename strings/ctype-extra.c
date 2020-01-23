@@ -3692,15 +3692,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3725,15 +3718,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3758,15 +3744,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3791,15 +3770,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3824,15 +3796,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3857,15 +3822,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3890,15 +3848,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3923,15 +3874,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3956,15 +3900,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -3989,15 +3926,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4022,15 +3952,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4055,15 +3978,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4088,15 +4004,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4121,15 +4030,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4154,15 +4056,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4187,15 +4082,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4220,15 +4108,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4253,15 +4134,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4286,15 +4160,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4319,15 +4186,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4352,15 +4212,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4385,15 +4238,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4418,15 +4264,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4451,15 +4290,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4484,15 +4316,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4517,15 +4342,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4550,15 +4368,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4583,15 +4394,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4616,15 +4420,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -4649,15 +4446,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4682,15 +4472,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4715,15 +4498,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4748,15 +4524,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -4781,15 +4550,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4814,15 +4576,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4847,15 +4602,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -4880,15 +4628,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4913,15 +4654,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -4946,15 +4680,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -4979,15 +4706,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5012,15 +4732,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5045,15 +4758,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5078,15 +4784,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5111,15 +4810,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5144,15 +4836,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5177,15 +4862,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5210,15 +4888,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5243,15 +4914,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5276,15 +4940,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5309,15 +4966,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5342,15 +4992,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5375,15 +5018,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5408,15 +5044,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5441,15 +5070,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5474,15 +5096,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5507,15 +5122,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5540,15 +5148,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5573,15 +5174,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -5606,15 +5200,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_bin_handler,
@@ -5639,15 +5226,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -5672,15 +5252,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,
@@ -5705,15 +5278,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -5738,15 +5304,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -5771,15 +5330,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -5804,15 +5356,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -5837,15 +5382,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -5870,15 +5408,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -5903,15 +5434,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -5936,15 +5460,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -5969,15 +5486,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6002,15 +5512,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6035,15 +5538,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6068,15 +5564,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6101,15 +5590,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6134,15 +5616,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6167,15 +5642,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6200,15 +5668,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6233,15 +5694,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6266,15 +5720,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6299,15 +5746,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6332,15 +5772,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6365,15 +5798,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6398,15 +5824,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6431,15 +5850,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6464,15 +5876,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6497,15 +5902,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6530,15 +5928,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -6563,15 +5954,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6596,15 +5980,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6629,15 +6006,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6662,15 +6032,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6695,15 +6058,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6728,15 +6084,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6761,15 +6110,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6794,15 +6136,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6827,15 +6162,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6860,15 +6188,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6893,15 +6214,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6926,15 +6240,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6959,15 +6266,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -6992,15 +6292,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -7025,15 +6318,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -7058,15 +6344,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -7091,15 +6370,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -7124,15 +6396,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -7157,15 +6422,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_nopad_ci_handler,
@@ -7190,15 +6448,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_nopad_bin_handler,
@@ -7222,15 +6473,8 @@ struct charset_info_st compiled_charsets[] = {
   &my_unicase_default,        /* caseinfo      */
   NULL,                       /* state map     */
   NULL,                       /* ident map     */
-  1,                          /* strxfrm_multiply*/
-  1,                          /* caseup_multiply*/
-  1,                          /* casedn_multiply*/
-  1,                          /* mbminlen      */
-  1,                          /* mbmaxlen      */
   0,                          /* min_sort_char */
   255,                        /* max_sort_char */
-  ' ',                        /* pad_char      */
-  0,                          /* escape_with_backslash_is_dangerous */
   1,                          /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_8bit_simple_ci_handler,

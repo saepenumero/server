@@ -849,7 +849,7 @@ public:
   String *val_str(String *);
   bool fix_length_and_dec()
   {
-    max_length= MAX_FIELD_NAME * system_charset_info->mbmaxlen;
+    max_length= MAX_FIELD_NAME * my_mbmaxlen(system_charset_info);
     maybe_null=1;
     return FALSE;
   }
@@ -873,7 +873,7 @@ public:
   }
   bool fix_length_and_dec()
   {
-    max_length= 512 * system_charset_info->mbmaxlen;
+    max_length= 512 * my_mbmaxlen(system_charset_info);
     null_value= maybe_null= false;
     return FALSE;
   }
@@ -1393,7 +1393,7 @@ public:
   {
     collation.set(args[0]->collation);
     ulonglong max_result_length= (ulonglong) args[0]->max_length * 2 +
-                                  2 * collation.collation->mbmaxlen;
+                                  2 * collation.mbmaxlen();
     max_length= (uint32) MY_MIN(max_result_length, MAX_BLOB_WIDTH);
     return FALSE;
   }
@@ -1517,7 +1517,7 @@ public:
   bool fix_length_and_dec()
   {
      collation.set(system_charset_info);
-     max_length= 64 * collation.collation->mbmaxlen; // should be enough
+     max_length= 64 * collation.mbmaxlen(); // should be enough
      maybe_null= 0;
      return FALSE;
   };

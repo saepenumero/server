@@ -251,7 +251,7 @@ void table_events_statements_common::make_row_part_1(PFS_events_statements *stat
 
   if (cs != NULL)
   {
-    if (cs->mbmaxlen > 1)
+    if (my_mbmaxlen(cs) > 1)
     {
       valid_length= Well_formed_prefix(cs,
                                        statement->m_sqltext,

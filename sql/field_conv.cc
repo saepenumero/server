@@ -488,7 +488,7 @@ static void do_cut_string_complex(Copy_field *copy)
   Well_formed_prefix prefix(cs,
                            (char*) copy->from_ptr,
                            (char*) from_end,
-                           copy->to_length / cs->mbmaxlen);
+                           copy->to_length / my_mbmaxlen(cs));
   size_t copy_length= prefix.length();
   if (copy->to_length < copy_length)
     copy_length= copy->to_length;
@@ -554,7 +554,7 @@ static void do_varstring1_mb(Copy_field *copy)
   CHARSET_INFO *cs= copy->from_field->charset();
   uint from_length= (uint) *(uchar*) copy->from_ptr;
   const uchar *from_ptr= copy->from_ptr + 1;
-  uint to_char_length= (copy->to_length - 1) / cs->mbmaxlen;
+  uint to_char_length= (copy->to_length - 1) / my_mbmaxlen(cs);
   Well_formed_prefix prefix(cs, (char*) from_ptr, from_length, to_char_length);
   if (prefix.length() < from_length)
   {
@@ -588,7 +588,7 @@ static void do_varstring2(Copy_field *copy)
 static void do_varstring2_mb(Copy_field *copy)
 {
   CHARSET_INFO *cs= copy->from_field->charset();
-  uint char_length= (copy->to_length - HA_KEY_BLOB_LENGTH) / cs->mbmaxlen;
+  uint char_length= (copy->to_length - HA_KEY_BLOB_LENGTH) / my_mbmaxlen(cs);
   uint from_length= uint2korr(copy->from_ptr);
   const uchar *from_beg= copy->from_ptr + HA_KEY_BLOB_LENGTH;
   Well_formed_prefix prefix(cs, (char*) from_beg, from_length, char_length);
@@ -776,9 +776,10 @@ Field::Copy_func *Field_varstring::get_copy_func(const Field *from) const
       length_bytes != ((const Field_varstring*) from)->length_bytes ||
       !compression_method() != !from->compression_method())
     return do_field_string;
+  uint mbmaxlen= from->mbmaxlen();
   return length_bytes == 1 ?
-         (from->charset()->mbmaxlen == 1 ? do_varstring1 : do_varstring1_mb) :
-         (from->charset()->mbmaxlen == 1 ? do_varstring2 : do_varstring2_mb);
+         (mbmaxlen == 1 ? do_varstring1 : do_varstring1_mb) :
+         (mbmaxlen == 1 ? do_varstring2 : do_varstring2_mb);
 }
 
 
@@ -790,7 +791,7 @@ Field::Copy_func *Field_string::get_copy_func(const Field *from) const
       Field_string::charset() != from->charset())
     return do_field_string;
   if (Field_string::pack_length() < from->pack_length())
-    return (Field_string::charset()->mbmaxlen == 1 ?
+    return (my_mbmaxlen(Field_string::charset()) == 1 ?
             do_cut_string : do_cut_string_complex);
   if (Field_string::pack_length() > from->pack_length())
     return Field_string::charset() == &my_charset_bin ? do_expand_binary :

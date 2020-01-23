@@ -1276,8 +1276,7 @@ class User_table_tabular: public User_table
 
     if (have_password()) // Password column might be missing. (MySQL 5.7.6+)
     {
-      int password_length= password()->field_length /
-                           password()->charset()->mbmaxlen;
+      int password_length= password()->char_length();
       if (password_length < SCRAMBLED_PASSWORD_CHAR_LENGTH_323)
       {
         sql_print_error("Fatal error: mysql.user table is damaged or in "

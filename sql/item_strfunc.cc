@@ -1592,7 +1592,7 @@ bool Item_func_lcase::fix_length_and_dec()
   if (agg_arg_charsets_for_string_result(collation, args, 1))
     return TRUE;
   DBUG_ASSERT(collation.collation != NULL);
-  multiply= collation.collation->casedn_multiply;
+  multiply= my_casedn_multiply(collation.collation);
   converter= collation.collation->cset->casedn;
   fix_char_length_ulonglong((ulonglong) args[0]->max_char_length() * multiply);
   return FALSE;
@@ -1603,7 +1603,7 @@ bool Item_func_ucase::fix_length_and_dec()
   if (agg_arg_charsets_for_string_result(collation, args, 1))
     return TRUE;
   DBUG_ASSERT(collation.collation != NULL);
-  multiply= collation.collation->caseup_multiply;
+  multiply= my_caseup_multiply(collation.collation);
   converter= collation.collation->cset->caseup;
   fix_char_length_ulonglong((ulonglong) args[0]->max_char_length() * multiply);
   return FALSE;
@@ -1764,7 +1764,7 @@ bool Item_func_substr::fix_length_and_dec()
     else
       set_if_smaller(max_length,(uint) length);
   }
-  max_length*= collation.collation->mbmaxlen;
+  max_length*= collation.mbmaxlen();
   return FALSE;
 }
 
@@ -2179,7 +2179,7 @@ Sql_mode_dependency Item_func_trim::value_depends_on_sql_mode() const
     return Item_func::value_depends_on_sql_mode(); // will trim nothing
   if (trimstr->lengthsp() != 0)
     return Item_func::value_depends_on_sql_mode(); // will trim not only spaces
-  if (trimstr->length() > trimstr->charset()->mbminlen ||
+  if (trimstr->length() > trimstr->mbminlen() ||
       trimstr->numchars() > 1)
     return Item_func::value_depends_on_sql_mode(); // more than one space
   // TRIM(TRAILING ' ' FROM expr)
@@ -2404,7 +2404,7 @@ bool Item_func_user::init(const char *user, const char *host)
   if (user)
   {
     CHARSET_INFO *cs= str_value.charset();
-    size_t res_length= (strlen(user)+strlen(host)+2) * cs->mbmaxlen;
+    size_t res_length= (strlen(user)+strlen(host)+2) * my_mbmaxlen(cs);
 
     if (str_value.alloc((uint) res_length))
     {
@@ -2544,7 +2544,7 @@ String *Item_func_soundex::val_str(String *str)
   if ((null_value= args[0]->null_value))
     return 0; /* purecov: inspected */
 
-  if (str->alloc(MY_MAX(res->length(), 4 * cs->mbminlen)))
+  if (str->alloc(MY_MAX(res->length(), 4 * my_mbminlen(cs))))
     return &tmp_value; /* purecov: inspected */
   str->set_charset(collation.collation);
   char *to= (char *) str->ptr();
@@ -2628,7 +2628,7 @@ String *Item_func_soundex::val_str(String *str)
   /* Pad up to 4 characters with DIGIT ZERO, if the string is shorter */
   if (nchars < 4) 
   {
-    uint nbytes= (4 - nchars) * cs->mbminlen;
+    uint nbytes= (4 - nchars) * my_mbminlen(cs);
     cs->cset->fill(cs, to, nbytes, '0');
     to+= nbytes;
   }
@@ -3110,7 +3110,7 @@ String *Item_func_space::val_str(String *str)
     count= INT_MAX32;
 
   // Safe length check
-  tot_length= (uint) count * cs->mbminlen;
+  tot_length= (uint) count * my_mbminlen(cs);
   {
     THD *thd= current_thd;
     if (tot_length > thd->variables.max_allowed_packet)
@@ -3197,7 +3197,7 @@ bool Item_func_pad::fix_length_and_dec()
     pad_str.append(" ", 1);
   }
 
-  DBUG_ASSERT(collation.collation->mbmaxlen > 0);
+  DBUG_ASSERT(collation.mbmaxlen() > 0);
   if (args[1]->const_item() && !args[1]->is_expensive())
   {
     fix_char_length_ulonglong(max_length_for_string(args[1]));
@@ -3286,7 +3286,7 @@ String *Item_func_rpad::val_str(String *str)
     return (res);
   }
 
-  byte_count= count * collation.collation->mbmaxlen;
+  byte_count= count * collation.mbmaxlen();
   {
     THD *thd= current_thd;
     if ((ulonglong) byte_count > thd->variables.max_allowed_packet)
@@ -3381,7 +3381,7 @@ String *Item_func_lpad::val_str(String *str)
     return res;
   }
   
-  byte_count= count * collation.collation->mbmaxlen;
+  byte_count= count * collation.mbmaxlen();
   
   {
     THD *thd= current_thd;
@@ -3587,7 +3587,7 @@ bool Item_func_weight_string::fix_length_and_dec()
     size_t char_length;
     char_length= ((cs->state & MY_CS_STRNXFRM_BAD_NWEIGHTS) || !nweights) ?
                  args[0]->max_char_length() : nweights * cs->levels_for_order;
-    max_length= (uint32)cs->coll->strnxfrmlen(cs, char_length * cs->mbmaxlen);
+    max_length= (uint32)cs->coll->strnxfrmlen(cs, char_length * my_mbmaxlen(cs));
   }
   maybe_null= 1;
   return FALSE;
@@ -3627,7 +3627,7 @@ String *Item_func_weight_string::val_str(String *str)
       /*
         If we don't need to pad the result with spaces, then it should be
         OK to calculate character length of the argument approximately:
-        "res->length() / cs->mbminlen" can return a number that is 
+        "res->length() / mbminlen" can return a number that is 
         bigger than the real number of characters in the string, so
         we'll allocate a little bit more memory but avoid calling
         the slow res->numchars().
@@ -3636,9 +3636,9 @@ String *Item_func_weight_string::val_str(String *str)
       */
       if (!(char_length= nweights))
         char_length= (flags & MY_STRXFRM_PAD_WITH_SPACE) ?
-                      res->numchars() : (res->length() / cs->mbminlen);
+                      res->numchars() : (res->length() / my_mbminlen(cs));
     }
-    tmp_length= cs->coll->strnxfrmlen(cs, char_length * cs->mbmaxlen);
+    tmp_length= cs->coll->strnxfrmlen(cs, char_length * my_mbmaxlen(cs));
   }
 
   {
@@ -4026,7 +4026,7 @@ String *Item_func_quote::val_str(String *str)
 
   arg_length= arg->length();
 
-  if (collation.collation->mbmaxlen == 1)
+  if (collation.mbmaxlen() == 1)
   {
     new_length= arg_length + 2; /* for beginning and ending ' signs */
     for (from= (char*) arg->ptr(), end= from + arg_length; from < end; from++)
@@ -4037,14 +4037,14 @@ String *Item_func_quote::val_str(String *str)
   else
   {
     new_length= (arg_length * 2) +  /* For string characters */
-                (2 * collation.collation->mbmaxlen); /* For quotes */
+                (2 * collation.mbmaxlen()); /* For quotes */
     set_if_smaller(new_length, max_allowed_packet);
   }
 
   if (str->alloc(new_length))
     goto null;
 
-  if (collation.collation->mbmaxlen > 1)
+  if (collation.mbmaxlen() > 1)
   {
     CHARSET_INFO *cs= collation.collation;
     int mblen;
@@ -4434,7 +4434,7 @@ bool Item_func_dyncol_create::prepare_arguments(THD *thd, bool force_names_arg)
         }
         else
         {
-          uint strlen= res->length() * DYNCOL_UTF->mbmaxlen + 1;
+          uint strlen= res->length() * my_mbmaxlen(DYNCOL_UTF) + 1;
           uint dummy_errors;
           if (char *str= (char *) thd->alloc(strlen))
           {
@@ -4769,7 +4769,7 @@ bool Item_dyncol_get::get_dyn_value(THD *thd, DYNAMIC_COLUMN_VALUE *val,
     }
     else
     {
-      uint strlen= nm->length() * DYNCOL_UTF->mbmaxlen + 1;
+      uint strlen= nm->length() * my_mbmaxlen(DYNCOL_UTF) + 1;
       uint dummy_errors;
       buf.str= (char *) thd->alloc(strlen);
       if (buf.str)

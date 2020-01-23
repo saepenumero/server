@@ -241,14 +241,14 @@ int str2my_decimal(uint mask, const char *from, size_t length,
                    const char **end_ptr)
 {
   int err;
-  if (charset->mbminlen > 1)
+  if (my_mbminlen(charset) > 1)
   {
     StringBuffer<STRING_BUFFER_USUAL_SIZE> tmp;
     uint dummy_errors;
     tmp.copy(from, length, charset, &my_charset_latin1, &dummy_errors);
     char *end= (char*) tmp.end();
     err= string2decimal(tmp.ptr(), (decimal_t*) decimal_value, &end);
-    *end_ptr= from + charset->mbminlen * (size_t) (end - tmp.ptr());
+    *end_ptr= from + my_mbminlen(charset) * (size_t) (end - tmp.ptr());
   }
   else
   {

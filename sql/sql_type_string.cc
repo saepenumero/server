@@ -40,7 +40,8 @@ StringPack::pack(uchar *to, const uchar *from, uint max_length) const
   */
   if (mbmaxlen() == 1)
   {
-    while (length && from[length-1] == charset()->pad_char)
+    uchar pad_char= my_pad_char(charset());
+    while (length && from[length-1] == pad_char)
       length --;
   }
   else
@@ -100,6 +101,6 @@ StringPack::unpack(uchar *to, const uchar *from, const uchar *from_end,
   charset()->cset->fill(charset(),
                         (char*) to + length,
                         m_octet_length - length,
-                        charset()->pad_char);
+                        my_pad_char(charset()));
   return from+length;
 }

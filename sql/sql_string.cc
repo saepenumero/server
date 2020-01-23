@@ -120,7 +120,7 @@ bool Binary_string::realloc_raw(size_t alloc_length)
 
 bool String::set_int(longlong num, bool unsigned_flag, CHARSET_INFO *cs)
 {
-  uint l=20*cs->mbmaxlen+1;
+  uint l= 20 * my_mbmaxlen(cs) + 1;
   int base= unsigned_flag ? 10 : -10;
 
   if (alloc(l))
@@ -303,7 +303,7 @@ bool String::needs_conversion(size_t arg_length,
       (to_cs == from_cs) ||
       my_charset_same(from_cs, to_cs) ||
       ((from_cs == &my_charset_bin) &&
-       (!(*offset=(uint32)(arg_length % to_cs->mbminlen)))))
+       (!(*offset=(uint32)(arg_length % my_mbminlen(to_cs))))))
     return FALSE;
   return TRUE;
 }
@@ -334,11 +334,11 @@ bool String::needs_conversion_on_storage(size_t arg_length,
            /* and any of the following is true :*/
            (
             /* it's a variable length encoding */
-            cs_to->mbminlen != cs_to->mbmaxlen ||
+            my_mbminlen(cs_to) != my_mbmaxlen(cs_to) ||
             /* longer than 2 bytes : neither 1 byte nor ucs2 */
-            cs_to->mbminlen > 2 ||
+            my_mbminlen(cs_to) > 2 ||
             /* and is not a multiple of the char byte size */
-            0 != (arg_length % cs_to->mbmaxlen)
+            0 != (arg_length % my_mbmaxlen(cs_to))
            )
           )
          );
@@ -353,7 +353,7 @@ bool String::needs_conversion_on_storage(size_t arg_length,
   copy_aligned()
   str			String to copy
   arg_length		Length of string. This should NOT be dividable with
-			cs->mbminlen.
+			mbminlen.
   offset		arg_length % cs->mb_minlength
   cs			Character set for 'str'
 
@@ -374,8 +374,8 @@ bool String::copy_aligned(const char *str, size_t arg_length, size_t offset,
 			  CHARSET_INFO *cs)
 {
   /* How many bytes are in incomplete character */
-  offset= cs->mbminlen - offset; /* How many zeros we should prepend */
-  DBUG_ASSERT(offset && offset != cs->mbminlen);
+  offset= my_mbminlen(cs) - offset; /* How many zeros we should prepend */
+  DBUG_ASSERT(offset && offset != my_mbminlen(cs));
 
   size_t aligned_length= arg_length + offset;
   if (alloc(aligned_length))
@@ -400,7 +400,7 @@ bool String::set_or_copy_aligned(const char *str, size_t arg_length,
 				 CHARSET_INFO *cs)
 {
   /* How many bytes are in incomplete character */
-  size_t offset= (arg_length % cs->mbminlen); 
+  size_t offset= (arg_length % my_mbminlen(cs)); 
   
   if (!offset)
   {
@@ -439,7 +439,7 @@ bool String::copy(const char *str, size_t arg_length,
     *errors= 0;
     return copy_aligned(str, arg_length, offset, to_cs);
   }
-  size_t new_length= to_cs->mbmaxlen*arg_length;
+  size_t new_length= my_mbmaxlen(to_cs)*arg_length;
   if (alloc(new_length))
     return TRUE;
   str_length=copy_and_convert((char*) Ptr, new_length, to_cs,
@@ -581,7 +581,7 @@ bool String::append(const char *s, size_t arg_length, CHARSET_INFO *cs)
       return FALSE;
     }
 
-    add_length= arg_length / cs->mbminlen * mbmaxlen();
+    add_length= arg_length / my_mbminlen(cs) * mbmaxlen();
     uint dummy_errors;
     if (realloc_with_extra_if_needed(str_length + add_length)) 
       return TRUE;
@@ -785,8 +785,8 @@ bool Binary_string::copy_printable_hhhh(CHARSET_INFO *to_cs,
 {
   DBUG_ASSERT(from_length < UINT_MAX32);
   uint errors;
-  uint one_escaped_char_length= MY_CS_PRINTABLE_CHAR_LENGTH * to_cs->mbminlen;
-  uint one_char_length= MY_MAX(one_escaped_char_length, to_cs->mbmaxlen);
+  uint one_escaped_char_length= MY_CS_PRINTABLE_CHAR_LENGTH * my_mbminlen(to_cs);
+  uint one_char_length= MY_MAX(one_escaped_char_length, my_mbmaxlen(to_cs));
   ulonglong bytes_needed= from_length * one_char_length;
   if (bytes_needed >= UINT_MAX32 || alloc((size_t) bytes_needed))
     return true;
@@ -1198,7 +1198,7 @@ uint convert_to_printable(char *to, size_t to_len,
     */
     if (((unsigned char) *f) >= 0x20 &&
         ((unsigned char) *f) <= 0x7F &&
-        from_cs->mbminlen == 1)
+        my_mbminlen(from_cs) == 1)
     {
       *t++= *f;
     }

@@ -969,7 +969,7 @@ bool Item_func_monthname::fix_length_and_dec()
   locale= thd->variables.lc_time_names;  
   collation.set(cs, DERIVATION_COERCIBLE, locale->repertoire());
   decimals=0;
-  max_length= locale->max_month_name_length * collation.collation->mbmaxlen;
+  max_length= locale->max_month_name_length * collation.mbmaxlen();
   maybe_null=1;
   return FALSE;
 }
@@ -1114,7 +1114,7 @@ bool Item_func_dayname::fix_length_and_dec()
   locale= thd->variables.lc_time_names;  
   collation.set(cs, DERIVATION_COERCIBLE, locale->repertoire());
   decimals=0;
-  max_length= locale->max_day_name_length * collation.collation->mbmaxlen;
+  max_length= locale->max_day_name_length * collation.mbmaxlen();
   maybe_null=1;
   return FALSE;
 }
@@ -1755,13 +1755,13 @@ bool Item_func_date_format::fix_length_and_dec()
   if (args[1]->basic_const_item() && (str= args[1]->val_str(&buffer)))
   {						// Optimize the normal case
     fixed_length=1;
-    max_length= format_length(str) * collation.collation->mbmaxlen;
+    max_length= format_length(str) * collation.mbmaxlen();
   }
   else
   {
     fixed_length=0;
     max_length=MY_MIN(arg1->max_length, MAX_BLOB_WIDTH) * 10 *
-                   collation.collation->mbmaxlen;
+                   collation.mbmaxlen();
     set_if_smaller(max_length,MAX_BLOB_WIDTH);
   }
   maybe_null=1;					// If wrong date
@@ -2449,7 +2449,7 @@ static Item_char_typecast_func_handler item_char_typecast_func_handler;
 
 void Item_char_typecast::fix_length_and_dec_numeric()
 {
-  fix_length_and_dec_internal(from_cs= cast_cs->mbminlen == 1 ?
+  fix_length_and_dec_internal(from_cs= my_mbminlen(cast_cs) == 1 ?
                                        cast_cs :
                                        &my_charset_latin1);
   set_func_handler(&item_char_typecast_func_handler);
@@ -2512,7 +2512,7 @@ void Item_char_typecast::fix_length_and_dec_internal(CHARSET_INFO *from_cs)
 
        Note (TODO): we could use repertoire technique here.
   */
-  charset_conversion= !from_cs || (cast_cs->mbmaxlen > 1) ||
+  charset_conversion= !from_cs || (my_mbmaxlen(cast_cs) > 1) ||
                       (!my_charset_same(from_cs, cast_cs) &&
                        from_cs != &my_charset_bin &&
                        cast_cs != &my_charset_bin);
@@ -2520,8 +2520,8 @@ void Item_char_typecast::fix_length_and_dec_internal(CHARSET_INFO *from_cs)
   char_length= ((cast_length != ~0U) ? cast_length :
                 args[0]->max_length /
                 (cast_cs == &my_charset_bin ? 1 :
-                 args[0]->collation.collation->mbmaxlen));
-  max_length= char_length * cast_cs->mbmaxlen;
+                 args[0]->collation.mbmaxlen()));
+  max_length= char_length * my_mbmaxlen(cast_cs);
   // Add NULL-ability in strict mode. See Item_str_func::fix_fields()
   maybe_null= maybe_null || current_thd->is_strict_mode();
 }
@@ -3031,7 +3031,7 @@ bool Item_func_str_to_date::fix_length_and_dec()
   }
   if (agg_arg_charsets(collation, args, 2, MY_COLL_ALLOW_CONV, 1))
     return TRUE;
-  if (collation.collation->mbminlen > 1)
+  if (collation.mbminlen() > 1)
     internal_charset= &my_charset_utf8mb4_general_ci;
 
   maybe_null= true;

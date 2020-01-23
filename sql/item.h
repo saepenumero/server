@@ -2286,13 +2286,13 @@ public:
   { return max_char_length() > CONVERT_IF_BIGGER_TO_BLOB; }
   void fix_length_and_charset(uint32 max_char_length_arg, CHARSET_INFO *cs)
   {
-    max_length= char_to_byte_length_safe(max_char_length_arg, cs->mbmaxlen);
+    max_length= char_to_byte_length_safe(max_char_length_arg, my_mbmaxlen(cs));
     collation.collation= cs;
   }
   void fix_char_length(size_t max_char_length_arg)
   {
     max_length= char_to_byte_length_safe(max_char_length_arg,
-                                         collation.collation->mbmaxlen);
+                                         my_mbmaxlen(collation.collation));
   }
   /*
     Return TRUE if the item points to a column of an outer-joined table.
@@ -4316,7 +4316,7 @@ public:
     set_name(thd, NULL, 0, system_charset_info);
     decimals= NOT_FIXED_DEC;
     str_value.copy(str_arg, length_arg, csi);
-    max_length= str_value.numchars() * csi->mbmaxlen;
+    max_length= str_value.numchars() * my_mbmaxlen(csi);
   }
   // Constructors with the item name set from its value
   Item_string(THD *thd, const char *str, uint length, CHARSET_INFO *cs,
@@ -4388,7 +4388,7 @@ public:
   inline void append(const char *str, uint length)
   {
     str_value.append(str, length);
-    max_length= str_value.numchars() * collation.collation->mbmaxlen;
+    max_length= str_value.numchars() * my_mbmaxlen(collation.collation);
   }
   virtual void print(String *str, enum_query_type query_type);
 
@@ -4537,12 +4537,12 @@ class Item_empty_string :public Item_partition_func_safe_string
 public:
   Item_empty_string(THD *thd, const LEX_CSTRING &header, uint length,
                     CHARSET_INFO *cs= &my_charset_utf8mb3_general_ci)
-   :Item_partition_func_safe_string(thd, header, length * cs->mbmaxlen, cs)
+   :Item_partition_func_safe_string(thd, header, length * my_mbmaxlen(cs), cs)
   { }
   Item_empty_string(THD *thd, const char *header, uint length,
                     CHARSET_INFO *cs= &my_charset_utf8mb3_general_ci)
    :Item_partition_func_safe_string(thd, LEX_CSTRING({header, strlen(header)}),
-                                    length * cs->mbmaxlen, cs)
+                                    length * my_mbmaxlen(cs), cs)
   { }
   void make_send_field(THD *thd, Send_field *field);
 };

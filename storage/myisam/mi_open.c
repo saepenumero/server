@@ -880,7 +880,7 @@ static void setup_key_functions(register MI_KEYDEF *keyinfo)
       */
       if (!keyinfo->seg->charset || use_strnxfrm(keyinfo->seg->charset) ||
           (keyinfo->seg->flag & HA_NULL_PART) ||
-          (keyinfo->seg->charset->mbminlen > 1))
+          (my_mbminlen(keyinfo->seg->charset) > 1))
         keyinfo->bin_search=_mi_seq_search;
       else
         keyinfo->bin_search=_mi_prefix_search;

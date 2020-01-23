@@ -293,7 +293,14 @@ my_strnxfrmlen_czech(CHARSET_INFO *cs
 {
   return len * 4 + 4;
 }
-    
+
+
+static uint
+my_strnxfrm_multiply_czech(CHARSET_INFO *cs)
+{
+  return 4;
+}
+
 
 /*
   Function strnxfrm, actually strxfrm, with Czech sorting, which expect
@@ -612,6 +619,7 @@ static MY_COLLATION_HANDLER my_collation_latin2_czech_ci_handler =
   my_strnncollsp_czech,
   my_strnxfrm_czech,
   my_strnxfrmlen_czech,
+  my_strnxfrm_multiply_czech,
   my_like_range_czech,
   my_wildcmp_bin,
   my_strcasecmp_8bit,
@@ -639,15 +647,8 @@ struct charset_info_st my_charset_latin2_czech_ci =
     &my_unicase_default,/* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
-    4,			/* strxfrm_multiply */
-    1,                  /* caseup_multiply  */
-    1,                  /* casedn_multiply  */
-    1,			/* mbminlen   */
-    1,			/* mbmaxlen  */
     0,			/* min_sort_char */
     0,			/* max_sort_char */
-    ' ',                /* pad char      */
-    0,                  /* escape_with_backslash_is_dangerous */
     4,                  /* levels_for_order   */
     &my_charset_8bit_handler,
     &my_collation_latin2_czech_ci_handler

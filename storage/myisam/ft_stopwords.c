@@ -70,7 +70,7 @@ int ft_init_stopwords()
       Use latin1 to compare stopwords in case of these character sets.
       It's also fine to use latin1 with the built-in stopwords.
     */
-    ft_stopword_cs= default_charset_info->mbminlen == 1 ?
+    ft_stopword_cs= my_mbminlen(default_charset_info) == 1 ?
                     default_charset_info : &my_charset_latin1;
   }
 

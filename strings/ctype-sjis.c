@@ -1073,7 +1073,9 @@ static MY_UNICASE_CHARACTER *my_caseinfo_pages_sjis[256]=
 static MY_UNICASE_INFO my_caseinfo_sjis=
 {
   0xFFFF,
-  my_caseinfo_pages_sjis
+  my_caseinfo_pages_sjis,
+  1, /* caseup_multiply  */
+  1  /* casedn_multiply  */
 };
 
 
@@ -34004,6 +34006,12 @@ size_t my_numcells_sjis(CHARSET_INFO *cs __attribute__((unused)),
 }
 
 
+static my_bool my_escape_with_backslash_is_dangerous_sjis(CHARSET_INFO *cs)
+{
+  return TRUE;
+}
+
+
 /*
   sjis_chinese_ci and sjis_bin sort character blocks in this order:
   1. [00..7F]                - 7BIT characters (ASCII)
@@ -34048,6 +34056,7 @@ static MY_COLLATION_HANDLER my_collation_handler_sjis_japanese_ci=
   my_strnncollsp_sjis_japanese_ci,
   my_strnxfrm_mb,
   my_strnxfrmlen_simple,
+  my_strnxfrm_multiply_simple,
   my_like_range_mb,
   my_wildcmp_mb,
   my_strcasecmp_8bit,
@@ -34064,6 +34073,7 @@ static MY_COLLATION_HANDLER my_collation_handler_sjis_bin=
   my_strnncollsp_sjis_bin,
   my_strnxfrm_mb,
   my_strnxfrmlen_simple,
+  my_strnxfrm_multiply_simple,
   my_like_range_mb,
   my_wildcmp_mb_bin,
   my_strcasecmp_mb_bin,
@@ -34080,6 +34090,7 @@ static MY_COLLATION_HANDLER my_collation_handler_sjis_japanese_nopad_ci=
   my_strnncollsp_sjis_japanese_nopad_ci,
   my_strnxfrm_mb_nopad,
   my_strnxfrmlen_simple,
+  my_strnxfrm_multiply_simple,
   my_like_range_mb,
   my_wildcmp_mb,
   my_strcasecmp_8bit,
@@ -34096,6 +34107,7 @@ static MY_COLLATION_HANDLER my_collation_handler_sjis_nopad_bin=
   my_strnncollsp_sjis_nopad_bin,
   my_strnxfrm_mb_nopad,
   my_strnxfrmlen_simple,
+  my_strnxfrm_multiply_simple,
   my_like_range_mb,
   my_wildcmp_mb_bin,
   my_strcasecmp_mb_bin,
@@ -34135,6 +34147,12 @@ static MY_CHARSET_HANDLER my_charset_handler=
   my_well_formed_char_length_sjis,
   my_copy_fix_mb,
   my_native_to_mb_sjis,
+  my_caseup_multiply_mb,
+  my_casedn_multiply_mb,
+  my_escape_with_backslash_is_dangerous_sjis,
+  my_pad_char_simple,
+  my_mblen_mb1,
+  my_mblen_mb2
 };
 
 
@@ -34156,15 +34174,8 @@ struct charset_info_st my_charset_sjis_japanese_ci=
     &my_caseinfo_sjis,  /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
-    1,			/* strxfrm_multiply */
-    1,                  /* caseup_multiply  */
-    1,                  /* casedn_multiply  */
-    1,			/* mbminlen   */
-    2,			/* mbmaxlen */
     0,			/* min_sort_char */
     0xFCFC,		/* max_sort_char */
-    ' ',                /* pad char      */
-    1,                  /* escape_with_backslash_is_dangerous */
     1,                  /* levels_for_order   */
     &my_charset_handler,
     &my_collation_handler_sjis_japanese_ci
@@ -34188,15 +34199,8 @@ struct charset_info_st my_charset_sjis_bin=
     &my_caseinfo_sjis,  /* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
-    1,			/* strxfrm_multiply */
-    1,                  /* caseup_multiply  */
-    1,                  /* casedn_multiply  */
-    1,			/* mbminlen   */
-    2,			/* mbmaxlen */
     0,			/* min_sort_char */
     0xFCFC,		/* max_sort_char */
-    ' ',                /* pad char      */
-    1,                  /* escape_with_backslash_is_dangerous */
     1,                  /* levels_for_order   */
     &my_charset_handler,
     &my_collation_handler_sjis_bin
@@ -34221,15 +34225,8 @@ struct charset_info_st my_charset_sjis_japanese_nopad_ci=
     &my_caseinfo_sjis,   /* caseinfo         */
     NULL,                /* state_map        */
     NULL,                /* ident_map        */
-    1,                   /* strxfrm_multiply */
-    1,                   /* caseup_multiply  */
-    1,                   /* casedn_multiply  */
-    1,                   /* mbminlen         */
-    2,                   /* mbmaxlen         */
     0,                   /* min_sort_char    */
     0xFCFC,              /* max_sort_char    */
-    ' ',                 /* pad char         */
-    1,                   /* escape_with_backslash_is_dangerous */
     1,                   /* levels_for_order */
     &my_charset_handler,
     &my_collation_handler_sjis_japanese_nopad_ci
@@ -34253,15 +34250,8 @@ struct charset_info_st my_charset_sjis_nopad_bin=
     &my_caseinfo_sjis,   /* caseinfo         */
     NULL,                /* state_map        */
     NULL,                /* ident_map        */
-    1,                   /* strxfrm_multiply */
-    1,                   /* caseup_multiply  */
-    1,                   /* casedn_multiply  */
-    1,                   /* mbminlen         */
-    2,                   /* mbmaxlen         */
     0,                   /* min_sort_char    */
     0xFCFC,              /* max_sort_char    */
-    ' ',                 /* pad char         */
-    1,                   /* escape_with_backslash_is_dangerous */
     1,                   /* levels_for_order */
     &my_charset_handler,
     &my_collation_handler_sjis_nopad_bin

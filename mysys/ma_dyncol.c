@@ -3905,7 +3905,7 @@ mariadb_dyncol_val_str(DYNAMIC_STRING *str, DYNAMIC_COLUMN_VALUE *val,
         my_bool conv= !my_charset_same(val->x.string.charset, cs);
         my_bool rc;
         len= val->x.string.value.length;
-        bufflen= (ulong)(len * (conv ? cs->mbmaxlen : 1));
+        bufflen= (ulong)(len * (conv ? my_mbmaxlen(cs) : 1));
         if (dynstr_realloc(str, bufflen))
             return ER_DYNCOL_RESOURCE;
 

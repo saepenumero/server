@@ -990,7 +990,7 @@ mysqld_collation_get_by_name(const char *name,
 
 inline bool is_supported_parser_charset(CHARSET_INFO *cs)
 {
-  return MY_TEST(cs->mbminlen == 1);
+  return MY_TEST(my_mbminlen(cs) == 1);
 }
 
 #ifdef MYSQL_SERVER

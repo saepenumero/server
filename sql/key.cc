@@ -320,7 +320,7 @@ bool key_cmp_if_same(TABLE *table,const uchar *key,uint idx,uint key_length)
                                 FIELDFLAG_PACK)))
     {
       CHARSET_INFO *cs= key_part->field->charset();
-      size_t char_length= key_part->length / cs->mbmaxlen;
+      size_t char_length= key_part->length / my_mbmaxlen(cs);
       const uchar *pos= table->record[0] + key_part->offset;
       if (length > char_length)
       {
@@ -377,7 +377,7 @@ void field_unpack(String *to, Field *field, const uchar *rec, uint max_length,
       while (tmp_end > tmp.ptr() && !*--tmp_end) ;
       tmp.length((uint32)(tmp_end - tmp.ptr() + 1));
     }
-    if (cs->mbmaxlen > 1 && prefix_key)
+    if (my_mbmaxlen(cs) > 1 && prefix_key)
     {
       /*
         Prefix key, multi-byte charset.
@@ -386,7 +386,7 @@ void field_unpack(String *to, Field *field, const uchar *rec, uint max_length,
         which can break a multi-byte characters in the middle.
         Align, returning not more than "char_length" characters.
       */
-      size_t charpos, char_length= max_length / cs->mbmaxlen;
+      size_t charpos, char_length= max_length / my_mbmaxlen(cs);
       if ((charpos= my_charpos(cs, tmp.ptr(),
                                tmp.ptr() + tmp.length(),
                                char_length)) < tmp.length())
@@ -755,11 +755,11 @@ ulong key_hashnr(KEY *key_info, uint used_key_parts, const uchar *key)
 
     if (is_string)
     {
-      if (cs->mbmaxlen > 1)
+      if (my_mbmaxlen(cs) > 1)
       {
         size_t char_length= my_charpos(cs, pos + pack_length,
                                      pos + pack_length + length,
-                                     length / cs->mbmaxlen);
+                                     length / my_mbmaxlen(cs));
         set_if_smaller(length, char_length);
       }
       cs->coll->hash_sort(cs, pos+pack_length, length, &nr, &nr2);
@@ -869,14 +869,14 @@ bool key_buf_cmp(KEY *key_info, uint used_key_parts,
         and collation
       */
       size_t byte_len1= length1, byte_len2= length2;
-      if (cs->mbmaxlen > 1)
+      if (my_mbmaxlen(cs) > 1)
       {
         size_t char_length1= my_charpos(cs, pos1 + pack_length,
                                       pos1 + pack_length + length1,
-                                      length1 / cs->mbmaxlen);
+                                      length1 / my_mbmaxlen(cs));
         size_t char_length2= my_charpos(cs, pos2 + pack_length,
                                       pos2 + pack_length + length2,
-                                      length2 / cs->mbmaxlen);
+                                      length2 / my_mbmaxlen(cs));
         set_if_smaller(length1, char_length1);
         set_if_smaller(length2, char_length2);
       }

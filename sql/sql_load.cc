@@ -1353,8 +1353,8 @@ READ_INFO::READ_INFO(THD *thd, File file_par,
   enclosed_char= enclosed_par.length() ? (uchar) enclosed_par[0] : INT_MAX;
 
   /* Set of a stack for unget if long terminators */
-  uint length= MY_MAX(charset()->mbmaxlen, MY_MAX(m_field_term.length(),
-                                                  m_line_term.length())) + 1;
+  uint length= MY_MAX(mbmaxlen(), MY_MAX(m_field_term.length(),
+                                         m_line_term.length())) + 1;
   set_if_bigger(length,line_start.length());
   stack= stack_pos= (int*) thd->alloc(sizeof(int) * length);
 
@@ -1455,7 +1455,7 @@ inline bool READ_INFO::terminator(const uchar *ptr, uint length)
 
   Note, adding useless escapes before multi-byte characters like in the
   example above is safe in case of utf8, but is not safe in case of
-  character sets that have escape_with_backslash_is_dangerous==TRUE,
+  character sets that have my_escape_with_backslash_is_dangerous()==TRUE,
   such as big5, cp932, gbk, sjis. This can lead to mis-interpretation of the
   data. Suppose we have a big5 character "<EE><5C>" followed by <30> (digit 0).
   If we add an extra escape before this sequence, then we'll get
@@ -1501,7 +1501,7 @@ int READ_INFO::read_field()
   for (;;)
   {
     // Make sure we have enough space for the longest multi-byte character.
-    while (data.length() + charset()->mbmaxlen <= data.alloced_length())
+    while (data.length() + mbmaxlen() <= data.alloced_length())
     {
       chr = GET;
       if (chr == my_b_EOF)

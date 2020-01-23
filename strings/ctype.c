@@ -901,7 +901,7 @@ void
 my_string_metadata_get(MY_STRING_METADATA *metadata,
                        CHARSET_INFO *cs, const char *str, size_t length)
 {
-  if (cs->mbmaxlen == 1 && !(cs->state & MY_CS_NONASCII))
+  if (my_mbmaxlen(cs) == 1 && !(cs->state & MY_CS_NONASCII))
   {
     metadata->char_length= length;
     metadata->repertoire= my_string_repertoire_8bit(cs, str, (ulong)length);
@@ -919,7 +919,7 @@ my_string_metadata_get(MY_STRING_METADATA *metadata,
 uint
 my_string_repertoire(CHARSET_INFO *cs, const char *str, size_t length)
 {
-  if (cs->mbminlen == 1 && !(cs->state & MY_CS_NONASCII))
+  if (my_mbminlen(cs) == 1 && !(cs->state & MY_CS_NONASCII))
   {
     return my_string_repertoire_8bit(cs, str, length);
   }
@@ -980,8 +980,8 @@ my_bool
 my_charset_is_ascii_based(CHARSET_INFO *cs)
 {
   return 
-    (cs->mbmaxlen == 1 && cs->tab_to_uni && cs->tab_to_uni['{'] == '{') ||
-    (cs->mbminlen == 1 && cs->mbmaxlen > 1);
+    (my_mbmaxlen(cs) == 1 && cs->tab_to_uni && cs->tab_to_uni['{'] == '{') ||
+    (my_mbminlen(cs) == 1 && my_mbmaxlen(cs) > 1);
 }
 
 
@@ -1050,6 +1050,7 @@ my_wc_to_printable_generic(CHARSET_INFO *cs, my_wc_t wc,
   uchar *str0;
   uint i, length;
   uchar tmp[MY_CS_PRINTABLE_CHAR_LENGTH];
+  uint mbminlen;
 
   if (my_is_printable(wc))
   {
@@ -1058,8 +1059,9 @@ my_wc_to_printable_generic(CHARSET_INFO *cs, my_wc_t wc,
       return mblen;
   }
 
-  if (str + MY_CS_PRINTABLE_CHAR_LENGTH * cs->mbminlen > end)
-    return MY_CS_TOOSMALLN(MY_CS_PRINTABLE_CHAR_LENGTH * cs->mbminlen);
+  mbminlen= my_mbminlen(cs);
+  if (str + MY_CS_PRINTABLE_CHAR_LENGTH * my_mbminlen(cs) > end)
+    return MY_CS_TOOSMALLN(MY_CS_PRINTABLE_CHAR_LENGTH * mbminlen);
 
   if ((cs->state & MY_CS_NONASCII) == 0)
     return to_printable_8bit(str, wc);
@@ -1068,12 +1070,12 @@ my_wc_to_printable_generic(CHARSET_INFO *cs, my_wc_t wc,
   str0= str;
   for (i= 0; i < length; i++)
   {
-    if (cs->cset->wc_mb(cs, tmp[i], str, end) != (int) cs->mbminlen)
+    if (cs->cset->wc_mb(cs, tmp[i], str, end) != (int) mbminlen)
     {
       DBUG_ASSERT(0);
       return MY_CS_ILSEQ;
     }
-    str+= cs->mbminlen;
+    str+= mbminlen;
   }
   return (int) (str - str0);
 }

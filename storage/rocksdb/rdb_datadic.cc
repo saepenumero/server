@@ -2129,7 +2129,7 @@ int Rdb_key_def::unpack_utf8_str(
   }
 
   cset->cset->fill(cset, reinterpret_cast<char *>(dst), dst_end - dst,
-                   cset->pad_char);
+                   my_pad_char(cset));
   return UNPACK_SUCCESS;
 }
 
@@ -2307,7 +2307,7 @@ static const int RDB_TRIMMED_CHARS_OFFSET = 8;
   - Stores mem-comparable image of the column
   - It is stored in chunks of fpi->m_segment_size bytes (*)
     = If the remainder of the chunk is not occupied, it is padded with mem-
-      comparable image of the space character (cs->pad_char to be precise).
+      comparable image of the space character (my_pad_char(cs) to be precise).
   - The last byte of the chunk shows how the rest of column's mem-comparable
     image would compare to mem-comparable image of the column extended with
     spaces. There are three possible values.
@@ -2327,7 +2327,7 @@ static const int RDB_TRIMMED_CHARS_OFFSET = 8;
    'abcdZZZZ' => [ 'abcd' <VARCHAR_CMP_GREATER>][ 'ZZZZ' <VARCHAR_CMP_EQUAL>]
 
   As mentioned above, the last chunk is padded with mem-comparable images of
-  cs->pad_char. It can be 1-byte long (latin1), 2 (utf8_bin), 3 (utf8mb4), etc.
+  my_pad_char(cs). It can be 1-byte long (latin1), 2 (utf8_bin), 3 (utf8mb4), etc.
 
   fpi->m_segment_size depends on the used collation. It is chosen to be such
   that no mem-comparable image of space will ever stretch across the segments
@@ -2674,7 +2674,7 @@ int Rdb_key_def::unpack_binary_or_utf8_varchar_space_pad(
         // Both binary and UTF-8 charset store space as ' ',
         // so the following is ok:
         if (dst + extra_spaces > dst_end) return UNPACK_FAILURE;
-        memset(dst, fpi->m_varchar_charset->pad_char, extra_spaces);
+        memset(dst, my_pad_char(fpi->m_varchar_charset), extra_spaces);
         len += extra_spaces;
       }
       break;
@@ -2934,7 +2934,7 @@ int Rdb_key_def::unpack_simple_varchar_space_pad(
         if (dst + extra_spaces > dst_end) return UNPACK_FAILURE;
         // pad_char has a 1-byte form in all charsets that
         // are handled by rdb_init_collation_mapping.
-        memset(dst, field_var->charset()->pad_char, extra_spaces);
+        memset(dst, my_pad_char(field_var->charset()), extra_spaces);
         len += extra_spaces;
       }
       break;
@@ -3049,13 +3049,13 @@ static void rdb_get_mem_comparable_space(const CHARSET_INFO *const cs,
       // Upper bound of how many bytes can be occupied by multi-byte form of a
       // character in any charset.
       const int MAX_MULTI_BYTE_CHAR_SIZE = 4;
-      DBUG_ASSERT(cs->mbmaxlen <= MAX_MULTI_BYTE_CHAR_SIZE);
+      DBUG_ASSERT(my_mbmaxlen(cs) <= MAX_MULTI_BYTE_CHAR_SIZE);
 
       // multi-byte form of the ' ' (space) character
       uchar space_mb[MAX_MULTI_BYTE_CHAR_SIZE];
 
       const size_t space_mb_len = cs->cset->wc_mb(
-          cs, (my_wc_t)cs->pad_char, space_mb, space_mb + sizeof(space_mb));
+          cs, (my_wc_t) my_pad_char(cs), space_mb, space_mb + sizeof(space_mb));
 
       // mem-comparable image of the space character
       std::array<uchar, 20> space;
@@ -3086,7 +3086,7 @@ std::array<const Rdb_collation_codec *, MY_ALL_CHARSETS_SIZE>
 mysql_mutex_t rdb_collation_data_mutex;
 
 bool rdb_is_collation_supported(const my_core::CHARSET_INFO *const cs) {
-  return cs->strxfrm_multiply==1 && cs->mbmaxlen == 1 &&
+  return my_strnxfrm_multiply(cs) == 1 && my_mbmaxlen(cs) == 1 &&
          !(cs->state & (MY_CS_BINSORT | MY_CS_NOPAD));
 }
 
@@ -3310,7 +3310,7 @@ bool Rdb_field_packing::setup(const Rdb_key_def *const key_descr,
   if (type == MYSQL_TYPE_VARCHAR || type == MYSQL_TYPE_STRING) {
     /*
       For CHAR-based columns, check how strxfrm image will take.
-      field->field_length = field->char_length() * cs->mbmaxlen.
+      field->field_length = field->char_length() * my_mbmaxlen(cs).
     */
     const CHARSET_INFO *cs = field->charset();
     m_max_image_len = cs->coll->strnxfrmlen(cs, field->field_length);

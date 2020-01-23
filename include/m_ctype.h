@@ -91,11 +91,14 @@ struct unicase_info_st
 {
   my_wc_t maxchar;
   MY_UNICASE_CHARACTER **page;
+  uint caseup_multiply;
+  uint casedn_multiply;
 };
 
 
 extern MY_UNICASE_INFO my_unicase_default;
 extern MY_UNICASE_INFO my_unicase_turkish;
+extern MY_UNICASE_INFO my_unicase_turkish_utf8;
 extern MY_UNICASE_INFO my_unicase_mysql500;
 extern MY_UNICASE_INFO my_unicase_unicode520;
 
@@ -347,6 +350,7 @@ struct my_collation_handler_st
                          uchar *dst, size_t dstlen, uint nweights,
                          const uchar *src, size_t srclen, uint flags);
   size_t    (*strnxfrmlen)(CHARSET_INFO *, size_t); 
+  uint    (*strnxfrm_multiply)(CHARSET_INFO *);
   my_bool (*like_range)(CHARSET_INFO *,
 			const char *s, size_t s_length,
 			pchar w_prefix, pchar w_one, pchar w_many, 
@@ -540,6 +544,12 @@ struct my_charset_handler_st
     cs->cset->native_to_mb() rather than cs->cset->wc_mb().
   */
   my_charset_conv_wc_mb native_to_mb;
+  uint (*caseup_multiply)(CHARSET_INFO *cs);
+  uint (*casedn_multiply)(CHARSET_INFO *cs);
+  my_bool (*escape_with_backslash_is_dangerous)(CHARSET_INFO *cs);
+  uchar (*pad_char)(CHARSET_INFO *cs);
+  uint (*mbminlen)(CHARSET_INFO *cs);
+  uint (*mbmaxlen)(CHARSET_INFO *cs);
 };
 
 extern MY_CHARSET_HANDLER my_charset_8bit_handler;
@@ -574,15 +584,8 @@ struct charset_info_st
   MY_UNICASE_INFO *caseinfo;
   const uchar  *state_map;
   const uchar  *ident_map;
-  uint      strxfrm_multiply;
-  uchar     caseup_multiply;
-  uchar     casedn_multiply;
-  uint      mbminlen;
-  uint      mbmaxlen;
   my_wc_t   min_sort_char;
   my_wc_t   max_sort_char; /* For LIKE optimization */
-  uchar     pad_char;
-  my_bool   escape_with_backslash_is_dangerous;
   uchar     levels_for_order;
   
   MY_CHARSET_HANDLER *cset;
@@ -685,6 +688,8 @@ const uint16 *my_cs_contraction2_weight(CHARSET_INFO *cs, my_wc_t wc1,
                                          my_wc_t wc2);
 
 /* declarations for simple charsets */
+extern uint my_strnxfrm_multiply_simple(CHARSET_INFO *cs);
+
 extern size_t my_strnxfrm_simple(CHARSET_INFO *,
                                  uchar *dst, size_t dstlen, uint nweights,
                                  const uchar *src, size_t srclen, uint flags); 
@@ -735,6 +740,12 @@ size_t my_copy_fix_mb(CHARSET_INFO *cs,
                       size_t nchars, MY_STRCOPY_STATUS *);
 
 /* Functions for 8bit */
+extern uint my_mblen_mb1(CHARSET_INFO *cs);
+extern uchar my_pad_char_simple(CHARSET_INFO *cs);
+extern uchar my_pad_char_bin(CHARSET_INFO *cs);
+extern my_bool my_escape_with_backslash_is_dangerous_simple(CHARSET_INFO *cs);
+extern uint my_caseup_multiply_simple(CHARSET_INFO *cs);
+extern uint my_casedn_multiply_simple(CHARSET_INFO *cs);
 extern size_t my_caseup_str_8bit(CHARSET_INFO *, char *);
 extern size_t my_casedn_str_8bit(CHARSET_INFO *, char *);
 extern size_t my_caseup_8bit(CHARSET_INFO *,
@@ -836,6 +847,13 @@ int my_charlen_8bit(CHARSET_INFO *, const uchar *str, const uchar *end);
 
 
 /* Functions for multibyte charsets */
+extern uint my_mblen_mb2(CHARSET_INFO *cs);
+extern uint my_mblen_mb3(CHARSET_INFO *cs);
+extern uint my_mblen_mb4(CHARSET_INFO *cs);
+extern uint my_mblen_mb5(CHARSET_INFO *cs);
+extern uint my_caseup_multiply_mb(CHARSET_INFO *cs);
+extern uint my_casedn_multiply_mb(CHARSET_INFO *cs);
+
 extern size_t my_caseup_str_mb(CHARSET_INFO *, char *);
 extern size_t my_casedn_str_mb(CHARSET_INFO *, char *);
 extern size_t my_caseup_mb(CHARSET_INFO *,
@@ -1039,8 +1057,15 @@ size_t my_convert_fix(CHARSET_INFO *dstcs, char *dst, size_t dst_length,
 #define my_wildcmp(cs,s,se,w,we,e,o,m) ((cs)->coll->wildcmp((cs),(s),(se),(w),(we),(e),(o),(m)))
 #define my_strcasecmp(s, a, b)        ((s)->coll->strcasecmp((s), (a), (b)))
 #define my_charpos(cs, b, e, num)     (cs)->cset->charpos((cs), (const char*) (b), (const char *)(e), (num))
-
-#define use_mb(s)                     ((s)->mbmaxlen > 1)
+#define my_caseup_multiply(cs)        (cs)->cset->caseup_multiply(cs)
+#define my_casedn_multiply(cs)        (cs)->cset->casedn_multiply(cs)
+#define my_escape_with_backslash_is_dangerous(cs) \
+    (cs)->cset->escape_with_backslash_is_dangerous(cs)
+#define my_pad_char(cs)               (cs)->cset->pad_char(cs)
+#define my_strnxfrm_multiply(cs)      (cs)->coll->strnxfrm_multiply(cs)
+#define my_mbminlen(cs)               (cs)->cset->mbminlen(cs)
+#define my_mbmaxlen(cs)               (cs)->cset->mbmaxlen(cs)
+#define use_mb(cs)                    ((cs)->cset->mbmaxlen(cs) > 1)
 /**
   Detect if the leftmost character in a string is a valid multi-byte character
   and return its length, or return 0 otherwise.

@@ -321,7 +321,7 @@ public:
   { }
   size_t out_buffer_max_length(size_t from_length) const
   {
-    return from_length / m_fromcs->mbminlen * m_tocs->mbmaxlen;
+    return from_length / my_mbminlen(m_fromcs) * my_mbmaxlen(m_tocs);
   }
   bool convert_data(const char *from, size_t length);
   bool convert_binary_stream(FILE *file)
@@ -449,8 +449,8 @@ int main(int argc, char *argv[])
   Conv conv(charset_info_to, charset_info_from, opt.m_continue);
   if (opt.m_delimiter)
   {
-    if (charset_info_from->mbminlen > 1 ||
-        charset_info_to->mbminlen > 1)
+    if (my_mbminlen(charset_info_from) > 1 ||
+        my_mbminlen(charset_info_to) > 1)
     {
       fprintf(stderr, "--delimiter cannot be used with %s to %s conversion\n",
               charset_info_from->csname, charset_info_to->csname);

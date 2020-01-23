@@ -5650,7 +5650,7 @@ bool Item_func_get_system_var::fix_length_and_dec()
                                                         cptr + strlen(cptr));
       mysql_mutex_unlock(&LOCK_global_system_variables);
       collation.set(system_charset_info, DERIVATION_SYSCONST);
-      max_length*= system_charset_info->mbmaxlen;
+      max_length*= my_mbmaxlen(system_charset_info);
       decimals=NOT_FIXED_DEC;
       break;
     case SHOW_LEX_STRING:
@@ -5662,7 +5662,7 @@ bool Item_func_get_system_var::fix_length_and_dec()
                                                         ls->str + ls->length);
         mysql_mutex_unlock(&LOCK_global_system_variables);
         collation.set(system_charset_info, DERIVATION_SYSCONST);
-        max_length*= system_charset_info->mbmaxlen;
+        max_length*= my_mbmaxlen(system_charset_info);
         decimals=NOT_FIXED_DEC;
       }
       break;

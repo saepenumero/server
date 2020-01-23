@@ -505,8 +505,8 @@ static bool check_item1_shorter_item2(Item *item1, Item *item2)
   if (item1->cmp_type() == STRING_RESULT &&
       item2->cmp_type() == STRING_RESULT)
   {
-    int len1= item1->max_length / item1->collation.collation->mbmaxlen;
-    int len2= item2->max_length / item2->collation.collation->mbmaxlen;
+    int len1= item1->max_length / item1->collation.mbmaxlen();
+    int len2= item2->max_length / item2->collation.mbmaxlen();
     return len1 < len2;
   }
   return false;  /* When the check is not applicable, it means "not bigger" */

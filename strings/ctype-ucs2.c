@@ -108,11 +108,11 @@ typedef enum
                       - TRUE  - try to put '?' instead.
   
   @return  MY_CHAR_COPY_OK     if after zero-padding got a valid character.
-                               cs->mbmaxlen bytes were written to "dst".
+                               mbmaxlen bytes were written to "dst".
   @return  MY_CHAR_COPY_FIXED  if after zero-padding did not get a valid
                                character, but wrote '?' to the destination
                                string instead.
-                               cs->mbminlen bytes were written to "dst".
+                               mbminlen bytes were written to "dst".
   @return  MY_CHAR_COPY_ERROR  If failed and nothing was written to "dst".
                                Possible reasons:
                                - dst_length was too short
@@ -127,11 +127,11 @@ my_copy_incomplete_char(CHARSET_INFO *cs,
                         size_t nchars, my_bool fix)
 {
   size_t pad_length;
-  size_t src_offset= src_length % cs->mbminlen;
-  if (dst_length < cs->mbminlen || !nchars)
+  size_t src_offset= src_length % my_mbminlen(cs);
+  if (dst_length < my_mbminlen(cs) || !nchars)
     return MY_CHAR_COPY_ERROR;
 
-  pad_length= cs->mbminlen - src_offset;
+  pad_length= my_mbminlen(cs) - src_offset;
   bzero(dst, pad_length);
   memmove(dst + pad_length, src, src_offset);
   /*
@@ -143,13 +143,13 @@ my_copy_incomplete_char(CHARSET_INFO *cs,
     
     Make sure we didn't pad to an incorrect character.
   */
-  if (cs->cset->charlen(cs, (uchar *) dst, (uchar *) dst + cs->mbminlen) ==
-      (int) cs->mbminlen)
+  if (cs->cset->charlen(cs, (uchar *) dst, (uchar *) dst + my_mbminlen(cs)) ==
+      (int) my_mbminlen(cs))
     return MY_CHAR_COPY_OK;
 
   if (fix &&
-      cs->cset->wc_mb(cs, '?', (uchar *) dst, (uchar *) dst + cs->mbminlen) ==
-      (int) cs->mbminlen)
+      cs->cset->wc_mb(cs, '?', (uchar *) dst, (uchar *) dst + my_mbminlen(cs)) ==
+      (int) my_mbminlen(cs))
     return MY_CHAR_COPY_FIXED;
 
   return MY_CHAR_COPY_ERROR;
@@ -165,7 +165,7 @@ my_copy_fix_mb2_or_mb4(CHARSET_INFO *cs,
                        const char *src, size_t src_length,
                        size_t nchars, MY_STRCOPY_STATUS *status)
 {
-  size_t length2, src_offset= src_length % cs->mbminlen;
+  size_t length2, src_offset= src_length % my_mbminlen(cs);
   my_char_copy_status_t padstatus;
   
   if (!src_offset)
@@ -178,12 +178,12 @@ my_copy_fix_mb2_or_mb4(CHARSET_INFO *cs,
     status->m_source_end_pos= status->m_well_formed_error_pos= src;
     return 0;
   }
-  length2= my_copy_fix_mb(cs, dst + cs->mbminlen, dst_length - cs->mbminlen,
+  length2= my_copy_fix_mb(cs, dst + my_mbminlen(cs), dst_length - my_mbminlen(cs),
                           src + src_offset, src_length - src_offset,
                           nchars - 1, status);
   if (padstatus == MY_CHAR_COPY_FIXED)
     status->m_well_formed_error_pos= src;
-  return cs->mbminlen /* The left-padded character */ + length2;
+  return my_mbminlen(cs) /* The left-padded character */ + length2;
 }
 
 
@@ -651,7 +651,7 @@ my_strntod_mb2_or_mb4(CHARSET_INFO *cs,
 
   *endptr= b;
   res= my_strtod(buf, endptr, err);
-  *endptr= nptr + cs->mbminlen * (size_t) (*endptr - buf);
+  *endptr= nptr + my_mbminlen(cs) * (size_t) (*endptr - buf);
   return res;
 }
 
@@ -683,7 +683,7 @@ my_strntoull10rnd_mb2_or_mb4(CHARSET_INFO *cs,
   }
 
   res= my_strntoull10rnd_8bit(cs, buf, b - buf, unsign_fl, endptr, err);
-  *endptr= (char*) nptr + cs->mbminlen * (size_t) (*endptr - buf);
+  *endptr= (char*) nptr + my_mbminlen(cs) * (size_t) (*endptr - buf);
   return res;
 }
 
@@ -1504,6 +1504,7 @@ static MY_COLLATION_HANDLER my_collation_utf16_general_ci_handler =
   my_strnncollsp_utf16_general_ci,
   my_strnxfrm_utf16_general_ci,
   my_strnxfrmlen_unicode,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf16_ci,
   my_strcasecmp_mb2_or_mb4,
@@ -1520,6 +1521,7 @@ static MY_COLLATION_HANDLER my_collation_utf16_bin_handler =
   my_strnncollsp_utf16_bin,
   my_strnxfrm_unicode_full_bin,
   my_strnxfrmlen_unicode_full_bin,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf16_bin,
   my_strcasecmp_mb2_or_mb4,
@@ -1536,6 +1538,7 @@ static MY_COLLATION_HANDLER my_collation_utf16_general_nopad_ci_handler =
   my_strnncollsp_utf16_general_nopad_ci,
   my_strnxfrm_nopad_utf16_general_ci,
   my_strnxfrmlen_unicode,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf16_ci,
   my_strcasecmp_mb2_or_mb4,
@@ -1552,6 +1555,7 @@ static MY_COLLATION_HANDLER my_collation_utf16_nopad_bin_handler =
   my_strnncollsp_utf16_nopad_bin,
   my_strnxfrm_unicode_full_nopad_bin,
   my_strnxfrmlen_unicode_full_bin,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf16_bin,
   my_strcasecmp_mb2_or_mb4,
@@ -1591,6 +1595,12 @@ MY_CHARSET_HANDLER my_charset_utf16_handler=
   my_well_formed_char_length_utf16,
   my_copy_fix_mb2_or_mb4,
   my_uni_utf16,
+  my_caseup_multiply_mb,
+  my_casedn_multiply_mb,
+  my_escape_with_backslash_is_dangerous_simple,
+  my_pad_char_simple,
+  my_mblen_mb2,
+  my_mblen_mb4
 };
 
 
@@ -1612,15 +1622,8 @@ struct charset_info_st my_charset_utf16_general_ci=
   &my_unicase_default, /* caseinfo     */
   NULL,                /* state_map    */
   NULL,                /* ident_map    */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  2,                   /* mbminlen     */
-  4,                   /* mbmaxlen     */
   0,                   /* min_sort_char */
   0xFFFF,              /* max_sort_char */
-  ' ',                 /* pad char      */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order   */
   &my_charset_utf16_handler,
   &my_collation_utf16_general_ci_handler
@@ -1645,15 +1648,8 @@ struct charset_info_st my_charset_utf16_bin=
   &my_unicase_default, /* caseinfo     */
   NULL,                /* state_map    */
   NULL,                /* ident_map    */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  2,                   /* mbminlen     */
-  4,                   /* mbmaxlen     */
   0,                   /* min_sort_char */
   0xFFFF,              /* max_sort_char */
-  ' ',                 /* pad char      */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order   */
   &my_charset_utf16_handler,
   &my_collation_utf16_bin_handler
@@ -1678,15 +1674,8 @@ struct charset_info_st my_charset_utf16_general_nopad_ci=
   &my_unicase_default, /* caseinfo         */
   NULL,                /* state_map        */
   NULL,                /* ident_map        */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  2,                   /* mbminlen         */
-  4,                   /* mbmaxlen         */
   0,                   /* min_sort_char    */
   0xFFFF,              /* max_sort_char    */
-  ' ',                 /* pad char         */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order */
   &my_charset_utf16_handler,
   &my_collation_utf16_general_nopad_ci_handler
@@ -1712,15 +1701,8 @@ struct charset_info_st my_charset_utf16_nopad_bin=
   &my_unicase_default, /* caseinfo         */
   NULL,                /* state_map        */
   NULL,                /* ident_map        */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  2,                   /* mbminlen         */
-  4,                   /* mbmaxlen         */
   0,                   /* min_sort_char    */
   0xFFFF,              /* max_sort_char    */
-  ' ',                 /* pad char         */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order */
   &my_charset_utf16_handler,
   &my_collation_utf16_nopad_bin_handler
@@ -1844,6 +1826,7 @@ static MY_COLLATION_HANDLER my_collation_utf16le_general_ci_handler =
   my_strnncollsp_utf16le_general_ci,
   my_strnxfrm_utf16le_general_ci,
   my_strnxfrmlen_unicode,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf16_ci,
   my_strcasecmp_mb2_or_mb4,
@@ -1860,6 +1843,7 @@ static MY_COLLATION_HANDLER my_collation_utf16le_bin_handler =
   my_strnncollsp_utf16le_bin,
   my_strnxfrm_unicode_full_bin,
   my_strnxfrmlen_unicode_full_bin,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf16_bin,
   my_strcasecmp_mb2_or_mb4,
@@ -1876,6 +1860,7 @@ static MY_COLLATION_HANDLER my_collation_utf16le_general_nopad_ci_handler =
   my_strnncollsp_utf16le_general_nopad_ci,
   my_strnxfrm_nopad_utf16le_general_ci,
   my_strnxfrmlen_unicode,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf16_ci,
   my_strcasecmp_mb2_or_mb4,
@@ -1892,6 +1877,7 @@ static MY_COLLATION_HANDLER my_collation_utf16le_nopad_bin_handler =
   my_strnncollsp_utf16le_nopad_bin,
   my_strnxfrm_unicode_full_nopad_bin,
   my_strnxfrmlen_unicode_full_bin,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf16_bin,
   my_strcasecmp_mb2_or_mb4,
@@ -1931,6 +1917,12 @@ static MY_CHARSET_HANDLER my_charset_utf16le_handler=
   my_well_formed_char_length_utf16,
   my_copy_fix_mb2_or_mb4,
   my_uni_utf16le,
+  my_caseup_multiply_mb,
+  my_casedn_multiply_mb,
+  my_escape_with_backslash_is_dangerous_simple,
+  my_pad_char_simple,
+  my_mblen_mb2,
+  my_mblen_mb4
 };
 
 
@@ -1952,15 +1944,8 @@ struct charset_info_st my_charset_utf16le_general_ci=
   &my_unicase_default, /* caseinfo     */
   NULL,                /* state_map    */
   NULL,                /* ident_map    */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  2,                   /* mbminlen     */
-  4,                   /* mbmaxlen     */
   0,                   /* min_sort_char */
   0xFFFF,              /* max_sort_char */
-  ' ',                 /* pad char      */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order   */
   &my_charset_utf16le_handler,
   &my_collation_utf16le_general_ci_handler
@@ -1985,15 +1970,8 @@ struct charset_info_st my_charset_utf16le_bin=
   &my_unicase_default, /* caseinfo     */
   NULL,                /* state_map    */
   NULL,                /* ident_map    */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  2,                   /* mbminlen     */
-  4,                   /* mbmaxlen     */
   0,                   /* min_sort_char */
   0xFFFF,              /* max_sort_char */
-  ' ',                 /* pad char      */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order   */
   &my_charset_utf16le_handler,
   &my_collation_utf16le_bin_handler
@@ -2018,15 +1996,8 @@ struct charset_info_st my_charset_utf16le_general_nopad_ci=
   &my_unicase_default, /* caseinfo         */
   NULL,                /* state_map        */
   NULL,                /* ident_map        */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  2,                   /* mbminlen         */
-  4,                   /* mbmaxlen         */
   0,                   /* min_sort_char    */
   0xFFFF,              /* max_sort_char    */
-  ' ',                 /* pad char         */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order */
   &my_charset_utf16le_handler,
   &my_collation_utf16le_general_nopad_ci_handler
@@ -2052,15 +2023,8 @@ struct charset_info_st my_charset_utf16le_nopad_bin=
   &my_unicase_default, /* caseinfo         */
   NULL,                /* state_map        */
   NULL,                /* ident_map        */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  2,                   /* mbminlen         */
-  4,                   /* mbmaxlen         */
   0,                   /* min_sort_char    */
   0xFFFF,              /* max_sort_char    */
-  ' ',                 /* pad char         */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order */
   &my_charset_utf16le_handler,
   &my_collation_utf16le_nopad_bin_handler
@@ -2667,6 +2631,7 @@ static MY_COLLATION_HANDLER my_collation_utf32_general_ci_handler =
   my_strnncollsp_utf32_general_ci,
   my_strnxfrm_utf32_general_ci,
   my_strnxfrmlen_unicode,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf32_ci,
   my_strcasecmp_mb2_or_mb4,
@@ -2683,6 +2648,7 @@ static MY_COLLATION_HANDLER my_collation_utf32_bin_handler =
   my_strnncollsp_utf32_bin,
   my_strnxfrm_unicode_full_bin,
   my_strnxfrmlen_unicode_full_bin,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf32_bin,
   my_strcasecmp_mb2_or_mb4,
@@ -2699,6 +2665,7 @@ static MY_COLLATION_HANDLER my_collation_utf32_general_nopad_ci_handler =
   my_strnncollsp_utf32_general_nopad_ci,
   my_strnxfrm_nopad_utf32_general_ci,
   my_strnxfrmlen_unicode,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf32_ci,
   my_strcasecmp_mb2_or_mb4,
@@ -2715,6 +2682,7 @@ static MY_COLLATION_HANDLER my_collation_utf32_nopad_bin_handler =
   my_strnncollsp_utf32_nopad_bin,
   my_strnxfrm_unicode_full_nopad_bin,
   my_strnxfrmlen_unicode_full_bin,
+  my_strnxfrm_multiply_simple,
   my_like_range_generic,
   my_wildcmp_utf32_bin,
   my_strcasecmp_mb2_or_mb4,
@@ -2754,6 +2722,12 @@ MY_CHARSET_HANDLER my_charset_utf32_handler=
   my_well_formed_char_length_utf32,
   my_copy_fix_mb2_or_mb4,
   my_uni_utf32,
+  my_caseup_multiply_simple,
+  my_casedn_multiply_simple,
+  my_escape_with_backslash_is_dangerous_simple,
+  my_pad_char_simple,
+  my_mblen_mb4,
+  my_mblen_mb4
 };
 
 
@@ -2775,15 +2749,8 @@ struct charset_info_st my_charset_utf32_general_ci=
   &my_unicase_default, /* caseinfo     */
   NULL,                /* state_map    */
   NULL,                /* ident_map    */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  4,                   /* mbminlen     */
-  4,                   /* mbmaxlen     */
   0,                   /* min_sort_char */
   0xFFFF,              /* max_sort_char */
-  ' ',                 /* pad char      */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order   */
   &my_charset_utf32_handler,
   &my_collation_utf32_general_ci_handler
@@ -2808,15 +2775,8 @@ struct charset_info_st my_charset_utf32_bin=
   &my_unicase_default, /* caseinfo     */
   NULL,                /* state_map    */
   NULL,                /* ident_map    */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  4,                   /* mbminlen     */
-  4,                   /* mbmaxlen     */
   0,                   /* min_sort_char */
   0xFFFF,              /* max_sort_char */
-  ' ',                 /* pad char      */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order   */
   &my_charset_utf32_handler,
   &my_collation_utf32_bin_handler
@@ -2841,15 +2801,8 @@ struct charset_info_st my_charset_utf32_general_nopad_ci=
   &my_unicase_default, /* caseinfo         */
   NULL,                /* state_map        */
   NULL,                /* ident_map        */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  4,                   /* mbminlen         */
-  4,                   /* mbmaxlen         */
   0,                   /* min_sort_char    */
   0xFFFF,              /* max_sort_char    */
-  ' ',                 /* pad char         */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order */
   &my_charset_utf32_handler,
   &my_collation_utf32_general_nopad_ci_handler
@@ -2875,15 +2828,8 @@ struct charset_info_st my_charset_utf32_nopad_bin=
   &my_unicase_default, /* caseinfo         */
   NULL,                /* state_map        */
   NULL,                /* ident_map        */
-  1,                   /* strxfrm_multiply */
-  1,                   /* caseup_multiply  */
-  1,                   /* casedn_multiply  */
-  4,                   /* mbminlen         */
-  4,                   /* mbmaxlen         */
   0,                   /* min_sort_char    */
   0xFFFF,              /* max_sort_char    */
-  ' ',                 /* pad char         */
-  0,                   /* escape_with_backslash_is_dangerous */
   1,                   /* levels_for_order */
   &my_charset_utf32_handler,
   &my_collation_utf32_nopad_bin_handler
@@ -3257,6 +3203,7 @@ static MY_COLLATION_HANDLER my_collation_ucs2_general_ci_handler =
     my_strnncollsp_ucs2_general_ci,
     my_strnxfrm_ucs2_general_ci,
     my_strnxfrmlen_unicode,
+    my_strnxfrm_multiply_simple,
     my_like_range_generic,
     my_wildcmp_ucs2_ci,
     my_strcasecmp_mb2_or_mb4,
@@ -3273,6 +3220,7 @@ static MY_COLLATION_HANDLER my_collation_ucs2_bin_handler =
     my_strnncollsp_ucs2_bin,
     my_strnxfrm_ucs2_bin,
     my_strnxfrmlen_unicode,
+    my_strnxfrm_multiply_simple,
     my_like_range_generic,
     my_wildcmp_ucs2_bin,
     my_strcasecmp_mb2_or_mb4,
@@ -3289,6 +3237,7 @@ static MY_COLLATION_HANDLER my_collation_ucs2_general_nopad_ci_handler =
     my_strnncollsp_ucs2_general_nopad_ci,
     my_strnxfrm_nopad_ucs2_general_ci,
     my_strnxfrmlen_unicode,
+    my_strnxfrm_multiply_simple,
     my_like_range_generic,
     my_wildcmp_ucs2_ci,
     my_strcasecmp_mb2_or_mb4,
@@ -3305,6 +3254,7 @@ static MY_COLLATION_HANDLER my_collation_ucs2_nopad_bin_handler =
     my_strnncollsp_ucs2_nopad_bin,
     my_strnxfrm_nopad_ucs2_bin,
     my_strnxfrmlen_unicode,
+    my_strnxfrm_multiply_simple,
     my_like_range_generic,
     my_wildcmp_ucs2_bin,
     my_strcasecmp_mb2_or_mb4,
@@ -3344,6 +3294,12 @@ MY_CHARSET_HANDLER my_charset_ucs2_handler=
     my_well_formed_char_length_ucs2,
     my_copy_fix_mb2_or_mb4,
     my_uni_ucs2,
+    my_caseup_multiply_simple,
+    my_casedn_multiply_simple,
+    my_escape_with_backslash_is_dangerous_simple,
+    my_pad_char_simple,
+    my_mblen_mb2,
+    my_mblen_mb2
 };
 
 
@@ -3365,15 +3321,8 @@ struct charset_info_st my_charset_ucs2_general_ci=
     &my_unicase_default,/* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
-    1,			/* strxfrm_multiply */
-    1,                  /* caseup_multiply  */
-    1,                  /* casedn_multiply  */
-    2,			/* mbminlen     */
-    2,			/* mbmaxlen     */
     0,			/* min_sort_char */
     0xFFFF,		/* max_sort_char */
-    ' ',                /* pad char      */
-    0,                  /* escape_with_backslash_is_dangerous */
     1,                  /* levels_for_order   */
     &my_charset_ucs2_handler,
     &my_collation_ucs2_general_ci_handler
@@ -3398,15 +3347,8 @@ struct charset_info_st my_charset_ucs2_general_mysql500_ci=
   &my_unicase_mysql500,                            /* caseinfo         */
   NULL,                                            /* state_map        */
   NULL,                                            /* ident_map        */
-  1,                                               /* strxfrm_multiply */
-  1,                                               /* caseup_multiply  */
-  1,                                               /* casedn_multiply  */
-  2,                                               /* mbminlen         */
-  2,                                               /* mbmaxlen         */
   0,                                               /* min_sort_char    */
   0xFFFF,                                          /* max_sort_char    */
-  ' ',                                             /* pad char         */
-  0,                          /* escape_with_backslash_is_dangerous    */
   1,                                               /* levels_for_order   */
   &my_charset_ucs2_handler,
   &my_collation_ucs2_general_ci_handler
@@ -3431,15 +3373,8 @@ struct charset_info_st my_charset_ucs2_bin=
     &my_unicase_default,/* caseinfo     */
     NULL,		/* state_map    */
     NULL,		/* ident_map    */
-    1,			/* strxfrm_multiply */
-    1,                  /* caseup_multiply  */
-    1,                  /* casedn_multiply  */
-    2,			/* mbminlen     */
-    2,			/* mbmaxlen     */
     0,			/* min_sort_char */
     0xFFFF,		/* max_sort_char */
-    ' ',                /* pad char      */
-    0,                  /* escape_with_backslash_is_dangerous */
     1,                  /* levels_for_order   */
     &my_charset_ucs2_handler,
     &my_collation_ucs2_bin_handler
@@ -3464,15 +3399,8 @@ struct charset_info_st my_charset_ucs2_general_nopad_ci=
     &my_unicase_default,     /* caseinfo         */
     NULL,                    /* state_map        */
     NULL,                    /* ident_map        */
-    1,                       /* strxfrm_multiply */
-    1,                       /* caseup_multiply  */
-    1,                       /* casedn_multiply  */
-    2,                       /* mbminlen         */
-    2,                       /* mbmaxlen         */
     0,                       /* min_sort_char    */
     0xFFFF,                  /* max_sort_char    */
-    ' ',                     /* pad char         */
-    0,                       /* escape_with_backslash_is_dangerous */
     1,                       /* levels_for_order */
     &my_charset_ucs2_handler,
     &my_collation_ucs2_general_nopad_ci_handler
@@ -3497,15 +3425,8 @@ struct charset_info_st my_charset_ucs2_nopad_bin=
     &my_unicase_default,     /* caseinfo         */
     NULL,                    /* state_map        */
     NULL,                    /* ident_map        */
-    1,                       /* strxfrm_multiply */
-    1,                       /* caseup_multiply  */
-    1,                       /* casedn_multiply  */
-    2,                       /* mbminlen         */
-    2,                       /* mbmaxlen         */
     0,                       /* min_sort_char    */
     0xFFFF,                  /* max_sort_char    */
-    ' ',                     /* pad char         */
-    0,                       /* escape_with_backslash_is_dangerous */
     1,                       /* levels_for_order */
     &my_charset_ucs2_handler,
     &my_collation_ucs2_nopad_bin_handler

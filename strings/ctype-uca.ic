@@ -90,7 +90,7 @@ MY_FUNCTION_NAME(scanner_next)(my_uca_scanner *scanner)
         There are some more bytes left. Non-positive mb_len means that
         we got an incomplete or a bad byte sequence. Consume mbminlen bytes.
       */
-      if ((scanner->sbeg+= scanner->cs->mbminlen) > scanner->send)
+      if ((scanner->sbeg+= my_mbminlen(scanner->cs)) > scanner->send)
       {
         /* For safety purposes don't go beyond the string range. */
         scanner->sbeg= scanner->send;
@@ -754,6 +754,7 @@ MY_COLLATION_HANDLER MY_FUNCTION_NAME(collation_handler)=
   MY_FUNCTION_NAME(strnncollsp),
   MY_FUNCTION_NAME(strnxfrm),
   my_strnxfrmlen_any_uca,
+  my_strnxfrm_multiply_uca,
   MY_LIKE_RANGE,
   my_wildcmp_uca,
   NULL,                                /* strcasecmp() */
@@ -775,6 +776,7 @@ MY_COLLATION_HANDLER MY_FUNCTION_NAME(collation_handler_nopad)=
   MY_FUNCTION_NAME(strnncollsp_nopad),
   MY_FUNCTION_NAME(strnxfrm_nopad),
   my_strnxfrmlen_any_uca,
+  my_strnxfrm_multiply_uca,
   MY_LIKE_RANGE,    /* my_like_range_mb or my_like_range_generic */
   my_wildcmp_uca,
   NULL,                                /* strcasecmp() */
@@ -794,6 +796,7 @@ MY_COLLATION_HANDLER MY_FUNCTION_NAME(collation_handler_multilevel)=
   MY_FUNCTION_NAME(strnncollsp_multilevel),
   MY_FUNCTION_NAME(strnxfrm_multilevel),
   my_strnxfrmlen_any_uca_multilevel,
+  my_strnxfrm_multiply_uca,
   MY_LIKE_RANGE,
   my_wildcmp_uca,
   NULL,                                /* strcasecmp() */
@@ -813,6 +816,7 @@ MY_COLLATION_HANDLER MY_FUNCTION_NAME(collation_handler_nopad_multilevel)=
   MY_FUNCTION_NAME(strnncollsp_nopad_multilevel),
   MY_FUNCTION_NAME(strnxfrm_multilevel),
   my_strnxfrmlen_any_uca_multilevel,
+  my_strnxfrm_multiply_uca,
   MY_LIKE_RANGE,
   my_wildcmp_uca,
   NULL,                                /* strcasecmp() */

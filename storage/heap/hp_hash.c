@@ -239,10 +239,10 @@ static ulong hp_hashnr(HP_KEYDEF *keydef, const uchar *key)
     {
        CHARSET_INFO *cs= seg->charset;
        size_t length= seg->length;
-       if (cs->mbmaxlen > 1)
+       if (my_mbmaxlen(cs) > 1)
        {
          size_t char_length;
-         char_length= my_charpos(cs, pos, pos + length, length/cs->mbmaxlen);
+         char_length= my_charpos(cs, pos, pos + length, length/my_mbmaxlen(cs));
          set_if_smaller(length, char_length);
        }
        cs->coll->hash_sort(cs, pos, length, &nr, &nr2);
@@ -252,12 +252,12 @@ static ulong hp_hashnr(HP_KEYDEF *keydef, const uchar *key)
        CHARSET_INFO *cs= seg->charset;
        size_t pack_length= 2;                     /* Key packing is constant */
        size_t length= uint2korr(pos);
-       if (cs->mbmaxlen > 1)
+       if (my_mbmaxlen(cs) > 1)
        {
          size_t char_length;
          char_length= my_charpos(cs, pos +pack_length,
                                  pos +pack_length + length,
-                                 seg->length/cs->mbmaxlen);
+                                 seg->length/my_mbmaxlen(cs));
          set_if_smaller(length, char_length);
        }
        cs->coll->hash_sort(cs, pos+pack_length, length, &nr, &nr2);
@@ -300,10 +300,10 @@ ulong hp_rec_hashnr(register HP_KEYDEF *keydef, register const uchar *rec)
     {
       CHARSET_INFO *cs= seg->charset;
       size_t char_length= seg->length;
-      if (cs->mbmaxlen > 1)
+      if (my_mbmaxlen(cs) > 1)
       {
         char_length= my_charpos(cs, pos, pos + char_length,
-                                char_length / cs->mbmaxlen);
+                                char_length / my_mbmaxlen(cs));
         set_if_smaller(char_length, seg->length); /* QQ: ok to remove? */
       }
       cs->coll->hash_sort(cs, pos, char_length, &nr, &nr2);
@@ -313,12 +313,12 @@ ulong hp_rec_hashnr(register HP_KEYDEF *keydef, register const uchar *rec)
       CHARSET_INFO *cs= seg->charset;
       size_t pack_length= seg->bit_start;
       size_t length= (pack_length == 1 ? (size_t) *(uchar*) pos : uint2korr(pos));
-      if (cs->mbmaxlen > 1)
+      if (my_mbmaxlen(cs) > 1)
       {
         size_t char_length;
         char_length= my_charpos(cs, pos + pack_length,
                                 pos + pack_length + length,
-                                seg->length/cs->mbmaxlen);
+                                seg->length/my_mbmaxlen(cs));
         set_if_smaller(length, char_length);
       }
       else
@@ -389,9 +389,9 @@ int hp_rec_key_cmp(HP_KEYDEF *keydef, const uchar *rec1, const uchar *rec2)
       size_t char_length2;
       uchar *pos1= (uchar*)rec1 + seg->start;
       uchar *pos2= (uchar*)rec2 + seg->start;
-      if (cs->mbmaxlen > 1)
+      if (my_mbmaxlen(cs) > 1)
       {
-        size_t char_length= seg->length / cs->mbmaxlen;
+        size_t char_length= seg->length / my_mbmaxlen(cs);
         char_length1= my_charpos(cs, pos1, pos1 + seg->length, char_length);
         set_if_smaller(char_length1, seg->length);
         char_length2= my_charpos(cs, pos2, pos2 + seg->length, char_length);
@@ -425,11 +425,11 @@ int hp_rec_key_cmp(HP_KEYDEF *keydef, const uchar *rec1, const uchar *rec2)
         pos1+= 2;
         pos2+= 2;
       }
-      if (cs->mbmaxlen > 1)
+      if (my_mbmaxlen(cs) > 1)
       {
         size_t safe_length1= char_length1;
         size_t safe_length2= char_length2;
-        size_t char_length= seg->length / cs->mbmaxlen;
+        size_t char_length= seg->length / my_mbmaxlen(cs);
         char_length1= my_charpos(cs, pos1, pos1 + char_length1, char_length);
         set_if_smaller(char_length1, safe_length1);
         char_length2= my_charpos(cs, pos2, pos2 + char_length2, char_length);
@@ -495,9 +495,9 @@ int hp_key_cmp(HP_KEYDEF *keydef, const uchar *rec, const uchar *key)
       size_t char_length_key;
       size_t char_length_rec;
       uchar *pos= (uchar*) rec + seg->start;
-      if (cs->mbmaxlen > 1)
+      if (my_mbmaxlen(cs) > 1)
       {
-        size_t char_length= seg->length / cs->mbmaxlen;
+        size_t char_length= seg->length / my_mbmaxlen(cs);
         char_length_key= my_charpos(cs, key, key + seg->length, char_length);
         set_if_smaller(char_length_key, seg->length);
         char_length_rec= my_charpos(cs, pos, pos + seg->length, char_length);
@@ -525,10 +525,10 @@ int hp_key_cmp(HP_KEYDEF *keydef, const uchar *rec, const uchar *key)
       size_t char_length_key= uint2korr(key);
       pos+= pack_length;
       key+= 2;                                  /* skip key pack length */
-      if (cs->mbmaxlen > 1)
+      if (my_mbmaxlen(cs) > 1)
       {
         size_t char_length1, char_length2;
-        char_length1= char_length2= seg->length / cs->mbmaxlen; 
+        char_length1= char_length2= seg->length / my_mbmaxlen(cs); 
         char_length1= my_charpos(cs, key, key + char_length_key, char_length1);
         set_if_smaller(char_length_key, char_length1);
         char_length2= my_charpos(cs, pos, pos + char_length_rec, char_length2);
@@ -576,10 +576,10 @@ void hp_make_key(HP_KEYDEF *keydef, uchar *key, const uchar *rec)
     uchar *pos= (uchar*) rec + seg->start;
     if (seg->null_bit)
       *key++= MY_TEST(rec[seg->null_pos] & seg->null_bit);
-    if (cs->mbmaxlen > 1)
+    if (my_mbmaxlen(cs) > 1)
     {
       char_length= my_charpos(cs, pos, pos + seg->length,
-                              char_length / cs->mbmaxlen);
+                              char_length / my_mbmaxlen(cs));
       set_if_smaller(char_length, seg->length); /* QQ: ok to remove? */
     }
     if (seg->type == HA_KEYTYPE_VARTEXT1)
@@ -662,7 +662,7 @@ uint hp_rb_make_key(HP_KEYDEF *keydef, uchar *key,
       size_t tmp_length= (pack_length == 1 ? (uint) *(uchar*) pos :
                         uint2korr(pos));
       CHARSET_INFO *cs= seg->charset;
-      char_length= length/cs->mbmaxlen;
+      char_length= length/my_mbmaxlen(cs);
 
       pos+= pack_length;			/* Skip VARCHAR length */
       set_if_smaller(length,tmp_length);
@@ -674,11 +674,11 @@ uint hp_rb_make_key(HP_KEYDEF *keydef, uchar *key,
     }
 
     char_length= seg->length;
-    if (seg->charset->mbmaxlen > 1)
+    if (my_mbmaxlen(seg->charset) > 1)
     {
       char_length= my_charpos(seg->charset, 
                               rec + seg->start, rec + seg->start + char_length,
-                              char_length / seg->charset->mbmaxlen);
+                              char_length / my_mbmaxlen(seg->charset));
       set_if_smaller(char_length, seg->length); /* QQ: ok to remove? */
       if (char_length < seg->length)
         seg->charset->cset->fill(seg->charset, (char*) key + char_length,
@@ -737,7 +737,7 @@ uint hp_rb_pack_key(HP_KEYDEF *keydef, uchar *key, const uchar *old,
       size_t tmp_length=uint2korr(old);
       size_t length= seg->length;
       CHARSET_INFO *cs= seg->charset;
-      char_length= length/cs->mbmaxlen;
+      char_length= length/my_mbmaxlen(cs);
 
       old+= 2;
       set_if_smaller(length,tmp_length);	/* Safety */
@@ -748,10 +748,10 @@ uint hp_rb_pack_key(HP_KEYDEF *keydef, uchar *key, const uchar *old,
       continue;
     }
     char_length= seg->length;
-    if (seg->charset->mbmaxlen > 1)
+    if (my_mbmaxlen(seg->charset) > 1)
     {
       char_length= my_charpos(seg->charset, old, old+char_length,
-                              char_length / seg->charset->mbmaxlen);
+                              char_length / my_mbmaxlen(seg->charset));
       set_if_smaller(char_length, seg->length); /* QQ: ok to remove? */
       if (char_length < seg->length)
         seg->charset->cset->fill(seg->charset, (char*) key + char_length, 

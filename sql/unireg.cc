@@ -827,7 +827,7 @@ static bool pack_header(THD *thd, uchar *forminfo,
     {
       uint old_int_count=int_count;
 
-      if (field->charset->mbminlen > 1)
+      if (my_mbminlen(field->charset) > 1)
       {
         TYPELIB *tmpint;
         /* 

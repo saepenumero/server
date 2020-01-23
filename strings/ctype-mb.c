@@ -20,6 +20,47 @@
 #ifdef USE_MB
 
 
+uint my_mblen_mb2(CHARSET_INFO *cs)
+{
+  return 2;
+}
+
+
+uint my_mblen_mb3(CHARSET_INFO *cs)
+{
+  return 3;
+}
+
+
+uint my_mblen_mb4(CHARSET_INFO *cs)
+{
+  return 4;
+}
+
+
+uint my_mblen_mb5(CHARSET_INFO *cs)
+{
+  return 4;
+}
+
+
+uint my_mbmaxlen_caseup_multiply_mb(CHARSET_INFO *cs)
+{
+  return cs->caseinfo->caseup_multiply;
+}
+
+uint my_caseup_multiply_mb(CHARSET_INFO *cs)
+{
+  return cs->caseinfo->caseup_multiply;
+}
+
+
+uint my_casedn_multiply_mb(CHARSET_INFO *cs)
+{
+  return cs->caseinfo->casedn_multiply;
+}
+
+
 size_t my_caseup_str_mb(CHARSET_INFO * cs, char *str)
 {
   register uint32 l;
@@ -29,7 +70,7 @@ size_t my_caseup_str_mb(CHARSET_INFO * cs, char *str)
   while (*str)
   {
     /* Pointing after the '\0' is safe here. */
-    if ((l= my_ismbchar(cs, str, str + cs->mbmaxlen)))
+    if ((l= my_ismbchar(cs, str, str + my_mbmaxlen(cs))))
       str+= l;
     else
     { 
@@ -50,7 +91,7 @@ size_t my_casedn_str_mb(CHARSET_INFO * cs, char *str)
   while (*str)
   {
     /* Pointing after the '\0' is safe here. */
-    if ((l= my_ismbchar(cs, str, str + cs->mbmaxlen)))
+    if ((l= my_ismbchar(cs, str, str + my_mbmaxlen(cs))))
       str+= l;
     else
     {
@@ -89,7 +130,7 @@ my_casefold_mb(CHARSET_INFO *cs,
   const char *srcend= src + srclen;
   char *dst0= dst;
 
-  DBUG_ASSERT(cs->mbmaxlen == 2);
+  DBUG_ASSERT(my_mbmaxlen(cs) == 2);
 
   while (src < srcend)
   {
@@ -124,8 +165,8 @@ size_t
 my_casedn_mb(CHARSET_INFO * cs, const char *src, size_t srclen,
                     char *dst, size_t dstlen)
 {
-  DBUG_ASSERT(dstlen >= srclen * cs->casedn_multiply); 
-  DBUG_ASSERT(src != dst || cs->casedn_multiply == 1);
+  DBUG_ASSERT(dstlen >= srclen * my_casedn_multiply(cs)); 
+  DBUG_ASSERT(src != dst || my_casedn_multiply(cs) == 1);
   return my_casefold_mb(cs, src, srclen, dst, dstlen, cs->to_lower, 0);
 }
 
@@ -134,8 +175,8 @@ size_t
 my_caseup_mb(CHARSET_INFO * cs, const char *src, size_t srclen,
              char *dst, size_t dstlen)
 {
-  DBUG_ASSERT(dstlen >= srclen * cs->caseup_multiply);
-  DBUG_ASSERT(src != dst || cs->caseup_multiply == 1);
+  DBUG_ASSERT(dstlen >= srclen * my_caseup_multiply(cs));
+  DBUG_ASSERT(src != dst || my_caseup_multiply(cs) == 1);
   return my_casefold_mb(cs, src, srclen, dst, dstlen, cs->to_upper, 1);
 }
 
@@ -152,13 +193,13 @@ int my_strcasecmp_mb(CHARSET_INFO * cs,const char *s, const char *t)
   while (*s && *t)
   {
     /* Pointing after the '\0' is safe here. */
-    if ((l=my_ismbchar(cs, s, s + cs->mbmaxlen)))
+    if ((l=my_ismbchar(cs, s, s + my_mbmaxlen(cs))))
     {
       while (l--)
         if (*s++ != *t++) 
           return 1;
     }
-    else if (my_charlen(cs, t, t + cs->mbmaxlen) > 1)
+    else if (my_charlen(cs, t, t + my_mbmaxlen(cs)) > 1)
       return 1;
     else if (map[(uchar) *s++] != map[(uchar) *t++])
       return 1;
@@ -358,7 +399,7 @@ my_append_fix_badly_formed_tail(CHARSET_INFO *cs,
                                       (const uchar *) from_end)) > 0)
     {
       /* Found a valid character */         /* chlen == 1..MBMAXLEN  */
-      DBUG_ASSERT(chlen <= (int) cs->mbmaxlen);
+      DBUG_ASSERT(chlen <= (int) my_mbmaxlen(cs));
       if (to + chlen > to_end)
         goto end;                           /* Does not fit to "to" */
       memcpy(to, from, (size_t) chlen);
@@ -515,7 +556,7 @@ size_t my_strnxfrm_mb_internal(CHARSET_INFO *cs, uchar *dst, uchar *de,
   const uchar *se= src + srclen;
   const uchar *sort_order= cs->sort_order;
 
-  DBUG_ASSERT(cs->mbmaxlen <= 4);
+  DBUG_ASSERT(my_mbmaxlen(cs) <= 4);
 
   /*
     If "srclen" is smaller than both "dstlen" and "nweights"
@@ -711,7 +752,7 @@ my_bool my_like_range_mb(CHARSET_INFO *cs,
   char *min_org= min_str;
   char *min_end= min_str + res_length;
   char *max_end= max_str + res_length;
-  size_t maxcharlen= res_length / cs->mbmaxlen;
+  size_t maxcharlen= res_length / my_mbmaxlen(cs);
   const MY_CONTRACTIONS *contractions= my_charset_get_contractions(cs, 0);
 
   for (; ptr != end && min_str != min_end && maxcharlen ; maxcharlen--)
@@ -867,7 +908,7 @@ my_like_range_generic(CHARSET_INFO *cs,
   const char *max_org= max_str;
   char *min_end= min_str + res_length;
   char *max_end= max_str + res_length;
-  size_t charlen= res_length / cs->mbmaxlen;
+  size_t charlen= res_length / my_mbmaxlen(cs);
   size_t res_length_diff;
   const MY_CONTRACTIONS *contractions= my_charset_get_contractions(cs, 0);
 
@@ -999,7 +1040,7 @@ pad_min_max:
     requires that "length" argument is divisible to mbminlen.
     Make sure to call fill() with proper "length" argument.
   */
-  res_length_diff= res_length % cs->mbminlen;
+  res_length_diff= res_length % my_mbminlen(cs);
   cs->cset->fill(cs, min_str, min_end - min_str - res_length_diff,
                  cs->min_sort_char);
   cs->cset->fill(cs, max_str, max_end - max_str - res_length_diff,

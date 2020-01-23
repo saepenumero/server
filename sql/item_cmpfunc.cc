@@ -5648,7 +5648,7 @@ Sql_mode_dependency Item_func_like::value_depends_on_sql_mode() const
   String *pattern= args[1]->val_str_ascii(&patternbuf);
   if (!pattern || !pattern->length())
     return Sql_mode_dependency();                  // Will return NULL or 0
-  DBUG_ASSERT(pattern->charset()->mbminlen == 1);
+  DBUG_ASSERT(my_mbminlen(pattern->charset()) == 1);
   if (pattern->ptr()[pattern->length() - 1] != '%')
     return Item_func::value_depends_on_sql_mode();
   return ((args[0]->value_depends_on_sql_mode() |
@@ -7381,7 +7381,7 @@ longlong Item_func_dyncol_exists::val_int()
     }
     else
     {
-      uint strlen= nm->length() * DYNCOL_UTF->mbmaxlen + 1;
+      uint strlen= nm->length() * my_mbmaxlen(DYNCOL_UTF) + 1;
       uint dummy_errors;
       buf.str= (char *) current_thd->alloc(strlen);
       if (buf.str)

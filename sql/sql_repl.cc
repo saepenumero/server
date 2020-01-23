@@ -3507,10 +3507,10 @@ static bool get_string_parameter(char *to, const char *from, size_t length,
   {
     size_t from_length= strlen(from);
     size_t from_numchars= cs->cset->numchars(cs, from, from + from_length);
-    if (from_numchars > length / cs->mbmaxlen)
+    if (from_numchars > length / my_mbmaxlen(cs))
     {
       my_error(ER_WRONG_STRING_LENGTH, MYF(0), from, name,
-               (int) (length / cs->mbmaxlen));
+               (int) (length / my_mbmaxlen(cs)));
       return 1;
     }
     memcpy(to, from, from_length+1);

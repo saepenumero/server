@@ -1104,8 +1104,8 @@ void STDCALL mysql_get_character_set_info(MYSQL *mysql, MY_CHARSET_INFO *csinfo)
   csinfo->csname   = mysql->charset->csname;
   csinfo->name     = mysql->charset->name;
   csinfo->comment  = mysql->charset->comment;
-  csinfo->mbminlen = mysql->charset->mbminlen;
-  csinfo->mbmaxlen = mysql->charset->mbmaxlen;
+  csinfo->mbminlen = my_mbminlen(mysql->charset);
+  csinfo->mbmaxlen = my_mbmaxlen(mysql->charset);
 
   if (mysql->options.charset_dir)
     csinfo->dir = mysql->options.charset_dir;

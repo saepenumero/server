@@ -1544,7 +1544,7 @@ append_identifier(THD *thd, String *packet, const char *name, size_t length)
   */
   CHARSET_INFO *quote_charset= q == 0x60 &&
                                (packet->charset()->state & MY_CS_NONASCII) &&
-                               packet->charset()->mbmaxlen == 1 ?
+                               packet->mbmaxlen() == 1 ?
                                &my_charset_bin : system_charset_info;
 
   (void) packet->reserve(length*2 + 2);
@@ -1653,7 +1653,7 @@ static void append_directory(THD *thd, String *packet, const char *dir_type,
 */
 static bool print_on_update_clause(Field *field, String *val, bool lcase)
 {
-  DBUG_ASSERT(val->charset()->mbminlen == 1);
+  DBUG_ASSERT(val->mbminlen() == 1);
   val->length(0);
   if (field->has_update_default_function())
   {
@@ -2270,7 +2270,7 @@ int show_create_table(THD *thd, TABLE_LIST *table_list, String *packet,
            !(key_info->flags & (HA_FULLTEXT | HA_SPATIAL))))
       {
         packet->append_parenthesized((long) key_part->length /
-                                      key_part->field->charset()->mbmaxlen);
+                                     key_part->field->mbmaxlen());
       }
     }
     packet->append(')');
@@ -3097,8 +3097,8 @@ int fill_show_explain(THD *thd, TABLE_LIST *table, COND *cond)
       char *warning_text;
       if (!my_charset_same(fromcs, tocs))
       {
-        uint conv_length= 1 + tocs->mbmaxlen * explain_req.query_str.length() / 
-                              fromcs->mbminlen;
+        uint conv_length= 1 + my_mbmaxlen(tocs) * explain_req.query_str.length() /
+                              my_mbminlen(fromcs);
         uint dummy_errors;
         char *to, *p;
         if (!(to= (char*)thd->alloc(conv_length + 1)))
@@ -5986,7 +5986,7 @@ int fill_schema_charsets(THD *thd, TABLE_LIST *tables, COND *cond)
       table->field[1]->store(tmp_cs->name, strlen(tmp_cs->name), scs);
       comment= tmp_cs->comment ? tmp_cs->comment : "";
       table->field[2]->store(comment, strlen(comment), scs);
-      table->field[3]->store((longlong) tmp_cs->mbmaxlen, TRUE);
+      table->field[3]->store((longlong) my_mbmaxlen(tmp_cs), TRUE);
       if (schema_table_store_record(thd, table))
         return 1;
     }
@@ -6106,7 +6106,7 @@ int fill_schema_collation(THD *thd, TABLE_LIST *tables, COND *cond)
 	table->field[3]->store(tmp_buff, strlen(tmp_buff), scs);
         tmp_buff= (tmp_cl->state & MY_CS_COMPILED)? "Yes" : "";
 	table->field[4]->store(tmp_buff, strlen(tmp_buff), scs);
-        table->field[5]->store((longlong) tmp_cl->strxfrm_multiply, TRUE);
+        table->field[5]->store((longlong) tmp_cl->coll->strnxfrm_multiply(tmp_cl), TRUE);
         if (schema_table_store_record(thd, table))
           return 1;
       }
@@ -6587,7 +6587,7 @@ static int get_schema_stat_record(THD *thd, TABLE_LIST *tables,
              show_table->s->field[key_part->fieldnr-1]->key_length()))
         {
           table->field[10]->store((longlong) key_part->length /
-                                  key_part->field->charset()->mbmaxlen, TRUE);
+                                  key_part->field->mbmaxlen(), TRUE);
           table->field[10]->set_notnull();
         }
         uint flags= key_part->field ? key_part->field->flags : 0;

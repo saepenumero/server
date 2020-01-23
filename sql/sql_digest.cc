@@ -235,7 +235,7 @@ void compute_digest_text(const sql_digest_storage* digest_storage,
         if (convert_text)
         {
           /* Verify that the converted text will fit. */
-          if (to_cs->mbmaxlen*id_len > NAME_LEN)
+          if (my_mbmaxlen(to_cs) * id_len > NAME_LEN)
           {
             digest_output->append("...", 3);
             break;

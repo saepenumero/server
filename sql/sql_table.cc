@@ -4045,7 +4045,7 @@ mysql_prepare_create_table(THD *thd, HA_CREATE_INFO *create_info,
         {
           key_part_length= MY_MIN(column->length,
                                   blob_length_by_type(sql_field->real_field_type())
-                                  * sql_field->charset->mbmaxlen);
+                                  * sql_field->mbmaxlen());
           if (key_part_length > max_key_length ||
               key_part_length > file->max_key_part_length())
           {
@@ -4058,7 +4058,7 @@ mysql_prepare_create_table(THD *thd, HA_CREATE_INFO *create_info,
                                   ER_THD(thd, ER_TOO_LONG_KEY),
                                   key_part_length);
               /* Align key length to multibyte char boundary */
-              key_part_length-= key_part_length % sql_field->charset->mbmaxlen;
+              key_part_length-= key_part_length % sql_field->mbmaxlen();
             }
             else
               is_hash_field_needed= true;
@@ -4103,7 +4103,7 @@ mysql_prepare_create_table(THD *thd, HA_CREATE_INFO *create_info,
                               ER_TOO_LONG_KEY, ER_THD(thd, ER_TOO_LONG_KEY),
                               key_part_length);
           /* Align key length to multibyte char boundary */
-          key_part_length-= key_part_length % sql_field->charset->mbmaxlen;
+          key_part_length-= key_part_length % sql_field->mbmaxlen();
         }
         else
         {
@@ -4476,7 +4476,7 @@ bool Column_definition::prepare_blob_field(THD *thd)
     if (thd->is_strict_mode())
     {
       my_error(ER_TOO_BIG_FIELDLENGTH, MYF(0), field_name.str,
-               static_cast<ulong>(MAX_FIELD_VARCHARLENGTH / charset->mbmaxlen));
+               static_cast<ulong>(MAX_FIELD_VARCHARLENGTH / mbmaxlen()));
       DBUG_RETURN(1);
     }
     set_handler(&type_handler_blob);
@@ -8487,10 +8487,10 @@ mysql_prepare_alter_table(THD *thd, TABLE *table,
                 cfield->real_field_type() <= MYSQL_TYPE_BLOB) ?
                 blob_length_by_type(cfield->real_field_type()) :
                 cfield->length) <
-	     key_part_length / kfield->charset()->mbmaxlen)))
+	     key_part_length / kfield->mbmaxlen())))
 	  key_part_length= 0;			// Use whole field
       }
-      key_part_length /= kfield->charset()->mbmaxlen;
+      key_part_length /= kfield->mbmaxlen();
       key_parts.push_back(new Key_part_spec(&cfield->field_name,
 					    key_part_length),
                           thd->mem_root);

@@ -475,7 +475,7 @@ static void make_base_query(String *new_query,
   DBUG_ASSERT(query[query_length] == 0);
   DBUG_ASSERT(!is_white_space(query[0]));
   /* We do not support UCS2, UTF16, UTF32 as a client character set */
-  DBUG_ASSERT(current_thd->variables.character_set_client->mbminlen == 1);
+  DBUG_ASSERT(my_mbminlen(current_thd->variables.character_set_client) == 1);
 
   if (new_query->alloc(query_length + additional_length))
   {

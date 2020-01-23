@@ -51,8 +51,8 @@ static int
 MY_FUNCTION_NAME(charlen)(CHARSET_INFO *cs __attribute__((unused)),
                           const uchar *b, const uchar *e)
 {
-  DBUG_ASSERT(cs->mbminlen == 1);
-  DBUG_ASSERT(cs->mbmaxlen <= 4);
+  DBUG_ASSERT(my_mbminlen(cs) == 1);
+  DBUG_ASSERT(my_mbmaxlen(cs) <= 4);
 
   if (b >= e)
     return MY_CS_TOOSMALL;

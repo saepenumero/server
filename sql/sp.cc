@@ -1447,7 +1447,7 @@ log:
     thd->clear_error();
 
     StringBuffer<128> log_query(thd->variables.character_set_client);
-    DBUG_ASSERT(log_query.charset()->mbminlen == 1);
+    DBUG_ASSERT(log_query.mbminlen() == 1);
 
     if (show_create_sp(thd, &log_query,
                        sp->m_explicit_name ? sp->m_db : null_clex_str,

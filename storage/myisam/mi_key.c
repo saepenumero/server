@@ -88,7 +88,8 @@ uint _mi_make_key(register MI_INFO *info, uint keynr, uchar *key,
       *key++=1;					/* Not NULL */
     }
 
-    char_length= ((!is_ft && cs && cs->mbmaxlen > 1) ? length/cs->mbmaxlen :
+    char_length= ((!is_ft && cs && my_mbmaxlen(cs) > 1) ?
+                  length/my_mbmaxlen(cs) :
                   length);
 
     pos= (uchar*) record+keyseg->start;
@@ -248,7 +249,9 @@ uint _mi_pack_key(register MI_INFO *info, uint keynr, uchar *key, uchar *old,
 	continue;					/* Found NULL */
       }
     }
-    char_length= (!is_ft && cs && cs->mbmaxlen > 1) ? length/cs->mbmaxlen : length;
+    char_length= (!is_ft && cs && my_mbmaxlen(cs) > 1) ?
+                 length / my_mbmaxlen(cs) :
+                 length;
     pos=old;
     if (keyseg->flag & HA_SPACE_PACK)
     {

@@ -2598,7 +2598,7 @@ int Field_decimal::store(const char *from_arg, size_t len, CHARSET_INFO *cs)
   const uchar *from= (uchar*) from_arg;
 
   /* Convert character set if the old one is multi uchar */
-  if (cs->mbmaxlen > 1)
+  if (my_mbmaxlen(cs) > 1)
   { 
     uint dummy_errors;
     tmp.copy((char*) from, len, cs, &my_charset_bin, &dummy_errors);
@@ -4112,7 +4112,7 @@ String *Field_int::val_str_from_long(String *val_buffer,
 {
   CHARSET_INFO *cs= &my_charset_numeric;
   uint length;
-  uint mlength= MY_MAX(field_length + 1, max_char_length * cs->mbmaxlen);
+  uint mlength= MY_MAX(field_length + 1, max_char_length * my_mbmaxlen(cs));
   val_buffer->alloc(mlength);
   char *to=(char*) val_buffer->ptr();
   length= (uint) cs->cset->long10_to_str(cs, to, mlength, radix, nr);
@@ -4416,7 +4416,7 @@ String *Field_longlong::val_str(String *val_buffer,
 {
   CHARSET_INFO *cs= &my_charset_numeric;
   uint length;
-  uint mlength=MY_MAX(field_length+1,22*cs->mbmaxlen);
+  uint mlength=MY_MAX(field_length+1,22*my_mbmaxlen(cs));
   val_buffer->alloc(mlength);
   char *to=(char*) val_buffer->ptr();
   longlong j;
@@ -7055,7 +7055,7 @@ int Field_string::store(const char *from, size_t length,CHARSET_INFO *cs)
     field_charset()->cset->fill(field_charset(),
                                 (char*) ptr + copy_length,
                                 field_length - copy_length,
-                                field_charset()->pad_char);
+                                my_pad_char(field_charset()));
 
   return rc;
 }
@@ -7333,7 +7333,7 @@ void Field_string::sort_string(uchar *to,uint length)
     field_charset()->coll->strnxfrm(field_charset(),
                                     to, length,
                                     char_length() *
-                                    field_charset()->strxfrm_multiply,
+                                    field_charset()->coll->strnxfrm_multiply(field_charset()),
                                     ptr, field_length,
                                     MY_STRXFRM_PAD_WITH_SPACE |
                                     MY_STRXFRM_PAD_TO_MAXLEN);
@@ -7352,7 +7352,7 @@ void Field_string::sql_type(String &res) const
                              (type() == MYSQL_TYPE_VAR_STRING ?
                               (has_charset() ? "varchar" : "varbinary") :
 			      (has_charset() ? "char" : "binary")),
-                             (int) field_length / charset()->mbmaxlen,
+                             (int) field_length / mbmaxlen(),
                              type() == MYSQL_TYPE_VAR_STRING ? "/*old*/" : "");
   res.length(length);
   if ((thd->variables.sql_mode & (MODE_MYSQL323 | MODE_MYSQL40)) &&
@@ -7492,7 +7492,7 @@ uint Field_string::get_key_image(uchar *buff, uint length, imagetype type_arg)
     field_charset()->cset->fill(field_charset(),
                                 (char*) buff + bytes,
                                 length - bytes,
-                                field_charset()->pad_char);
+                                my_pad_char(field_charset()));
   return (uint)bytes;
 }
 
@@ -7718,7 +7718,7 @@ void Field_varstring::sort_string(uchar *to,uint length)
   field_charset()->coll->strnxfrm(field_charset(),
                                   to, length,
                                   char_length() *
-                                  field_charset()->strxfrm_multiply,
+                                  field_charset()->coll->strnxfrm_multiply(field_charset()),
                                   (const uchar*) buf.ptr(), buf.length(),
                                   MY_STRXFRM_PAD_WITH_SPACE |
                                   MY_STRXFRM_PAD_TO_MAXLEN);
@@ -8498,7 +8498,7 @@ int Field_blob::key_cmp(const uchar *key_ptr, uint max_key_length) const
   size_t blob_length=get_length(ptr);
   memcpy(&blob1, ptr+packlength, sizeof(char*));
   CHARSET_INFO *cs= charset();
-  size_t local_char_length= max_key_length / cs->mbmaxlen;
+  size_t local_char_length= max_key_length / my_mbmaxlen(cs);
   local_char_length= my_charpos(cs, blob1, blob1+blob_length,
                                 local_char_length);
   set_if_smaller(blob_length, local_char_length);
@@ -8558,7 +8558,7 @@ void Field_blob::sort_string(uchar *to,uint length)
   String buf;
 
   val_str(&buf, &buf);
-  if (!buf.length() && field_charset()->pad_char == 0)
+  if (!buf.length() && my_pad_char(field_charset()) == 0)
     bzero(to,length);
   else
   {
@@ -9939,7 +9939,7 @@ bool Column_definition::create_interval_from_interval_list(MEM_ROOT *mem_root,
   List_iterator<String> it(interval_list);
   StringBuffer<64> conv;
   char comma_buf[5]; /* 5 bytes for 'filename' charset */
-  DBUG_ASSERT(sizeof(comma_buf) >= charset->mbmaxlen);
+  DBUG_ASSERT(sizeof(comma_buf) >= mbmaxlen());
   int comma_length= charset->cset->wc_mb(charset, ',',
                                          (uchar*) comma_buf,
                                          (uchar*) comma_buf +
@@ -10447,7 +10447,7 @@ bool Field_vers_trx_id::test_if_equality_guarantees_uniqueness(const Item* item)
 
 
 Column_definition_attributes::Column_definition_attributes(const Field *field)
- :length(field->character_octet_length() / field->charset()->mbmaxlen),
+ :length(field->character_octet_length() / field->mbmaxlen()),
   decimals(field->decimals()),
   unireg_check(field->unireg_check),
   interval(NULL),

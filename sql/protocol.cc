@@ -86,7 +86,7 @@ bool Protocol_binary::net_store_data_cs(const uchar *from, size_t length,
 {
   uint dummy_errors;
   /* Calculate maxumum possible result length */
-  size_t conv_length= to_cs->mbmaxlen * length / from_cs->mbminlen;
+  size_t conv_length= my_mbmaxlen(to_cs) * length / my_mbminlen(from_cs);
 
   if (conv_length > 250)
   {

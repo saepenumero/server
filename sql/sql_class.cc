@@ -2355,7 +2355,7 @@ bool THD::convert_string(LEX_STRING *to, CHARSET_INFO *to_cs,
 			 CHARSET_INFO *from_cs)
 {
   DBUG_ENTER("THD::convert_string");
-  size_t new_length= to_cs->mbmaxlen * from_length;
+  size_t new_length= my_mbmaxlen(to_cs) * from_length;
   uint errors;
   if (unlikely(alloc_lex_string(to, new_length + 1)))
     DBUG_RETURN(true);                          // EOM
@@ -2382,7 +2382,7 @@ bool THD::convert_fix(CHARSET_INFO *dstcs, LEX_STRING *dst,
                       String_copier *status)
 {
   DBUG_ENTER("THD::convert_fix");
-  size_t dst_length= dstcs->mbmaxlen * src_length;
+  size_t dst_length= my_mbmaxlen(dstcs) * src_length;
   if (alloc_lex_string(dst, dst_length + 1))
     DBUG_RETURN(true);                           // EOM
   dst->length= status->convert_fix(dstcs, (char*) dst->str, dst_length,
@@ -2400,7 +2400,7 @@ bool THD::copy_fix(CHARSET_INFO *dstcs, LEX_STRING *dst,
                    String_copier *status)
 {
   DBUG_ENTER("THD::copy_fix");
-  size_t dst_length= dstcs->mbmaxlen * src_length;
+  size_t dst_length= my_mbmaxlen(dstcs) * src_length;
   if (alloc_lex_string(dst, dst_length + 1))
     DBUG_RETURN(true);                          // EOM
   dst->length= status->well_formed_copy(dstcs, dst->str, dst_length,
@@ -3299,8 +3299,8 @@ int select_export::send_data(List<Item> &items)
       const char *error_pos;
       uint32 bytes;
       uint64 estimated_bytes=
-        ((uint64) res->length() / res->charset()->mbminlen + 1) *
-        write_cs->mbmaxlen + 1;
+        ((uint64) res->length() / res->mbminlen() + 1) *
+        my_mbmaxlen(write_cs) + 1;
       set_if_smaller(estimated_bytes, UINT_MAX32);
       if (cvt_str.alloc((uint32) estimated_bytes))
       {
@@ -3386,10 +3386,11 @@ int select_export::send_data(List<Item> &items)
         CHARSET_INFO *character_set_client= thd->variables.
                                             character_set_client;
         bool check_second_byte= (res_charset == &my_charset_bin) &&
-                                 character_set_client->
-                                 escape_with_backslash_is_dangerous;
-        DBUG_ASSERT(character_set_client->mbmaxlen == 2 ||
-                    !character_set_client->escape_with_backslash_is_dangerous);
+                                 my_escape_with_backslash_is_dangerous(
+                                   character_set_client);
+        DBUG_ASSERT(my_mbmaxlen(character_set_client) == 2 ||
+                    !my_escape_with_backslash_is_dangerous(
+                      character_set_client));
 	for (start=pos=(char*) res->ptr(),end=pos+used_length ;
 	     pos != end ;
 	     pos++)
@@ -3434,7 +3435,7 @@ int select_export::send_data(List<Item> &items)
             Note, in the condition below we only check if
             mbcharlen is equal to 2, because there are no
             character sets with mbmaxlen longer than 2
-            and with escape_with_backslash_is_dangerous set.
+            and with my_escape_with_backslash_is_dangerous() returning TRUE.
             DBUG_ASSERT before the loop makes that sure.
           */
 

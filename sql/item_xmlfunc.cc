@@ -2724,7 +2724,7 @@ bool Item_xml_str_func::fix_fields(THD *thd, Item **ref)
   nodeset_func= 0;
 
 
-  if (collation.collation->mbminlen > 1)
+  if (collation.mbminlen() > 1)
   {
     /* UCS2 is not supported */
     my_printf_error(ER_UNKNOWN_ERROR,

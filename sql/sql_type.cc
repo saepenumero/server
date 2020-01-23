@@ -1351,7 +1351,7 @@ Type_handler_string_result::type_handler_adjusted_to_max_octet_length(
                                                         uint max_octet_length,
                                                         CHARSET_INFO *cs) const
 {
-  if (max_octet_length / cs->mbmaxlen <= CONVERT_IF_BIGGER_TO_BLOB)
+  if (max_octet_length / my_mbmaxlen(cs) <= CONVERT_IF_BIGGER_TO_BLOB)
     return &type_handler_varchar; // See also Item::too_big_for_varchar()
   if (max_octet_length >= 16777216)
     return &type_handler_long_blob;
@@ -3204,7 +3204,7 @@ bool Type_handler::Key_part_spec_init_primary(Key_part_spec *part,
                                               const Column_definition &def,
                                               const handler *file) const
 {
-  part->length*= def.charset->mbmaxlen;
+  part->length*= def.mbmaxlen();
   return false;
 }
 
@@ -3214,7 +3214,7 @@ bool Type_handler::Key_part_spec_init_unique(Key_part_spec *part,
                                              const handler *file,
                                              bool *has_field_needed) const
 {
-  part->length*= def.charset->mbmaxlen;
+  part->length*= def.mbmaxlen();
   return false;
 }
 
@@ -3223,7 +3223,7 @@ bool Type_handler::Key_part_spec_init_multiple(Key_part_spec *part,
                                                const Column_definition &def,
                                                const handler *file) const
 {
-  part->length*= def.charset->mbmaxlen;
+  part->length*= def.mbmaxlen();
   return false;
 }
 
@@ -3232,7 +3232,7 @@ bool Type_handler::Key_part_spec_init_foreign(Key_part_spec *part,
                                               const Column_definition &def,
                                               const handler *file) const
 {
-  part->length*= def.charset->mbmaxlen;
+  part->length*= def.mbmaxlen();
   return false;
 }
 
@@ -3250,7 +3250,7 @@ bool Type_handler_blob_common::Key_part_spec_init_primary(Key_part_spec *part,
                                               const Column_definition &def,
                                               const handler *file) const
 {
-  part->length*= def.charset->mbmaxlen;
+  part->length*= def.mbmaxlen();
   return part->check_primary_key_for_blob(file);
 }
 
@@ -3260,7 +3260,7 @@ bool Type_handler_blob_common::Key_part_spec_init_unique(Key_part_spec *part,
                                               const handler *file,
                                               bool *hash_field_needed) const
 {
-  if (!(part->length*= def.charset->mbmaxlen))
+  if (!(part->length*= def.mbmaxlen()))
     *hash_field_needed= true;
   return part->check_key_for_blob(file);
 }
@@ -3270,7 +3270,7 @@ bool Type_handler_blob_common::Key_part_spec_init_multiple(Key_part_spec *part,
                                                const Column_definition &def,
                                                const handler *file) const
 {
-  part->length*= def.charset->mbmaxlen;
+  part->length*= def.mbmaxlen();
   return part->init_multiple_key_for_blob(file);
 }
 
@@ -3279,7 +3279,7 @@ bool Type_handler_blob_common::Key_part_spec_init_foreign(Key_part_spec *part,
                                                const Column_definition &def,
                                                const handler *file) const
 {
-  part->length*= def.charset->mbmaxlen;
+  part->length*= def.mbmaxlen();
   return part->check_foreign_key_for_blob(file);
 }
 
@@ -4008,7 +4008,7 @@ bool Type_handler_varchar::adjust_spparam_type(Spvar_definition *def,
 {
   if (def->decimals)
   {
-    uint def_max_char_length= MAX_FIELD_VARCHARLENGTH / def->charset->mbmaxlen;
+    uint def_max_char_length= MAX_FIELD_VARCHARLENGTH / def->mbmaxlen();
     uint arg_max_length= from->max_char_length();
     set_if_smaller(arg_max_length, def_max_char_length);
     def->length= arg_max_length > 0 ? arg_max_length : def->decimals;
@@ -6059,7 +6059,7 @@ String *Type_handler::
 
   buf.append('_');
   buf.append(result->charset()->csname);
-  if (cs->escape_with_backslash_is_dangerous)
+  if (my_escape_with_backslash_is_dangerous(cs))
     buf.append(' ');
   append_query_string(cs, &buf, result->ptr(), result->length(),
                      thd->variables.sql_mode & MODE_NO_BACKSLASH_ESCAPES);

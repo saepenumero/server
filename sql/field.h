@@ -95,7 +95,7 @@ public:
     DBUG_ASSERT(cs);
   }
   uint16 metadata() const { return m_metadata; }
-  uint mbmaxlen() const { return m_cs->mbmaxlen; }
+  uint mbmaxlen() const { return my_mbmaxlen(m_cs); }
 };
 
 
@@ -1470,7 +1470,7 @@ public:
       parameter means a number of output buffer bytes as if all field
       characters have maximal possible size (mbmaxlen). In the other words,
       "length" parameter is a number of characters multiplied by
-      field_charset->mbmaxlen.
+      mbmaxlen.
 
     RETURN
       Number of copied bytes (excluding padded zero bytes -- see above).
@@ -1692,8 +1692,11 @@ public:
   /* The max. number of characters */
   virtual uint32 char_length() const
   {
-    return field_length / charset()->mbmaxlen;
+    return field_length / mbmaxlen();
   }
+
+  uint mbminlen() const { return my_mbminlen(charset()); }
+  uint mbmaxlen() const { return my_mbmaxlen(charset()); }
 
   ha_storage_media field_storage_type() const
   {
@@ -2003,7 +2006,7 @@ protected:
   DTCollation m_collation;
   // A short alias for m_collation.collation with non-virtual linkage
   const CHARSET_INFO *field_charset() const { return m_collation.collation; }
-  uint mbmaxlen() const { return m_collation.collation->mbmaxlen; }
+  uint mbmaxlen() const { return m_collation.mbmaxlen(); }
 public:
   bool can_be_substituted_to_equal_item(const Context &ctx,
                                         const Item_equal *item_equal) override;
@@ -4273,7 +4276,7 @@ public:
     information_schema_character_attributes() const override
   {
     uint32 octets= Field_blob::character_octet_length();
-    uint32 chars= octets / field_charset()->mbminlen;
+    uint32 chars= octets / my_mbminlen(field_charset());
     return Information_schema_character_attributes(octets, chars);
   }
   void update_data_type_statistics(Data_type_statistics *st) const override
@@ -4973,6 +4976,8 @@ public:
   bool frm_unpack_temporal_with_dec(TABLE_SHARE *share, uint intlen,
                                     const uchar *buff);
   void set_length_and_dec(const Lex_length_and_dec_st &attr);
+  uint mbminlen() const { return my_mbminlen(charset); }
+  uint mbmaxlen() const { return my_mbmaxlen(charset); }
 };
 
 
@@ -5090,7 +5095,7 @@ public:
   }
   void create_length_to_internal_length_string()
   {
-    length*= charset->mbmaxlen;
+    length*= mbmaxlen();
     if (real_field_type() == MYSQL_TYPE_VARCHAR && compression_method())
       length++;
     set_if_smaller(length, UINT_MAX32);
@@ -5099,7 +5104,7 @@ public:
   void create_length_to_internal_length_typelib()
   {
     /* Pack_length already calculated in sql_parse.cc */
-    length*= charset->mbmaxlen;
+    length*= mbmaxlen();
   }
   bool vers_sys_field() const
   {
@@ -5508,8 +5513,8 @@ public:
   {
     return type_handler()->field_type() >= MYSQL_TYPE_TINY_BLOB &&
            type_handler()->field_type() <= MYSQL_TYPE_BLOB ?
-                   length / cs->mbminlen :
-                   length / cs->mbmaxlen;
+                   length / my_mbminlen(cs) :
+                   length / my_mbmaxlen(cs);
   }
   uint32 max_octet_length(CHARSET_INFO *from, CHARSET_INFO *to) const
   {
@@ -5530,7 +5535,7 @@ public:
       In that case column max length would not fit into the 4 bytes
       reserved for it in the protocol. So we cut it here to UINT_MAX32.
     */
-    return char_to_byte_length_safe(max_char_length(from), to->mbmaxlen);
+    return char_to_byte_length_safe(max_char_length(from), my_mbmaxlen(to));
   }
 
   // This should move to Type_handler eventually

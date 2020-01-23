@@ -2022,8 +2022,8 @@ innobase_get_cset_width(
 
 	cs = all_charsets[cset];
 	if (cs) {
-		*mbminlen = cs->mbminlen;
-		*mbmaxlen = cs->mbmaxlen;
+		*mbminlen = my_mbminlen(cs);
+		*mbmaxlen = my_mbmaxlen(cs);
 		ut_ad(*mbminlen < DATA_MBMAX);
 		ut_ad(*mbmaxlen < DATA_MBMAX);
 	} else {
@@ -6479,7 +6479,7 @@ innobase_fts_casedn_str(
 	char*		dst,	/*!< in: buffer for result string */
 	size_t		dst_len)/*!< in: buffer size */
 {
-	if (cs->casedn_multiply == 1) {
+	if (my_casedn_multiply(cs) == 1) {
 		memcpy(dst, src, src_len);
 		dst[src_len] = 0;
 		my_casedn_str(cs, dst);
@@ -6781,12 +6781,12 @@ wsrep_store_key_val_for_row(
 			/* For multi byte character sets we need to calculate
 			the true length of the key */
 
-			if (len > 0 && cs->mbmaxlen > 1) {
+			if (len > 0 && my_mbmaxlen(cs) > 1) {
 				true_len = (ulint) my_well_formed_length(cs,
 						(const char *) data,
 						(const char *) data + len,
 						(uint) (key_len /
-						cs->mbmaxlen),
+						my_mbmaxlen(cs)),
 						&error);
 			}
 
@@ -6867,13 +6867,13 @@ wsrep_store_key_val_for_row(
 			/* For multi byte character sets we need to calculate
 			the true length of the key */
 
-			if (blob_len > 0 && cs->mbmaxlen > 1) {
+			if (blob_len > 0 && my_mbmaxlen(cs) > 1) {
 				true_len = (ulint) my_well_formed_length(cs,
 						(const char *) blob_data,
 						(const char *) blob_data
 							+ blob_len,
 						(uint) (key_len /
-							cs->mbmaxlen),
+							my_mbmaxlen(cs)),
 						&error);
 			}
 
@@ -6954,7 +6954,7 @@ wsrep_store_key_val_for_row(
 				/* For multi byte character sets we need to
 				calculate the true length of the key */
 
-				if (key_len > 0 && cs->mbmaxlen > 1) {
+				if (key_len > 0 && my_mbmaxlen(cs) > 1) {
 
 					true_len = (ulint)
 						my_well_formed_length(cs,
@@ -6962,7 +6962,7 @@ wsrep_store_key_val_for_row(
 							(const char *)src_start
 								+ key_len,
 							(uint) (key_len /
-								cs->mbmaxlen),
+								my_mbmaxlen(cs)),
 							&error);
 				}
 				memcpy(sorted, src_start, true_len);
@@ -17186,18 +17186,18 @@ innobase_get_at_most_n_mbchars(
 	charset = get_charset((uint) charset_id, MYF(MY_WME));
 
 	ut_ad(charset);
-	ut_ad(charset->mbmaxlen);
+	ut_ad(my_mbmaxlen(charset));
 
 	/* Calculate how many characters at most the prefix index contains */
 
-	n_chars = prefix_len / charset->mbmaxlen;
+	n_chars = prefix_len / my_mbmaxlen(charset);
 
 	/* If the charset is multi-byte, then we must find the length of the
 	first at most n chars in the string. If the string contains less
 	characters than n, then we return the length to the end of the last
 	character. */
 
-	if (charset->mbmaxlen > 1) {
+	if (my_mbmaxlen(charset) > 1) {
 		/* my_charpos() returns the byte length of the first n_chars
 		characters, or a value bigger than the length of str, if
 		there were not enough full characters in str.

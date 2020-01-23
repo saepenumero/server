@@ -73,7 +73,7 @@ static inline bool append_simple(String *s, const uchar *a, size_t a_len)
 static int st_append_json(String *s,
              CHARSET_INFO *json_cs, const uchar *js, uint js_len)
 {
-  int str_len= js_len * s->charset()->mbmaxlen;
+  int str_len= js_len * s->mbmaxlen();
 
   if (!s->reserve(str_len, 1024) &&
       (str_len= json_unescape(json_cs, js, js + js_len,
@@ -97,8 +97,7 @@ static int st_append_escaped(String *s, const String *a)
     In the worst case one character from the 'a' string
     turns into '\uXXXX\uXXXX' which is 12.
   */
-  int str_len= a->length() * 12 * s->charset()->mbmaxlen /
-               a->charset()->mbminlen;
+  int str_len= a->length() * 12 * s->mbmaxlen() / a->mbminlen();
   if (!s->reserve(str_len, 1024) &&
       (str_len=
          json_escape(a->charset(), (uchar *) a->ptr(), (uchar *)a->end(),
@@ -3686,8 +3685,8 @@ Item_func_json_objectagg::fix_fields(THD *thd, Item **ref)
   result_field= 0;
   null_value= 1;
   max_length= (uint32)(thd->variables.group_concat_max_len
-              / collation.collation->mbminlen
-              * collation.collation->mbmaxlen);
+              / collation.mbminlen()
+              * collation.mbmaxlen());
 
   if (check_sum_func(thd, ref))
     return TRUE;

@@ -4093,14 +4093,14 @@ Item_func_group_concat::fix_fields(THD *thd, Item **ref)
   result_field= 0;
   null_value= 1;
   max_length= (uint32)(thd->variables.group_concat_max_len
-              / collation.collation->mbminlen
-              * collation.collation->mbmaxlen);
+              / collation.mbminlen()
+              * collation.mbmaxlen());
 
   uint32 offset;
   if (separator->needs_conversion(separator->length(), separator->charset(),
                                   collation.collation, &offset))
   {
-    uint32 buflen= collation.collation->mbmaxlen * separator->length();
+    uint32 buflen= collation.mbmaxlen() * separator->length();
     uint errors, conv_length;
     char *buf;
     String *new_separator;

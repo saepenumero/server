@@ -1884,8 +1884,8 @@ bool check_part_func_fields(Field **ptr, bool ok_with_charsets)
     {
       CHARSET_INFO *cs= field->charset();
       if (!ok_with_charsets ||
-          cs->mbmaxlen > 1 ||
-          cs->strxfrm_multiply > 1)
+          my_mbmaxlen(cs) > 1 ||
+          my_strnxfrm_multiply(cs) > 1)
       {
         DBUG_RETURN(TRUE);
       }

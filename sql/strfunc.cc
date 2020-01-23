@@ -63,7 +63,7 @@ ulonglong find_set(const TYPELIB *lib,
       uint var_len;
       int mblen= 1;
 
-      if (cs && cs->mbminlen > 1)
+      if (cs && my_mbminlen(cs) > 1)
       {
         for ( ; pos < end; pos+= mblen)
         {

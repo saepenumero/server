@@ -1100,7 +1100,7 @@ void Item::set_name(THD *thd, const char *str, size_t length, CHARSET_INFO *cs)
   }
 
   const char *str_start= str;
-  if (!cs->ctype || cs->mbminlen > 1)
+  if (!cs->ctype || my_mbminlen(cs) > 1)
   {
     str+= cs->cset->scan(cs, str, str + length, MY_SEQ_SPACES);
     length-= (uint)(str - str_start);
@@ -2244,8 +2244,8 @@ left_is_superset(const DTCollation *left, const DTCollation *right)
          /* The code below makes 4-byte utf8 a superset over 3-byte utf8 */
          (left->collation->state & MY_CS_UNICODE_SUPPLEMENT &&
           !(right->collation->state & MY_CS_UNICODE_SUPPLEMENT) &&
-          left->collation->mbmaxlen > right->collation->mbmaxlen &&
-          left->collation->mbminlen == right->collation->mbminlen)))))
+          left->mbmaxlen() > right->mbmaxlen() &&
+          left->mbminlen() == right->mbminlen())))))
     return TRUE;
   /* Allow convert from ASCII */
   if (right->repertoire == MY_REPERTOIRE_ASCII &&

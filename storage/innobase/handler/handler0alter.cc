@@ -9048,7 +9048,7 @@ innobase_rename_or_enlarge_column_try(
 	ulint prtype, mtype, len;
 	get_type(f, prtype, mtype, len);
 	DBUG_ASSERT(!dtype_is_string_type(col->mtype)
-		    || col->mbminlen == f.charset()->mbminlen);
+		    || col->mbminlen == f.mbminlen());
 	DBUG_ASSERT(col->len <= len);
 
 #ifdef UNIV_DEBUG
@@ -9198,7 +9198,7 @@ innobase_rename_or_enlarge_columns_cache(
 			const bool is_string= dtype_is_string_type(col->mtype);
 			DBUG_ASSERT(col->mbminlen
 				    == (is_string
-					? (*af)->charset()->mbminlen : 0));
+					? (*af)->mbminlen() : 0));
 			ulint prtype, mtype, len;
 			get_type(**af, prtype, mtype, len);
 			DBUG_ASSERT(is_string == dtype_is_string_type(mtype));
@@ -9207,7 +9207,7 @@ innobase_rename_or_enlarge_columns_cache(
 			col->mtype = mtype;
 			col->len = len;
 			col->mbmaxlen = is_string
-				? (*af)->charset()->mbmaxlen : 0;
+				? (*af)->mbmaxlen() : 0;
 
 			if ((*fp)->flags & FIELD_IS_RENAMED) {
 				dict_mem_table_col_rename(

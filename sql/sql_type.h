@@ -2731,6 +2731,8 @@ public:
     derivation(derivation_arg),
     repertoire(repertoire_arg)
   { }
+  uint mbminlen() const { return my_mbminlen(collation); }
+  uint mbmaxlen() const { return my_mbmaxlen(collation); }
   void set(const DTCollation &dt)
   {
     *this= dt;
@@ -2811,7 +2813,7 @@ public:
   static uint find_max_decimals(Item **item, uint nitems);
 public:
   /*
-    The maximum value length in characters multiplied by collation->mbmaxlen.
+    The maximum value length in characters multiplied by mbmaxlen.
     Almost always it's the maximum value length in bytes.
   */
   uint32 max_length;
@@ -2895,16 +2897,16 @@ public:
     *this= Type_std_attributes(nattr, dtc);
   }
   uint32 max_char_length() const
-  { return max_length / collation.collation->mbmaxlen; }
+  { return max_length / collation.mbmaxlen(); }
   void fix_length_and_charset(uint32 max_char_length_arg, CHARSET_INFO *cs)
   {
-    max_length= char_to_byte_length_safe(max_char_length_arg, cs->mbmaxlen);
+    max_length= char_to_byte_length_safe(max_char_length_arg, my_mbmaxlen(cs));
     collation.collation= cs;
   }
   void fix_char_length(uint32 max_char_length_arg)
   {
     max_length= char_to_byte_length_safe(max_char_length_arg,
-                                         collation.collation->mbmaxlen);
+                                         collation.mbmaxlen());
   }
   void fix_attributes_temporal(uint32 int_part_length, uint dec)
   {

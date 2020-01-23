@@ -723,8 +723,8 @@ static inline uchar* pack_toku_blob(
 
     memcpy(&blob_buf,from_mysql+length_bytes_in_mysql,sizeof(uchar *));
 
-    local_char_length= ((charset->mbmaxlen > 1) ?
-                       max_num_bytes/charset->mbmaxlen : max_num_bytes);
+    local_char_length= ((my_mbmaxlen(charset) > 1) ?
+                       max_num_bytes/my_mbmaxlen(charset) : max_num_bytes);
     if (length > local_char_length)
     {
       local_char_length= my_charpos(
@@ -813,8 +813,8 @@ static uchar* pack_toku_varstring_from_desc(
     //
     // copy the string
     //
-    local_char_length= ((charset->mbmaxlen > 1) ?
-                       key_part_length/charset->mbmaxlen : key_part_length);
+    local_char_length= ((my_mbmaxlen(charset) > 1) ?
+                       key_part_length/my_mbmaxlen(charset) : key_part_length);
     if (length > local_char_length)
     {
       local_char_length= my_charpos(
@@ -876,8 +876,8 @@ static inline uchar* pack_toku_varstring(
     }
     set_if_smaller(length,max_num_bytes);
 
-    local_char_length= ((charset->mbmaxlen > 1) ?
-                       max_num_bytes/charset->mbmaxlen : max_num_bytes);
+    local_char_length= ((my_mbmaxlen(charset) > 1) ?
+                       max_num_bytes/my_mbmaxlen(charset) : max_num_bytes);
     if (length > local_char_length)
     {
       local_char_length= my_charpos(

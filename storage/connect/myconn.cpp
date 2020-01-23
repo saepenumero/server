@@ -935,7 +935,7 @@ PQRYRES MYSQLC::GetResult(PGLOBAL g, bool pdb)
               ? fld->decimals : 0;
     CHARSET_INFO *cs= get_charset(fld->charsetnr, MYF(0));
     crp->Clen = GetTypeSize(crp->Type, fld->length);
-    crp->Length = fld->length / (cs ? cs->mbmaxlen : 1);
+    crp->Length = fld->length / (cs ? my_mbmaxlen(cs) : 1);
     uns = (fld->flags & (UNSIGNED_FLAG | ZEROFILL_FLAG)) ? true : false;
 
     if (!(crp->Kdata = AllocValBlock(g, NULL, crp->Type, m_Rows,

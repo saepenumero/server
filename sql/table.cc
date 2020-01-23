@@ -1257,7 +1257,7 @@ bool parse_vcol_defs(THD *thd, MEM_ROOT *mem_root, TABLE *table,
         keypart= key->key_part + i;
         if (keypart->key_part_flag & HA_PART_KEY_SEG)
         {
-          int length= keypart->length/keypart->field->charset()->mbmaxlen;
+          int length= keypart->length / keypart->field->mbmaxlen();
           list_item= new (mem_root) Item_func_left(thd,
                        new (mem_root) Item_field(thd, keypart->field),
                        new (mem_root) Item_int(thd, length));
@@ -2446,7 +2446,7 @@ int TABLE_SHARE::init_from_binary_frm_image(THD *thd, bool write,
     if (share->mysql_version < 100200)
       attr.pack_flag&= ~FIELDFLAG_LONG_DECIMAL;
 
-    if (interval_nr && attr.charset->mbminlen > 1)
+    if (interval_nr && attr.mbminlen() > 1)
     {
       /* Unescape UCS2 intervals from HEX notation */
       TYPELIB *interval= share->intervals + interval_nr - 1;
@@ -4781,7 +4781,7 @@ bool check_column_name(const char *name)
     if (use_mb(system_charset_info))
     {
       int len=my_ismbchar(system_charset_info, name, 
-                          name+system_charset_info->mbmaxlen);
+                          name + my_mbmaxlen(system_charset_info));
       if (len)
       {
         name += len;

@@ -195,7 +195,7 @@ public:
   void fix_char_length_ulonglong(ulonglong max_char_length_arg)
   {
     ulonglong max_result_length= max_char_length_arg *
-                                 collation.collation->mbmaxlen;
+                                 collation.mbmaxlen();
     if (max_result_length >= MAX_BLOB_WIDTH)
     {
       max_length= MAX_BLOB_WIDTH;

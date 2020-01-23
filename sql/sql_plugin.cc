@@ -830,7 +830,7 @@ static st_plugin_dl *plugin_dl_add(const LEX_CSTRING *dl, myf MyFlags)
   }
 
   /* Duplicate and convert dll name */
-  plugin_dl.dl.length= dl->length * files_charset_info->mbmaxlen + 1;
+  plugin_dl.dl.length= dl->length * my_mbmaxlen(files_charset_info) + 1;
   if (! (plugin_dl.dl.str= (char*) my_malloc(plugin_dl.dl.length, MYF(0))))
   {
     my_error(ER_OUTOFMEMORY, MyFlags,

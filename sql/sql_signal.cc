@@ -120,7 +120,7 @@ static bool assign_fixed_string(MEM_ROOT *mem_root,
 
   if (String::needs_conversion(to_copy, src_cs, dst_cs, & dummy_offset))
   {
-    dst_len= numchars * dst_cs->mbmaxlen;
+    dst_len= numchars * my_mbmaxlen(dst_cs);
     dst_str= (char*) alloc_root(mem_root, dst_len + 1);
     if (dst_str)
     {

@@ -669,13 +669,26 @@ my_like_range_win1250ch(CHARSET_INFO *cs __attribute__((unused)),
 }
 
 
+static size_t my_strnxfrmlen_czech(CHARSET_INFO *cs, size_t len)
+{
+  return len * 2;
+}
+
+
+static uint my_strnxfrm_multiply_czech(CHARSET_INFO *cs)
+{
+  return 2;
+}
+
+
 static MY_COLLATION_HANDLER my_collation_czech_ci_handler =
 {
   NULL,				/* init */
   my_strnncoll_win1250ch,
   my_strnncollsp_win1250ch,
   my_strnxfrm_win1250ch,
-  my_strnxfrmlen_simple,
+  my_strnxfrmlen_czech,
+  my_strnxfrm_multiply_czech,
   my_like_range_win1250ch,
   my_wildcmp_8bit,
   my_strcasecmp_8bit,
@@ -704,15 +717,8 @@ struct charset_info_st my_charset_cp1250_czech_ci =
   &my_unicase_default,          /* caseinfo     */
   NULL,				/* state_map    */
   NULL,				/* ident_map    */
-  2,				/* strxfrm_multiply */
-  1,                            /* caseup_multiply  */
-  1,                            /* casedn_multiply  */
-  1,				/* mbminlen  */
-  1,				/* mbmaxlen  */
   0,				/* min_sort_char */
   0,				/* max_sort_char */
-  ' ',                          /* pad char      */
-  0,                            /* escape_with_backslash_is_dangerous */
   2,                            /* levels_for_order   */
   &my_charset_8bit_handler,
   &my_collation_czech_ci_handler

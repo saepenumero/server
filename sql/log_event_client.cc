@@ -3413,7 +3413,7 @@ static void get_type_name(uint type, unsigned char** meta_ptr,
   case MYSQL_TYPE_VAR_STRING:
     if (cs && cs->number != my_charset_bin.number)
       my_snprintf(typestr, typestr_length, "VARCHAR(%d)",
-                  uint2korr(*meta_ptr)/cs->mbmaxlen);
+                  uint2korr(*meta_ptr) / my_mbmaxlen(cs));
     else
       my_snprintf(typestr, typestr_length, "VARBINARY(%d)",
                   uint2korr(*meta_ptr));
@@ -3427,7 +3427,7 @@ static void get_type_name(uint type, unsigned char** meta_ptr,
       uint len= (((byte0 & 0x30) ^ 0x30) << 4) | byte1;
 
       if (cs && cs->number != my_charset_bin.number)
-        my_snprintf(typestr, typestr_length, "CHAR(%d)", len/cs->mbmaxlen);
+        my_snprintf(typestr, typestr_length, "CHAR(%d)", len / my_mbmaxlen(cs));
       else
         my_snprintf(typestr, typestr_length, "BINARY(%d)", len);
 

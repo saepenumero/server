@@ -867,8 +867,8 @@ size_t Lex_input_stream::get_body_utf8_maximum_length(THD *thd)
         less than 2 times growth.
     "2" should be a reasonable multiplier that safely covers escaping needs.
   */
-  return (m_buf_length / thd->variables.character_set_client->mbminlen) *
-          my_charset_utf8mb3_bin.mbmaxlen * 2/*for escaping*/;
+  return (m_buf_length / my_mbminlen(thd->variables.character_set_client)) *
+          my_mbmaxlen(&my_charset_utf8mb3_bin) * 2/*for escaping*/;
 }
 
 

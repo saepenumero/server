@@ -3268,7 +3268,7 @@ i_s_fts_index_table_fill(
 
 	int		ret = 0;
 	fts_string_t	conv_str;
-	conv_str.f_len = system_charset_info->mbmaxlen
+	conv_str.f_len = my_mbmaxlen(system_charset_info)
 		* FTS_MAX_WORD_LEN_IN_CHAR;
 	conv_str.f_str = static_cast<byte*>(ut_malloc_nokey(conv_str.f_len));
 

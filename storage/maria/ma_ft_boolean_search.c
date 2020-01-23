@@ -197,7 +197,7 @@ static int ftb_query_add_word(MYSQL_FTPARSER_PARAM *param,
       ftbw= (FTB_WORD *)alloc_root(&ftb_param->ftb->mem_root,
                                    sizeof(FTB_WORD) +
                                    (info->trunc ? MARIA_MAX_KEY_BUFF :
-                                    word_len * ftb_param->ftb->charset->mbmaxlen +
+                                    word_len * my_mbmaxlen(ftb_param->ftb->charset) +
                                     HA_FT_WLEN +
                                     ftb_param->ftb->info->s->rec_reflength));
       ftbw->len= word_len + 1;

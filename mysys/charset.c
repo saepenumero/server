@@ -276,31 +276,9 @@ copy_uca_collation(struct charset_info_st *to, CHARSET_INFO *from,
 {
   to->cset= from->cset;
   to->coll= from->coll;
-  /*
-    Single-level UCA collation have strnxfrm_multiple=8.
-    In case of a multi-level UCA collation we use strnxfrm_multiply=4.
-    That means MY_COLLATION_HANDLER::strnfrmlen() will request the caller
-    to allocate a buffer smaller size for each level, for performance purpose,
-    and to fit longer VARCHARs to @@max_sort_length.
-    This makes filesort produce non-precise order for some rare Unicode
-    characters that produce more than 4 weights (long expansions).
-    UCA requires 2 bytes per weight multiplied by the number of levels.
-    In case of a 2-level collation, each character requires 4*2=8 bytes.
-    Therefore, the longest VARCHAR that fits into the default @@max_sort_length
-    is 1024/8=VARCHAR(128). With strnxfrm_multiply==8, only VARCHAR(64)
-    would fit.
-    Note, the built-in collation utf8_thai_520_w2 also uses strnxfrm_multiply=4,
-    for the same purpose.
-    TODO: we could add a new LDML syntax to choose strxfrm_multiply value.
-  */
-  to->strxfrm_multiply= loaded->levels_for_order > 1 ?
-                        4 : from->strxfrm_multiply;
+  to->levels_for_order= loaded->levels_for_order ? loaded->levels_for_order : 1;
   to->min_sort_char= from->min_sort_char;
   to->max_sort_char= from->max_sort_char;
-  to->mbminlen= from->mbminlen;
-  to->mbmaxlen= from->mbmaxlen;
-  to->caseup_multiply= from->caseup_multiply;
-  to->casedn_multiply= from->casedn_multiply;
   to->state|= MY_CS_AVAILABLE | MY_CS_LOADED |
               MY_CS_STRNXFRM  | MY_CS_UNICODE;
 }
@@ -335,7 +313,6 @@ static int add_collation(struct charset_info_st *cs)
       if (cs_copy_data(newcs,cs))
         return MY_XML_ERROR;
 
-      newcs->caseup_multiply= newcs->casedn_multiply= 1;
       newcs->levels_for_order= 1;
       
       if (!strcmp(cs->csname,"ucs2") )
@@ -394,9 +371,6 @@ static int add_collation(struct charset_info_st *cs)
       else
       {
         simple_cs_init_functions(newcs);
-        newcs->mbminlen= 1;
-        newcs->mbmaxlen= 1;
-        newcs->strxfrm_multiply= 1;
         if (simple_cs_is_full(newcs))
         {
           newcs->state |= MY_CS_LOADED;
@@ -629,7 +603,7 @@ static void init_available_charsets(void)
   {
     if (*cs)
     {
-      DBUG_ASSERT(cs[0]->mbmaxlen <= MY_CS_MBMAXLEN);
+      DBUG_ASSERT(my_mbmaxlen(cs[0]) <= MY_CS_MBMAXLEN);
       if (cs[0]->ctype)
         if (init_state_maps(*cs))
           *cs= NULL;

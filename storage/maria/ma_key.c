@@ -216,7 +216,8 @@ MARIA_KEY *_ma_make_key(MARIA_HA *info, MARIA_KEY *int_key, uint keynr,
       *key++=1;					/* Not NULL */
     }
 
-    char_length= ((!is_ft && cs && cs->mbmaxlen > 1) ? length/cs->mbmaxlen :
+    char_length= ((!is_ft && cs && my_mbmaxlen(cs) > 1) ?
+                  length/my_mbmaxlen(cs) :
                   length);
 
     pos= record+keyseg->start;
@@ -392,7 +393,8 @@ MARIA_KEY *_ma_pack_key(register MARIA_HA *info, MARIA_KEY *int_key,
 	continue;					/* Found NULL */
       }
     }
-    char_length= ((!is_ft && cs && cs->mbmaxlen > 1) ? length/cs->mbmaxlen :
+    char_length= ((!is_ft && cs && my_mbmaxlen(cs) > 1) ?
+                  length / my_mbmaxlen(cs) :
                   length);
     pos= old;
     if (keyseg->flag & HA_SPACE_PACK)

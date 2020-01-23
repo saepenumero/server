@@ -780,7 +780,7 @@ xmlChar *LIBXMLDOC::Encode(PGLOBAL g, char *txt)
   const CHARSET_INFO *ics= &my_charset_utf8mb3_general_ci;
   const CHARSET_INFO *ocs= &my_charset_utf8mb3_general_ci;
   size_t      i = strlen(txt);
-  size_t      o = i * ocs->mbmaxlen / ics->mbmaxlen + 1;
+  size_t      o = i * my_mbmaxlen(ocs) / my_mbmaxlen(ics) + 1;
   char        *buf;
   if (g) {
     buf = (char*)PlugSubAlloc(g, NULL, o);

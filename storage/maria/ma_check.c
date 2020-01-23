@@ -3859,7 +3859,7 @@ int maria_repair_by_sort(HA_CHECK *param, register MARIA_HA *info,
     if (sort_param.keyinfo->flag & HA_FULLTEXT)
     {
       uint ft_max_word_len_for_sort=FT_MAX_WORD_LEN_FOR_SORT*
-                                    sort_param.keyinfo->seg->charset->mbmaxlen;
+                                    my_mbmaxlen(sort_param.keyinfo->seg->charset);
       sort_param.key_length+=ft_max_word_len_for_sort-HA_FT_MAXBYTELEN;
       /*
         fulltext indexes may have much more entries than the
@@ -4438,7 +4438,7 @@ int maria_repair_parallel(HA_CHECK *param, register MARIA_HA *info,
     {
       uint ft_max_word_len_for_sort=
         (FT_MAX_WORD_LEN_FOR_SORT *
-         sort_param[i].keyinfo->seg->charset->mbmaxlen);
+         my_mbmaxlen(sort_param[i].keyinfo->seg->charset));
       sort_param[i].key_length+=ft_max_word_len_for_sort-HA_FT_MAXBYTELEN;
       init_alloc_root(&sort_param[i].wordroot, "sort",
                       FTPARSER_MEMROOT_ALLOC_SIZE, 0,
@@ -6453,7 +6453,7 @@ static my_bool maria_too_big_key_for_sort(MARIA_KEYDEF *key, ha_rows rows)
   if (key->flag & HA_FULLTEXT)
   {
     uint ft_max_word_len_for_sort=FT_MAX_WORD_LEN_FOR_SORT*
-                                  key->seg->charset->mbmaxlen;
+                                  my_mbmaxlen(key->seg->charset);
     key_maxlength+=ft_max_word_len_for_sort-HA_FT_MAXBYTELEN;
   }
   return (key->flag & HA_SPATIAL) ||

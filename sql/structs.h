@@ -842,6 +842,7 @@ public:
   bool add_outvar_field(THD *thd, const Field *field);
   bool add_outvar_user_var(THD *thd);
   CHARSET_INFO *charset() const { return m_charset; }
+  uint mbmaxlen() const { return my_mbmaxlen(m_charset); }
   bool is_fixed_length() const { return m_is_fixed_length; }
   bool use_blobs() const { return m_use_blobs; }
 };

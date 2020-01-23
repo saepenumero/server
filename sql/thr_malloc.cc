@@ -73,7 +73,7 @@ char *sql_strmake_with_convert(THD *thd, const char *str, size_t arg_length,
 			       CHARSET_INFO *to_cs, size_t *result_length)
 {
   char *pos;
-  size_t new_length= to_cs->mbmaxlen*arg_length;
+  size_t new_length= my_mbmaxlen(to_cs) * arg_length;
   max_res_length--;				// Reserve place for end null
 
   set_if_smaller(new_length, max_res_length);
@@ -82,7 +82,7 @@ char *sql_strmake_with_convert(THD *thd, const char *str, size_t arg_length,
 
   if ((from_cs == &my_charset_bin) || (to_cs == &my_charset_bin))
   {
-    // Safety if to_cs->mbmaxlen > 0
+    // Safety if mbmaxlen > 0
     new_length= MY_MIN(arg_length, max_res_length);
     memcpy(pos, str, new_length);
   }

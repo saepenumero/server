@@ -21,7 +21,7 @@ class StringPack
   CHARSET_INFO *m_cs;
   uint32 m_octet_length;
   CHARSET_INFO *charset() const { return m_cs; }
-  uint mbmaxlen() const { return m_cs->mbmaxlen; };
+  uint mbmaxlen() const { return my_mbmaxlen(m_cs); };
   uint32 char_length() const { return m_octet_length / mbmaxlen(); }
 public:
   StringPack(CHARSET_INFO *cs, uint32 octet_length)

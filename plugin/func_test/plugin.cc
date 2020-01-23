@@ -31,7 +31,7 @@ public:
   }
   bool fix_length_and_dec()
   {
-    max_length= MAX_FIELD_NAME * system_charset_info->mbmaxlen;
+    max_length= MAX_FIELD_NAME * my_mbmaxlen(system_charset_info);
     maybe_null= true;
     return false;
   }

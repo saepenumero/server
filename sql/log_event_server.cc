@@ -523,7 +523,7 @@ int append_query_string(CHARSET_INFO *csinfo, String *to,
 
   beg= (char*) to->ptr() + to->length();
   ptr= beg;
-  if (csinfo->escape_with_backslash_is_dangerous)
+  if (my_escape_with_backslash_is_dangerous(csinfo))
     ptr= str_to_hex(ptr, str, len);
   else
   {
@@ -1420,7 +1420,7 @@ Query_log_event::Query_log_event(THD* thd_arg, const char* query_arg, size_t que
   DBUG_ASSERT(thd_arg->variables.character_set_client->number < 256*256);
   DBUG_ASSERT(thd_arg->variables.collation_connection->number < 256*256);
   DBUG_ASSERT(thd_arg->variables.collation_server->number < 256*256);
-  DBUG_ASSERT(thd_arg->variables.character_set_client->mbminlen == 1);
+  DBUG_ASSERT(my_mbminlen(thd_arg->variables.character_set_client) == 1);
   int2store(charset, thd_arg->variables.character_set_client->number);
   int2store(charset+2, thd_arg->variables.collation_connection->number);
   int2store(charset+4, thd_arg->variables.collation_server->number);
@@ -6712,7 +6712,7 @@ bool Table_map_log_event::init_primary_key_field()
 
       // Store character length but not octet length
       if (key_part->length != m_table->field[key_part->fieldnr-1]->key_length())
-        prefix= key_part->length / key_part->field->charset()->mbmaxlen;
+        prefix= key_part->length / key_part->field->mbmaxlen();
       store_compressed_length(buf, prefix);
     }
     return write_tlv_field(m_metadata_buf, PRIMARY_KEY_WITH_PREFIX, buf);

@@ -137,12 +137,12 @@ public:
   Charset(CHARSET_INFO *cs) :m_charset(cs) { }
 
   CHARSET_INFO *charset() const { return m_charset; }
-  uint mbminlen() const { return m_charset->mbminlen; }
-  uint mbmaxlen() const { return m_charset->mbmaxlen; }
+  uint mbminlen() const { return my_mbminlen(m_charset); }
+  uint mbmaxlen() const { return my_mbmaxlen(m_charset); }
   bool is_good_for_ft() const
   {
     // Binary and UCS2/UTF16/UTF32 are not supported
-    return m_charset != &my_charset_bin && m_charset->mbminlen == 1;
+    return m_charset != &my_charset_bin && my_mbminlen(m_charset) == 1;
   }
 
   size_t numchars(const char *str, const char *end) const
@@ -872,7 +872,7 @@ public:
             CHARSET_INFO *fromcs, const char *src, size_t src_length,
             size_t nchars, String_copier *copier)
   {
-    if (unlikely(alloc(tocs->mbmaxlen * src_length)))
+    if (unlikely(alloc(my_mbmaxlen(tocs) * src_length)))
       return true;
     str_length= copier->well_formed_copy(tocs, Ptr, alloced_length(),
                                          fromcs, src, (uint)src_length, (uint)nchars);
@@ -1004,7 +1004,7 @@ public:
   {
     if (length() == 0)
       return TRUE;
-    if (charset()->mbminlen > 1)
+    if (mbminlen() > 1)
       return FALSE;
     return !has_8bit_bytes();
   }

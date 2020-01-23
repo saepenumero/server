@@ -876,7 +876,7 @@ static char *dup_str_aux(MEM_ROOT *root, const char *from, uint length,
   /* 'tocs' is set 0 when client issues SET character_set_results=NULL */
   if (tocs && String::needs_conversion(0, fromcs, tocs, &dummy32))
   {
-    uint new_len= (tocs->mbmaxlen * length) / fromcs->mbminlen + 1;
+    uint new_len= (my_mbmaxlen(tocs) * length) / my_mbminlen(fromcs) + 1;
     result= (char *)alloc_root(root, new_len);
     length= copy_and_convert(result, new_len,
                              tocs, from, length, fromcs, &dummy_err);
@@ -1354,7 +1354,7 @@ bool Protocol::net_store_data(const uchar *from, size_t length)
 bool Protocol::net_store_data_cs(const uchar *from, size_t length,
                               CHARSET_INFO *from_cs, CHARSET_INFO *to_cs)
 {
-  uint conv_length= to_cs->mbmaxlen * length / from_cs->mbminlen;
+  uint conv_length= my_mbmaxlen(to_cs) * length / my_mbminlen(from_cs);
   uint dummy_error;
   char *field_buf;
   if (!thd->mysql)            // bootstrap file handling

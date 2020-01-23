@@ -770,7 +770,7 @@ static void do_verify_prepare_field(MYSQL_RES *result,
   }
   cs= get_charset(field->charsetnr, 0);
   DIE_UNLESS(cs);
-  if ((expected_field_length*= cs->mbmaxlen) > UINT_MAX32)
+  if ((expected_field_length*= my_mbmaxlen(cs)) > UINT_MAX32)
     expected_field_length= UINT_MAX32;
   if (!opt_silent)
   {
@@ -803,7 +803,7 @@ static void do_verify_prepare_field(MYSQL_RES *result,
     VARCHAR -> CHAR downgrade won't work for VARCHAR(3) as one would
     expect.
   */
-  if (cs->mbmaxlen == 1)
+  if (my_mbmaxlen(cs) == 1)
   {
     if (field->type != type)
     {
