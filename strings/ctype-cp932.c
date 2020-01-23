@@ -34514,7 +34514,7 @@ static const uint16 unicode_to_cp932[65536]=
 */
 
 static int
-my_mb_wc_cp932(CHARSET_INFO *cs  __attribute__((unused)),
+my_mb_wc_cp932(const my_charset_t *cs  __attribute__((unused)),
 	       my_wc_t *pwc, const uchar *s, const uchar *e){
   int hi;
 
@@ -34558,7 +34558,7 @@ my_mb_wc_cp932(CHARSET_INFO *cs  __attribute__((unused)),
   @retval   MY_CS_ILUNI    If the Unicode character does not exist in CP932
 */
 static int
-my_wc_mb_cp932(CHARSET_INFO *cs __attribute__((unused)),
+my_wc_mb_cp932(const my_charset_t *cs __attribute__((unused)),
 	       my_wc_t wc, uchar *s, uchar *e)
 {
   int code;
@@ -34598,7 +34598,7 @@ my_wc_mb_cp932(CHARSET_INFO *cs __attribute__((unused)),
 
 
 static
-size_t my_numcells_cp932(CHARSET_INFO *cs __attribute__((unused)),
+size_t my_numcells_cp932(const my_charset_t *cs __attribute__((unused)),
                       const char *str, const char *str_end)
 {
   size_t clen= 0;
@@ -34627,7 +34627,8 @@ size_t my_numcells_cp932(CHARSET_INFO *cs __attribute__((unused)),
 }
 
 
-static my_bool my_escape_with_backslash_is_dangerous_cp932(CHARSET_INFO *cs)
+static my_bool
+my_escape_with_backslash_is_dangerous_cp932(const my_charset_t *cs)
 {
   return TRUE;
 }

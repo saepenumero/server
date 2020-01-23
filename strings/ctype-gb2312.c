@@ -6279,7 +6279,7 @@ static int func_uni_gb2312_onechar(int code){
 
 
 static int
-my_wc_mb_gb2312(CHARSET_INFO *cs  __attribute__((unused)),
+my_wc_mb_gb2312(const my_charset_t *cs  __attribute__((unused)),
 		my_wc_t wc, uchar *s, uchar *e)
 {
   int code;
@@ -6307,7 +6307,7 @@ my_wc_mb_gb2312(CHARSET_INFO *cs  __attribute__((unused)),
 
 
 static int 
-my_mb_wc_gb2312(CHARSET_INFO *cs  __attribute__((unused)),
+my_mb_wc_gb2312(const my_charset_t *cs  __attribute__((unused)),
 		my_wc_t *pwc, const uchar *s, const uchar *e){
   int hi;
   

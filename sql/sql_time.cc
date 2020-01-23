@@ -338,7 +338,7 @@ to_ascii(CHARSET_INFO *cs,
   const char *srcend= src + src_length;
   char *dst0= dst, *dstend= dst + dst_length - 1;
   while (dst < dstend &&
-         (cnvres= (cs->cs.ha->mb_wc)(cs, &wc,
+         (cnvres= (cs->cs.ha->mb_wc)(&cs->cs, &wc,
                                     (const uchar*) src,
                                     (const uchar*) srcend)) > 0 &&
          wc < 128)

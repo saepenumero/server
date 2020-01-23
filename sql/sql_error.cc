@@ -846,7 +846,7 @@ bool mysqld_show_warnings(THD *thd, ulong levels_to_show)
   Notice, the 0x00 byte is replaced to a 5-byte long string '\0000',
   while 'a' and 'b' are printed as is.
 */
-extern "C" int my_wc_mb_utf8_null_terminated(CHARSET_INFO *cs,
+extern "C" int my_wc_mb_utf8_null_terminated(const my_charset_t *cs,
                                              my_wc_t wc, uchar *r, uchar *e)
 {
   return wc == '\0' ?

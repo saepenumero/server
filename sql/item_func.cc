@@ -3171,7 +3171,7 @@ longlong Item_func_find_in_set::val_int()
     while (1)
     {
       int symbol_len;
-      if ((symbol_len= cs->cs.ha->mb_wc(cs, &wc, (uchar*) str_end, 
+      if ((symbol_len= cs->cs.ha->mb_wc(&cs->cs, &wc, (uchar*) str_end, 
                                        (uchar*) real_end)) > 0)
       {
         const char *substr_end= str_end + symbol_len;
@@ -5645,7 +5645,7 @@ bool Item_func_get_system_var::fix_length_and_dec()
         (char*) var->value_ptr(current_thd, var_type, &component) :
         *(char**) var->value_ptr(current_thd, var_type, &component);
       if (cptr)
-        max_length= (uint32)system_charset_info->cs.ha->numchars(system_charset_info,
+        max_length= (uint32)system_charset_info->cs.ha->numchars(&system_charset_info->cs,
                                                         cptr,
                                                         cptr + strlen(cptr));
       mysql_mutex_unlock(&LOCK_global_system_variables);
@@ -5657,7 +5657,7 @@ bool Item_func_get_system_var::fix_length_and_dec()
       {
         mysql_mutex_lock(&LOCK_global_system_variables);
         LEX_STRING *ls= ((LEX_STRING*)var->value_ptr(current_thd, var_type, &component));
-        max_length= (uint32)system_charset_info->cs.ha->numchars(system_charset_info,
+        max_length= (uint32)system_charset_info->cs.ha->numchars(&system_charset_info->cs,
                                                         ls->str,
                                                         ls->str + ls->length);
         mysql_mutex_unlock(&LOCK_global_system_variables);

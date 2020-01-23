@@ -1100,7 +1100,7 @@ Type_handler_string_result::make_sort_key(uchar *to, Item *item,
     /* apply cs->sort_order for case-insensitive comparison if needed */
     my_strnxfrm(cs,(uchar*)to,length,(const uchar*)res->ptr(),length);
     char fill_char= ((cs->state & MY_CS_BINSORT) ? (char) 0 : ' ');
-    cs->cs.ha->fill(cs, (char *)to+length,diff,fill_char);
+    cs->cs.ha->fill(&cs->cs, (char *)to+length,diff,fill_char);
   }
 }
 

@@ -31507,7 +31507,7 @@ my_uca_scanner_contraction_find(my_uca_scanner *scanner, my_wc_t *wc)
        flag<<= 1)
   {
     int mblen;
-    if ((mblen= scanner->cs->cs.ha->mb_wc(scanner->cs, &wc[clen],
+    if ((mblen= scanner->cs->cs.ha->mb_wc(&scanner->cs->cs, &wc[clen],
                                           s, scanner->send)) <= 0)
       break;
     beg[clen]= s= s + mblen;
@@ -31885,7 +31885,7 @@ int my_wildcmp_uca_impl(CHARSET_INFO *cs,
     while (1)
     {
       my_bool escaped= 0;
-      if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+      if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                        (const uchar*)wildend)) <= 0)
         return 1;
 
@@ -31898,14 +31898,14 @@ int my_wildcmp_uca_impl(CHARSET_INFO *cs,
       wildstr+= scan;
       if (w_wc ==  (my_wc_t) escape && wildstr < wildend)
       {
-        if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+        if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                          (const uchar*)wildend)) <= 0)
           return 1;
         wildstr+= scan;
         escaped= 1;
       }
 
-      if ((scan= mb_wc(cs, &s_wc, (const uchar*)str,
+      if ((scan= mb_wc(&cs->cs, &s_wc, (const uchar*)str,
                        (const uchar*)str_end)) <= 0)
         return 1;
       str+= scan;
@@ -31928,7 +31928,7 @@ int my_wildcmp_uca_impl(CHARSET_INFO *cs,
       /* Remove any '%' and '_' from the wild search string */
       for ( ; wildstr != wildend ; )
       {
-        if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+        if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                          (const uchar*)wildend)) <= 0)
           return 1;
 
@@ -31941,7 +31941,7 @@ int my_wildcmp_uca_impl(CHARSET_INFO *cs,
         if (w_wc == (my_wc_t) w_one)
         {
           wildstr+= scan;
-          if ((scan= mb_wc(cs, &s_wc, (const uchar*)str,
+          if ((scan= mb_wc(&cs->cs, &s_wc, (const uchar*)str,
                            (const uchar*)str_end)) <= 0)
             return 1;
           str+= scan;
@@ -31956,7 +31956,7 @@ int my_wildcmp_uca_impl(CHARSET_INFO *cs,
       if (str == str_end)
         return -1;
 
-      if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+      if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                        (const uchar*)wildend)) <= 0)
         return 1;
       wildstr+= scan;
@@ -31965,7 +31965,7 @@ int my_wildcmp_uca_impl(CHARSET_INFO *cs,
       {
         if (wildstr < wildend)
         {
-          if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+          if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                            (const uchar*)wildend)) <= 0)
             return 1;
           wildstr+= scan;
@@ -31977,7 +31977,7 @@ int my_wildcmp_uca_impl(CHARSET_INFO *cs,
         /* Skip until the first character from wildstr is found */
         while (str != str_end)
         {
-          if ((scan= mb_wc(cs, &s_wc, (const uchar*)str,
+          if ((scan= mb_wc(&cs->cs, &s_wc, (const uchar*)str,
                            (const uchar*)str_end)) <= 0)
             return 1;
 
@@ -32341,10 +32341,10 @@ static my_coll_lexem_num my_coll_lexem_next(MY_COLL_LEXEM *lexem)
 
     if (((uchar) *beg) > 0x7F) /* Unescaped multibyte character */
     {
-      CHARSET_INFO *cs= &my_charset_utf8mb3_general_ci;
+      const my_charset_t *cs= &my_charset_utf8mb3_general_ci.cs;
       my_wc_t wc;
-      int nbytes= cs->cs.ha->mb_wc(cs, &wc,
-                                   (uchar *) beg, (uchar *) lexem->end);
+      int nbytes= cs->ha->mb_wc(cs, &wc,
+                                (uchar *) beg, (uchar *) lexem->end);
       if (nbytes > 0)
       {
         rc= MY_COLL_LEXEM_CHAR;
@@ -33805,7 +33805,7 @@ static void my_uca_handler_map(struct charset_info_st *cs,
   instead of generic.
 */
 #define MY_FUNCTION_NAME(x)   my_uca_ ## x ## _generic
-#define MY_MB_WC(scanner, wc, beg, end) (scanner->cs->cs.ha->mb_wc(scanner->cs, wc, beg, end))
+#define MY_MB_WC(scanner, wc, beg, end) (scanner->cs->cs.ha->mb_wc(&scanner->cs->cs, wc, beg, end))
 #define MY_LIKE_RANGE my_like_range_generic
 #define MY_UCA_ASCII_OPTIMIZE 0
 #define MY_UCA_COMPILE_CONTRACTIONS 1

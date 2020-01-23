@@ -6621,7 +6621,7 @@ static int func_uni_big5_onechar(int code){
 
 
 static int
-my_wc_mb_big5(CHARSET_INFO *cs __attribute__((unused)),
+my_wc_mb_big5(const my_charset_t *cs __attribute__((unused)),
 	      my_wc_t wc, uchar *s, uchar *e)
 {
 
@@ -6650,7 +6650,7 @@ my_wc_mb_big5(CHARSET_INFO *cs __attribute__((unused)),
 
 
 static int 
-my_mb_wc_big5(CHARSET_INFO *cs __attribute__((unused)),
+my_mb_wc_big5(const my_charset_t *cs __attribute__((unused)),
 	      my_wc_t *pwc,const uchar *s,const uchar *e)
 {
 
@@ -6678,7 +6678,8 @@ my_mb_wc_big5(CHARSET_INFO *cs __attribute__((unused)),
 }
 
 
-static my_bool my_escape_with_backslash_is_dangerous_big5(CHARSET_INFO *cs)
+static my_bool
+my_escape_with_backslash_is_dangerous_big5(const my_charset_t *cs)
 {
   return TRUE;
 }

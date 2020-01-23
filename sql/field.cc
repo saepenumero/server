@@ -984,7 +984,7 @@ static bool
 test_if_important_data(CHARSET_INFO *cs, const char *str, const char *strend)
 {
   if (cs != &my_charset_bin)
-    str+= cs->cs.ha->scan(cs, str, strend, MY_SEQ_SPACES);
+    str+= cs->cs.ha->scan(&cs->cs, str, strend, MY_SEQ_SPACES);
   return (str < strend);
 }
 
@@ -1662,7 +1662,7 @@ bool Field_num::get_int(CHARSET_INFO *cs, const char *from, size_t len,
   char *end;
   int error;
   
-  *rnd= (longlong) cs->cs.ha->strntoull10rnd(cs, from, len,
+  *rnd= (longlong) cs->cs.ha->strntoull10rnd(&cs->cs, from, len,
                                              unsigned_flag, &end,
                                              &error);
   if (unsigned_flag)
@@ -1760,7 +1760,7 @@ String *Field::val_int_as_str(String *val_buffer, bool unsigned_val)
 
   if (val_buffer->alloc(MY_INT64_NUM_DECIMAL_DIGITS))
     return 0;
-  length= (uint) (*cs->cs.ha->longlong10_to_str)(cs, (char*) val_buffer->ptr(),
+  length= (uint) (*cs->cs.ha->longlong10_to_str)(&cs->cs, (char*) val_buffer->ptr(),
                                                  MY_INT64_NUM_DECIMAL_DIGITS,
                                                  unsigned_val ? 10 : -10,
                                                  value);
@@ -3140,7 +3140,7 @@ void Field_decimal::sql_type(String &res) const
     tmp--;
   if (dec)
     tmp--;
-  res.length(cs->cs.ha->snprintf(cs,(char*) res.ptr(),res.alloced_length(),
+  res.length(cs->cs.ha->snprintf(&cs->cs,(char*) res.ptr(),res.alloced_length(),
 			  "decimal(%d,%d)/*old*/",tmp,dec));
   add_zerofill_and_unsigned(res);
 }
@@ -3468,7 +3468,7 @@ void Field_new_decimal::sort_string(uchar *buff,
 void Field_new_decimal::sql_type(String &str) const
 {
   CHARSET_INFO *cs= str.charset();
-  str.length(cs->cs.ha->snprintf(cs, (char*) str.ptr(), str.alloced_length(),
+  str.length(cs->cs.ha->snprintf(&cs->cs, (char*) str.ptr(), str.alloced_length(),
                                  "decimal(%d,%d)", precision, (int)dec));
   add_zerofill_and_unsigned(str);
 }
@@ -3644,7 +3644,7 @@ void Field_int::sql_type(String &res) const
 {
   CHARSET_INFO *cs=res.charset();
   Name name= type_handler()->type_handler_signed()->name();
-  res.length(cs->cs.ha->snprintf(cs,(char*) res.ptr(),res.alloced_length(),
+  res.length(cs->cs.ha->snprintf(&cs->cs,(char*) res.ptr(),res.alloced_length(),
 			  "%.*s(%d)", (int) name.length(), name.ptr(),
 			  (int) field_length));
   add_zerofill_and_unsigned(res);
@@ -4115,7 +4115,7 @@ String *Field_int::val_str_from_long(String *val_buffer,
   uint mlength= MY_MAX(field_length + 1, max_char_length * my_mbmaxlen(cs));
   val_buffer->alloc(mlength);
   char *to=(char*) val_buffer->ptr();
-  length= (uint) cs->cs.ha->long10_to_str(cs, to, mlength, radix, nr);
+  length= (uint) cs->cs.ha->long10_to_str(&cs->cs, to, mlength, radix, nr);
   val_buffer->length(length);
   if (zerofill)
     prepend_zeros(val_buffer); /* purecov: inspected */
@@ -4334,7 +4334,7 @@ int Field_longlong::store(const char *from,size_t len,CHARSET_INFO *cs)
   char *end;
   ulonglong tmp;
 
-  tmp= cs->cs.ha->strntoull10rnd(cs,from,len,unsigned_flag,&end,&error);
+  tmp= cs->cs.ha->strntoull10rnd(&cs->cs,from,len,unsigned_flag,&end,&error);
   if (unlikely(error == MY_ERRNO_ERANGE))
   {
     set_warning(ER_WARN_DATA_OUT_OF_RANGE, 1);
@@ -4422,7 +4422,7 @@ String *Field_longlong::val_str(String *val_buffer,
   longlong j;
   j=sint8korr(ptr);
 
-  length=(uint) (cs->cs.ha->longlong10_to_str)(cs,to,mlength,
+  length=(uint) (cs->cs.ha->longlong10_to_str)(&cs->cs,to,mlength,
 					unsigned_flag ? 10 : -10, j);
   val_buffer->length(length);
   if (zerofill)
@@ -4867,7 +4867,7 @@ void Field_real::sql_type(String &res) const
   else
   {
     CHARSET_INFO *cs= res.charset();
-    res.length(cs->cs.ha->snprintf(cs,(char*) res.ptr(),res.alloced_length(),
+    res.length(cs->cs.ha->snprintf(&cs->cs,(char*) res.ptr(),res.alloced_length(),
 			    "%.*s(%d,%d)", (int) name.length(), name.ptr(),
 			    (int) field_length,dec));
   }
@@ -5614,7 +5614,7 @@ void Field_temporal::sql_type_dec_comment(String &res,
                                           const Name &comment) const
 {
   CHARSET_INFO *cs=res.charset();
-  res.length(cs->cs.ha->snprintf(cs, (char*) res.ptr(), res.alloced_length(),
+  res.length(cs->cs.ha->snprintf(&cs->cs, (char*) res.ptr(), res.alloced_length(),
                                  "%.*s(%u)%s%.*s%s",
                                  (uint) name.length(), name.ptr(),
                                  dec,
@@ -5629,7 +5629,7 @@ void Field_temporal::sql_type_comment(String &res,
                                       const Name &comment) const
 {
   CHARSET_INFO *cs=res.charset();
-  res.length(cs->cs.ha->snprintf(cs, (char*) res.ptr(), res.alloced_length(),
+  res.length(cs->cs.ha->snprintf(&cs->cs, (char*) res.ptr(), res.alloced_length(),
                                  "%.*s%s%.*s%s",
                                  (uint) name.length(), name.ptr(),
                                  comment.length() ? " /* " : "",
@@ -6240,7 +6240,7 @@ int Field_year::store(const char *from, size_t len,CHARSET_INFO *cs)
   DBUG_ASSERT(marked_for_write_or_computed());
   char *end;
   int error;
-  longlong nr= cs->cs.ha->strntoull10rnd(cs, from, len, 0, &end, &error);
+  longlong nr= cs->cs.ha->strntoull10rnd(&cs->cs, from, len, 0, &end, &error);
 
   if (nr < 0 || (nr >= 100 && nr <= 1900) || nr > 2155 || 
       error == MY_ERRNO_ERANGE)
@@ -6369,7 +6369,7 @@ bool Field_year::get_date(MYSQL_TIME *ltime,date_mode_t fuzzydate)
 void Field_year::sql_type(String &res) const
 {
   CHARSET_INFO *cs=res.charset();
-  res.length(cs->cs.ha->snprintf(cs,(char*)res.ptr(),res.alloced_length(),
+  res.length(cs->cs.ha->snprintf(&cs->cs,(char*)res.ptr(),res.alloced_length(),
 			  "year(%d)",(int) field_length));
 }
 
@@ -7052,7 +7052,7 @@ int Field_string::store(const char *from, size_t length,CHARSET_INFO *cs)
 
   /* Append spaces if the string was shorter than the field. */
   if (copy_length < field_length)
-    field_charset()->cs.ha->fill(field_charset(),
+    field_charset()->cs.ha->fill(&field_charset()->cs,
                                  (char*) ptr + copy_length,
                                  field_length - copy_length,
                                  my_pad_char(field_charset()));
@@ -7065,7 +7065,7 @@ int Field_str::store(longlong nr, bool unsigned_val)
 {
   char buff[64];
   uint  length;
-  length= (uint) (field_charset()->cs.ha->longlong10_to_str)(field_charset(),
+  length= (uint) (field_charset()->cs.ha->longlong10_to_str)(&field_charset()->cs,
                                                              buff,
                                                              sizeof(buff),
                                                              (unsigned_val ? 10:
@@ -7247,7 +7247,7 @@ String *Field_string::val_str(String *val_buffer __attribute__((unused)),
     length= my_charpos(field_charset(), ptr, ptr + field_length,
                        Field_string::char_length());
   else
-    length= field_charset()->cs.ha->lengthsp(field_charset(),
+    length= field_charset()->cs.ha->lengthsp(&field_charset()->cs,
                                              (const char*) ptr,
                                              field_length);
   val_ptr->set((const char*) ptr, length, field_charset());
@@ -7347,7 +7347,7 @@ void Field_string::sql_type(String &res) const
   CHARSET_INFO *cs=res.charset();
   size_t length;
 
-  length= cs->cs.ha->snprintf(cs,(char*) res.ptr(),
+  length= cs->cs.ha->snprintf(&cs->cs,(char*) res.ptr(),
                              res.alloced_length(), "%s(%d)%s",
                              (type() == MYSQL_TYPE_VAR_STRING ?
                               (has_charset() ? "varchar" : "varbinary") :
@@ -7372,7 +7372,7 @@ void Field_string::sql_rpl_type(String *res) const
   CHARSET_INFO *cs=charset();
   if (Field_string::has_charset())
   {
-    size_t length= cs->cs.ha->snprintf(cs, (char*) res->ptr(),
+    size_t length= cs->cs.ha->snprintf(&cs->cs, (char*) res->ptr(),
                                        res->alloced_length(),
                                        "char(%u octets) character set %s",
                                        field_length,
@@ -7489,7 +7489,7 @@ uint Field_string::get_key_image(uchar *buff, uint length, imagetype type_arg)
                            length / mbmaxlen());
   memcpy(buff, ptr, bytes);
   if (bytes < length)
-    field_charset()->cs.ha->fill(field_charset(),
+    field_charset()->cs.ha->fill(&field_charset()->cs,
                                  (char*) buff + bytes,
                                  length - bytes,
                                  my_pad_char(field_charset()));
@@ -7749,7 +7749,7 @@ void Field_varstring::sql_type(String &res) const
   CHARSET_INFO *cs=res.charset();
   size_t length;
 
-  length= cs->cs.ha->snprintf(cs,(char*) res.ptr(),
+  length= cs->cs.ha->snprintf(&cs->cs,(char*) res.ptr(),
                               res.alloced_length(), "%s(%u)",
                               (has_charset() ? "varchar" : "varbinary"),
                               (uint) char_length());
@@ -7771,7 +7771,7 @@ void Field_varstring::sql_rpl_type(String *res) const
   CHARSET_INFO *cs=charset();
   if (Field_varstring::has_charset())
   {
-    size_t length= cs->cs.ha->snprintf(cs, (char*) res->ptr(),
+    size_t length= cs->cs.ha->snprintf(&cs->cs, (char*) res->ptr(),
                                        res->alloced_length(),
                                        "varchar(%u octets) character set %s",
                                        field_length,
@@ -8855,7 +8855,7 @@ int Field_enum::store(const char *from,size_t length,CHARSET_INFO *cs)
   }
 
   /* Remove end space */
-  length= (uint)field_charset()->cs.ha->lengthsp(field_charset(), from, length);
+  length= (uint)field_charset()->cs.ha->lengthsp(&field_charset()->cs, from, length);
   uint tmp=find_type2(typelib, from, length, field_charset());
   if (!tmp)
   {
@@ -9733,7 +9733,7 @@ Field_bit::compatible_field_size(uint field_metadata,
 void Field_bit::sql_type(String &res) const
 {
   CHARSET_INFO *cs= res.charset();
-  size_t length= cs->cs.ha->snprintf(cs, (char*) res.ptr(), res.alloced_length(),
+  size_t length= cs->cs.ha->snprintf(&cs->cs, (char*) res.ptr(), res.alloced_length(),
                                     "bit(%d)", (int) field_length);
   res.length(length);
 }
@@ -9917,7 +9917,7 @@ int Field_bit_as_char::store(const char *from, size_t length, CHARSET_INFO *cs)
 void Field_bit_as_char::sql_type(String &res) const
 {
   CHARSET_INFO *cs= res.charset();
-  size_t length= cs->cs.ha->snprintf(cs, (char*) res.ptr(), res.alloced_length(),
+  size_t length= cs->cs.ha->snprintf(&cs->cs, (char*) res.ptr(), res.alloced_length(),
                                     "bit(%d)", (int) field_length);
   res.length(length);
 }
@@ -9940,7 +9940,7 @@ bool Column_definition::create_interval_from_interval_list(MEM_ROOT *mem_root,
   StringBuffer<64> conv;
   char comma_buf[5]; /* 5 bytes for 'filename' charset */
   DBUG_ASSERT(sizeof(comma_buf) >= mbmaxlen());
-  int comma_length= charset->cs.ha->wc_mb(charset, ',',
+  int comma_length= charset->cs.ha->wc_mb(&charset->cs, ',',
                                           (uchar*) comma_buf,
                                           (uchar*) comma_buf +
                                           sizeof(comma_buf));
@@ -9982,7 +9982,7 @@ bool Column_definition::create_interval_from_interval_list(MEM_ROOT *mem_root,
       goto err; // EOM
 
     // Strip trailing spaces.
-    value.length= charset->cs.ha->lengthsp(charset, value.str, value.length);
+    value.length= charset->cs.ha->lengthsp(&charset->cs, value.str, value.length);
     ((char*) value.str)[value.length]= '\0';
 
     if (real_field_type() == MYSQL_TYPE_SET)
@@ -10989,7 +10989,7 @@ void Field_string::print_key_value(String *out, uint32 length)
 {
   if (charset() == &my_charset_bin)
   {
-    size_t len= field_charset()->cs.ha->lengthsp(field_charset(), (const char*) ptr, length);
+    size_t len= field_charset()->cs.ha->lengthsp(&field_charset()->cs, (const char*) ptr, length);
     print_key_value_binary(out, ptr, static_cast<uint32>(len));
   }
   else

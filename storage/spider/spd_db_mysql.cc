@@ -11642,12 +11642,12 @@ int spider_mbase_handler::append_limit(
     if (offset)
     {
       length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
-        &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, offset);
+        &my_charset_bin.cs, buf, SPIDER_LONGLONG_LEN + 1, -10, offset);
       str->q_append(buf, length);
       str->q_append(SPIDER_SQL_COMMA_STR, SPIDER_SQL_COMMA_LEN);
     }
     length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
-      &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
+      &my_charset_bin.cs, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
     str->q_append(buf, length);
   }
   DBUG_RETURN(0);
@@ -15784,12 +15784,12 @@ int spider_mbase_copy_table::append_limit(
     if (offset)
     {
       length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
-        &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, offset);
+        &my_charset_bin.cs, buf, SPIDER_LONGLONG_LEN + 1, -10, offset);
       sql.q_append(buf, length);
       sql.q_append(SPIDER_SQL_COMMA_STR, SPIDER_SQL_COMMA_LEN);
     }
     length = (uint32) (my_charset_bin.cs.ha->longlong10_to_str)(
-      &my_charset_bin, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
+      &my_charset_bin.cs, buf, SPIDER_LONGLONG_LEN + 1, -10, limit);
     sql.q_append(buf, length);
   }
   DBUG_RETURN(0);

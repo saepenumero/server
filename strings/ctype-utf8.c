@@ -4438,7 +4438,7 @@ int my_wildcmp_unicode_impl(CHARSET_INFO *cs,
     while (1)
     {
       my_bool escaped= 0;
-      if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+      if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                        (const uchar*)wildend)) <= 0)
         return 1;
 
@@ -4451,14 +4451,14 @@ int my_wildcmp_unicode_impl(CHARSET_INFO *cs,
       wildstr+= scan;
       if (w_wc ==  (my_wc_t) escape && wildstr < wildend)
       {
-        if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+        if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                          (const uchar*)wildend)) <= 0)
           return 1;
         wildstr+= scan;
         escaped= 1;
       }
 
-      if ((scan= mb_wc(cs, &s_wc, (const uchar*)str,
+      if ((scan= mb_wc(&cs->cs, &s_wc, (const uchar*)str,
                        (const uchar*)str_end)) <= 0)
         return 1;
       str+= scan;
@@ -4486,7 +4486,7 @@ int my_wildcmp_unicode_impl(CHARSET_INFO *cs,
       /* Remove any '%' and '_' from the wild search string */
       for ( ; wildstr != wildend ; )
       {
-        if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+        if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                          (const uchar*)wildend)) <= 0)
           return 1;
 
@@ -4499,7 +4499,7 @@ int my_wildcmp_unicode_impl(CHARSET_INFO *cs,
         if (w_wc == (my_wc_t) w_one)
         {
           wildstr+= scan;
-          if ((scan= mb_wc(cs, &s_wc, (const uchar*)str,
+          if ((scan= mb_wc(&cs->cs, &s_wc, (const uchar*)str,
                            (const uchar*)str_end)) <= 0)
             return 1;
           str+= scan;
@@ -4514,7 +4514,7 @@ int my_wildcmp_unicode_impl(CHARSET_INFO *cs,
       if (str == str_end)
         return -1;
 
-      if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+      if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                        (const uchar*)wildend)) <= 0)
         return 1;
       wildstr+= scan;
@@ -4523,7 +4523,7 @@ int my_wildcmp_unicode_impl(CHARSET_INFO *cs,
       {
         if (wildstr < wildend)
         {
-          if ((scan= mb_wc(cs, &w_wc, (const uchar*)wildstr,
+          if ((scan= mb_wc(&cs->cs, &w_wc, (const uchar*)wildstr,
                            (const uchar*)wildend)) <= 0)
             return 1;
           wildstr+= scan;
@@ -4535,7 +4535,7 @@ int my_wildcmp_unicode_impl(CHARSET_INFO *cs,
         /* Skip until the first character from wildstr is found */
         while (str != str_end)
         {
-          if ((scan= mb_wc(cs, &s_wc, (const uchar*)str,
+          if ((scan= mb_wc(&cs->cs, &s_wc, (const uchar*)str,
                            (const uchar*)str_end)) <= 0)
             return 1;
           if (weights)
@@ -4664,7 +4664,7 @@ my_strnxfrm_unicode_full_bin_internal(CHARSET_INFO *cs,
   for (; dst < de && *nweights; (*nweights)--)
   {
     int res;
-    if ((res= cs->cs.ha->mb_wc(cs, &wc, src, se)) <= 0)
+    if ((res= cs->cs.ha->mb_wc(&cs->cs, &wc, src, se)) <= 0)
       break;
     src+= res;
     *dst++= (uchar) (wc >> 16);
@@ -4835,7 +4835,7 @@ static const uchar to_upper_utf8mb3[] = {
   240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255
 };
 
-static int my_utf8mb3_uni(CHARSET_INFO *cs __attribute__((unused)),
+static int my_utf8mb3_uni(const my_charset_t *cs __attribute__((unused)),
                           my_wc_t * pwc, const uchar *s, const uchar *e)
 {
   return my_mb_wc_utf8mb3_quick(pwc, s, e);
@@ -4846,7 +4846,7 @@ static int my_utf8mb3_uni(CHARSET_INFO *cs __attribute__((unused)),
   The same as above, but without range check
   for example, for a null-terminated string
 */
-static int my_utf8mb3_uni_no_range(CHARSET_INFO *cs __attribute__((unused)),
+static int my_utf8mb3_uni_no_range(const my_charset_t *cs __attribute__((unused)),
                                    my_wc_t * pwc, const uchar *s)
 {
   uchar c;
@@ -4882,7 +4882,7 @@ static int my_utf8mb3_uni_no_range(CHARSET_INFO *cs __attribute__((unused)),
 }
 
 
-static int my_uni_utf8mb3(CHARSET_INFO *cs __attribute__((unused)),
+static int my_uni_utf8mb3(const my_charset_t *cs __attribute__((unused)),
                           my_wc_t wc, uchar *r, uchar *e)
 {
   if (wc < 0x80)
@@ -4918,7 +4918,7 @@ static int my_uni_utf8mb3(CHARSET_INFO *cs __attribute__((unused)),
 /*
   The same as above, but without range check.
 */
-static int my_uni_utf8mb3_no_range(CHARSET_INFO *cs __attribute__((unused)),
+static int my_uni_utf8mb3_no_range(const my_charset_t *cs __attribute__((unused)),
                                    my_wc_t wc, uchar *r)
 {
   int count;
@@ -4974,10 +4974,10 @@ static size_t my_caseup_utf8mb3(CHARSET_INFO *cs,
   DBUG_ASSERT(src != dst || my_caseup_multiply(cs) == 1);
 
   while ((src < srcend) &&
-         (srcres= my_utf8mb3_uni(cs, &wc, (uchar *) src, (uchar*) srcend)) > 0)
+         (srcres= my_utf8mb3_uni(&cs->cs, &wc, (uchar *) src, (uchar*) srcend)) > 0)
   {
     my_toupper_utf8mb3(uni_plane, &wc);
-    if ((dstres= my_uni_utf8mb3(cs, wc, (uchar*) dst, (uchar*) dstend)) <= 0)
+    if ((dstres= my_uni_utf8mb3(&cs->cs, wc, (uchar*) dst, (uchar*) dstend)) <= 0)
       break;
     src+= srcres;
     dst+= dstres;
@@ -4995,7 +4995,7 @@ static void my_hash_sort_utf8mb3_nopad(CHARSET_INFO *cs, const uchar *s, size_t 
   MY_UNICASE_INFO *uni_plane= cs->cs.caseinfo;
   register ulong m1= *nr1, m2= *nr2;
 
-  while ((s < e) && (res=my_utf8mb3_uni(cs,&wc, (uchar *)s, (uchar*)e))>0 )
+  while ((s < e) && (res=my_utf8mb3_uni(&cs->cs,&wc, (uchar *)s, (uchar*)e))>0 )
   {
     my_tosort_unicode(uni_plane, &wc, cs->state);
     MY_HASH_ADD_16(m1, m2, wc);
@@ -5029,10 +5029,10 @@ static size_t my_caseup_str_utf8mb3(CHARSET_INFO *cs, char *src)
   DBUG_ASSERT(my_caseup_multiply(cs) == 1);
 
   while (*src &&
-         (srcres= my_utf8mb3_uni_no_range(cs, &wc, (uchar *) src)) > 0)
+         (srcres= my_utf8mb3_uni_no_range(&cs->cs, &wc, (uchar *) src)) > 0)
   {
     my_toupper_utf8mb3(uni_plane, &wc);
-    if ((dstres= my_uni_utf8mb3_no_range(cs, wc, (uchar*) dst)) <= 0)
+    if ((dstres= my_uni_utf8mb3_no_range(&cs->cs, wc, (uchar*) dst)) <= 0)
       break;
     src+= srcres;
     dst+= dstres;
@@ -5054,10 +5054,10 @@ static size_t my_casedn_utf8mb3(CHARSET_INFO *cs,
   DBUG_ASSERT(src != dst || my_casedn_multiply(cs) == 1);
 
   while ((src < srcend) &&
-         (srcres= my_utf8mb3_uni(cs, &wc, (uchar*) src, (uchar*)srcend)) > 0)
+         (srcres= my_utf8mb3_uni(&cs->cs, &wc, (uchar*) src, (uchar*)srcend)) > 0)
   {
     my_tolower_utf8mb3(uni_plane, &wc);
-    if ((dstres= my_uni_utf8mb3(cs, wc, (uchar*) dst, (uchar*) dstend)) <= 0)
+    if ((dstres= my_uni_utf8mb3(&cs->cs, wc, (uchar*) dst, (uchar*) dstend)) <= 0)
       break;
     src+= srcres;
     dst+= dstres;
@@ -5075,10 +5075,10 @@ static size_t my_casedn_str_utf8mb3(CHARSET_INFO *cs, char *src)
   DBUG_ASSERT(my_casedn_multiply(cs) == 1);
 
   while (*src &&
-         (srcres= my_utf8mb3_uni_no_range(cs, &wc, (uchar *) src)) > 0)
+         (srcres= my_utf8mb3_uni_no_range(&cs->cs, &wc, (uchar *) src)) > 0)
   {
     my_tolower_utf8mb3(uni_plane, &wc);
-    if ((dstres= my_uni_utf8mb3_no_range(cs, wc, (uchar*) dst)) <= 0)
+    if ((dstres= my_uni_utf8mb3_no_range(&cs->cs, wc, (uchar*) dst)) <= 0)
       break;
     src+= srcres;
     dst+= dstres;
@@ -5158,7 +5158,7 @@ int my_strcasecmp_utf8mb3(CHARSET_INFO *cs, const char *s, const char *t)
         loop with finish.
       */
       
-      res= my_utf8mb3_uni(cs,&s_wc, (const uchar*)s, (const uchar*) s + 3);
+      res= my_utf8mb3_uni(&cs->cs,&s_wc, (const uchar*)s, (const uchar*) s + 3);
       
       /* 
          In the case of wrong multibyte sequence we will
@@ -5183,7 +5183,7 @@ int my_strcasecmp_utf8mb3(CHARSET_INFO *cs, const char *s, const char *t)
     }
     else
     {
-      int res=my_utf8mb3_uni(cs,&t_wc, (const uchar*)t, (const uchar*) t + 3);
+      int res=my_utf8mb3_uni(&cs->cs,&t_wc, (const uchar*)t, (const uchar*) t + 3);
       if (res <= 0)
         return strcmp(s, t);
       t+= res;
@@ -5213,7 +5213,7 @@ int my_wildcmp_utf8mb3(CHARSET_INFO *cs,
 
 
 static
-int my_charlen_utf8mb3(CHARSET_INFO *cs __attribute__((unused)),
+int my_charlen_utf8mb3(const my_charset_t *cs __attribute__((unused)),
                        const uchar *s, const uchar *e)
 {
   uchar c;
@@ -5345,12 +5345,12 @@ my_weight_mb3_utf8mb3_general_mysql500_ci(uchar b0, uchar b1, uchar b2)
   TODO-10.2: join this with pad_max_char() in ctype-mb.c
 */
 static void
-my_fill_utf8mb3_mb(CHARSET_INFO *cs, char *str, size_t length, int fill)
+my_fill_utf8mb3_mb(const my_charset_t *cs, char *str, size_t length, int fill)
 {
   char *end= str + length;
   char buf[10];
-  char buflen= cs->cs.ha->native_to_mb(cs, (my_wc_t) fill, (uchar*) buf,
-                                           (uchar*) buf + sizeof(buf));
+  char buflen= cs->ha->native_to_mb(cs, (my_wc_t) fill, (uchar*) buf,
+                                        (uchar*) buf + sizeof(buf));
   DBUG_ASSERT(buflen > 0);
   for ( ; str + buflen <= end ; )
   {
@@ -5364,7 +5364,7 @@ my_fill_utf8mb3_mb(CHARSET_INFO *cs, char *str, size_t length, int fill)
 
 
 static void
-my_fill_utf8mb3(CHARSET_INFO *cs, char *str, size_t length, int fill)
+my_fill_utf8mb3(const my_charset_t *cs, char *str, size_t length, int fill)
 {
   if (fill < 0x80)
     my_fill_8bit(cs, str, length, fill);
@@ -6896,7 +6896,7 @@ static const char filename_safe_char[128]=
   see strconvert()
 */
 static int
-my_mb_wc_filename(CHARSET_INFO *cs __attribute__((unused)),
+my_mb_wc_filename(const my_charset_t *cs __attribute__((unused)),
                   my_wc_t *pwc, const uchar *s, const uchar *e)
 {
   int byte1, byte2;
@@ -6956,7 +6956,7 @@ my_mb_wc_filename(CHARSET_INFO *cs __attribute__((unused)),
 
 
 static int
-my_wc_mb_filename(CHARSET_INFO *cs __attribute__((unused)),
+my_wc_mb_filename(const my_charset_t *cs __attribute__((unused)),
                   my_wc_t wc, uchar *s, uchar *e)
 {
   int code;
@@ -6999,10 +6999,10 @@ my_wc_mb_filename(CHARSET_INFO *cs __attribute__((unused)),
 
 
 static int
-my_charlen_filename(CHARSET_INFO *cs, const uchar *str, const uchar *end)
+my_charlen_filename(const my_charset_t *cs, const uchar *str, const uchar *end)
 {
   my_wc_t wc;
-  return cs->cs.ha->mb_wc(cs, &wc, str, end);
+  return cs->ha->mb_wc(cs, &wc, str, end);
 }
 
 
@@ -7194,7 +7194,7 @@ static uchar to_upper_utf8mb4[]=
 
 
 static int
-my_mb_wc_utf8mb4(CHARSET_INFO *cs __attribute__((unused)),
+my_mb_wc_utf8mb4(const my_charset_t *cs __attribute__((unused)),
                  my_wc_t * pwc, const uchar *s, const uchar *e)
 {
   return my_mb_wc_utf8mb4_quick(pwc, s, e);
@@ -7206,7 +7206,7 @@ my_mb_wc_utf8mb4(CHARSET_INFO *cs __attribute__((unused)),
   for example, for a null-terminated string
 */
 static int
-my_mb_wc_utf8mb4_no_range(CHARSET_INFO *cs __attribute__((unused)),
+my_mb_wc_utf8mb4_no_range(const my_charset_t *cs __attribute__((unused)),
                           my_wc_t *pwc, const uchar *s)
 {
   uchar c;
@@ -7249,7 +7249,7 @@ my_mb_wc_utf8mb4_no_range(CHARSET_INFO *cs __attribute__((unused)),
 
 
 static int
-my_wc_mb_utf8mb4(CHARSET_INFO *cs __attribute__((unused)),
+my_wc_mb_utf8mb4(const my_charset_t *cs __attribute__((unused)),
                  my_wc_t wc, uchar *r, uchar *e)
 {
   int count;
@@ -7287,7 +7287,7 @@ my_wc_mb_utf8mb4(CHARSET_INFO *cs __attribute__((unused)),
   The same as above, but without range check.
 */
 static int
-my_wc_mb_utf8mb4_no_range(CHARSET_INFO *cs __attribute__((unused)),
+my_wc_mb_utf8mb4_no_range(const my_charset_t *cs __attribute__((unused)),
                           my_wc_t wc, uchar *r)
 {
   int count;
@@ -7353,11 +7353,11 @@ my_caseup_utf8mb4(CHARSET_INFO *cs, const char *src, size_t srclen,
   DBUG_ASSERT(src != dst || my_caseup_multiply(cs) == 1);
 
   while ((src < srcend) &&
-         (srcres= my_mb_wc_utf8mb4(cs, &wc,
+         (srcres= my_mb_wc_utf8mb4(&cs->cs, &wc,
                                    (uchar *) src, (uchar*) srcend)) > 0)
   {
     my_toupper_utf8mb4(uni_plane, &wc);
-    if ((dstres= my_wc_mb_utf8mb4(cs, wc, (uchar*) dst, (uchar*) dstend)) <= 0)
+    if ((dstres= my_wc_mb_utf8mb4(&cs->cs, wc, (uchar*) dst, (uchar*) dstend)) <= 0)
       break;
     src+= srcres;
     dst+= dstres;
@@ -7376,7 +7376,7 @@ my_hash_sort_utf8mb4_nopad(CHARSET_INFO *cs, const uchar *s, size_t slen,
   MY_UNICASE_INFO *uni_plane= cs->cs.caseinfo;
   register ulong m1= *nr1, m2= *nr2;
 
-  while ((res= my_mb_wc_utf8mb4(cs, &wc, (uchar*) s, (uchar*) e)) > 0)
+  while ((res= my_mb_wc_utf8mb4(&cs->cs, &wc, (uchar*) s, (uchar*) e)) > 0)
   {
     my_tosort_unicode(uni_plane, &wc, cs->state);
     MY_HASH_ADD_16(m1, m2, (uint) (wc & 0xFFFF));
@@ -7423,10 +7423,10 @@ my_caseup_str_utf8mb4(CHARSET_INFO *cs, char *src)
   DBUG_ASSERT(my_caseup_multiply(cs) == 1);
 
   while (*src &&
-         (srcres= my_mb_wc_utf8mb4_no_range(cs, &wc, (uchar *) src)) > 0)
+         (srcres= my_mb_wc_utf8mb4_no_range(&cs->cs, &wc, (uchar *) src)) > 0)
   {
     my_toupper_utf8mb4(uni_plane, &wc);
-    if ((dstres= my_wc_mb_utf8mb4_no_range(cs, wc, (uchar*) dst)) <= 0)
+    if ((dstres= my_wc_mb_utf8mb4_no_range(&cs->cs, wc, (uchar*) dst)) <= 0)
       break;
     src+= srcres;
     dst+= dstres;
@@ -7449,11 +7449,11 @@ my_casedn_utf8mb4(CHARSET_INFO *cs,
   DBUG_ASSERT(src != dst || my_casedn_multiply(cs) == 1);
 
   while ((src < srcend) &&
-         (srcres= my_mb_wc_utf8mb4(cs, &wc,
+         (srcres= my_mb_wc_utf8mb4(&cs->cs, &wc,
                                    (uchar*) src, (uchar*) srcend)) > 0)
   {
     my_tolower_utf8mb4(uni_plane, &wc);
-    if ((dstres= my_wc_mb_utf8mb4(cs, wc, (uchar*) dst, (uchar*) dstend)) <= 0)
+    if ((dstres= my_wc_mb_utf8mb4(&cs->cs, wc, (uchar*) dst, (uchar*) dstend)) <= 0)
       break;
     src+= srcres;
     dst+= dstres;
@@ -7472,10 +7472,10 @@ my_casedn_str_utf8mb4(CHARSET_INFO *cs, char *src)
   DBUG_ASSERT(my_casedn_multiply(cs) == 1);
 
   while (*src &&
-         (srcres= my_mb_wc_utf8mb4_no_range(cs, &wc, (uchar *) src)) > 0)
+         (srcres= my_mb_wc_utf8mb4_no_range(&cs->cs, &wc, (uchar *) src)) > 0)
   {
     my_tolower_utf8mb4(uni_plane, &wc);
-    if ((dstres= my_wc_mb_utf8mb4_no_range(cs, wc, (uchar*) dst)) <= 0)
+    if ((dstres= my_wc_mb_utf8mb4_no_range(&cs->cs, wc, (uchar*) dst)) <= 0)
       break;
     src+= srcres;
     dst+= dstres;
@@ -7534,7 +7534,7 @@ my_strcasecmp_utf8mb4(CHARSET_INFO *cs, const char *s, const char *t)
     }
     else
     {
-      int res= my_mb_wc_utf8mb4_no_range(cs, &s_wc, (const uchar*) s);
+      int res= my_mb_wc_utf8mb4_no_range(&cs->cs, &s_wc, (const uchar*) s);
       
       /* 
          In the case of wrong multibyte sequence we will
@@ -7558,7 +7558,7 @@ my_strcasecmp_utf8mb4(CHARSET_INFO *cs, const char *s, const char *t)
     }
     else
     {
-      int res= my_mb_wc_utf8mb4_no_range(cs, &t_wc, (const uchar*) t);
+      int res= my_mb_wc_utf8mb4_no_range(&cs->cs, &t_wc, (const uchar*) t);
       if (res <= 0)
         return strcmp(s, t);
       t+= res;
@@ -7586,7 +7586,7 @@ my_wildcmp_utf8mb4(CHARSET_INFO *cs,
 
 
 static int
-my_charlen_utf8mb4(CHARSET_INFO *cs __attribute__((unused)),
+my_charlen_utf8mb4(const my_charset_t *cs __attribute__((unused)),
                    const uchar *s, const uchar *e)
 {
   uchar c;

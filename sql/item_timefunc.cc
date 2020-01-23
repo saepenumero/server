@@ -157,7 +157,7 @@ static bool extract_date_time(THD *thd, DATE_TIME_FORMAT *format,
   for (; ptr != end && val != val_end; ptr++)
   {
     /* Skip pre-space between each argument */
-    if ((val+= cs->cs.ha->scan(cs, val, val_end, MY_SEQ_SPACES)) >= val_end)
+    if ((val+= cs->cs.ha->scan(&cs->cs, val, val_end, MY_SEQ_SPACES)) >= val_end)
       break;
 
     if (*ptr == '%' && ptr+1 != end)

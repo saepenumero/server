@@ -434,7 +434,7 @@ scan_one_character(const char *s, const char *e, my_wc_t *wc)
   }
   else /* Non-escaped character */
   {
-    int rc= cs->cs.ha->mb_wc(cs, wc, (uchar *) s, (uchar *) e);
+    int rc= cs->cs.ha->mb_wc(&cs->cs, wc, (uchar *) s, (uchar *) e);
     if (rc > 0)
       return (size_t) rc;
   }
@@ -867,8 +867,8 @@ my_string_metadata_get_mb(MY_STRING_METADATA *metadata,
        metadata->char_length++)
   {
     my_wc_t wc;
-    int mblen= cs->cs.ha->mb_wc(cs, &wc, (const uchar *) str,
-                                         (const uchar *) strend);
+    int mblen= cs->cs.ha->mb_wc(&cs->cs, &wc, (const uchar *) str,
+                                              (const uchar *) strend);
     if (mblen > 0) /* Assigned character */
     {
       if (wc > 0x7F)
@@ -929,7 +929,7 @@ my_string_repertoire(CHARSET_INFO *cs, const char *str, size_t length)
     my_wc_t wc;
     int chlen;
     for (;
-         (chlen= cs->cs.ha->mb_wc(cs, &wc, (uchar*) str, (uchar*) strend)) > 0;
+         (chlen= cs->cs.ha->mb_wc(&cs->cs, &wc, (uchar*) str, (uchar*) strend)) > 0;
          str+= chlen)
     {
       if (wc > 0x7F)
@@ -1044,7 +1044,7 @@ static uint to_printable_8bit(uchar *dst, my_wc_t wc)
   ASCII-incompatible multi-byte character sets, e.g. ucs2, utf16, utf32.
 */
 int
-my_wc_to_printable_generic(CHARSET_INFO *cs, my_wc_t wc,
+my_wc_to_printable_generic(const my_charset_t *cs, my_wc_t wc,
                            uchar *str, uchar *end)
 {
   uchar *str0;
@@ -1054,23 +1054,26 @@ my_wc_to_printable_generic(CHARSET_INFO *cs, my_wc_t wc,
 
   if (my_is_printable(wc))
   {
-    int mblen= cs->cs.ha->wc_mb(cs, wc, str, end);
+    int mblen= cs->ha->wc_mb(cs, wc, str, end);
     if (mblen > 0)
       return mblen;
   }
 
-  mbminlen= my_mbminlen(cs);
-  if (str + MY_CS_PRINTABLE_CHAR_LENGTH * my_mbminlen(cs) > end)
+  mbminlen= cs->ha->mbminlen(cs);
+  if (str + MY_CS_PRINTABLE_CHAR_LENGTH * cs->ha->mbminlen(cs) > end)
     return MY_CS_TOOSMALLN(MY_CS_PRINTABLE_CHAR_LENGTH * mbminlen);
 
+/*
+  TODO
   if ((cs->state & MY_CS_NONASCII) == 0)
     return to_printable_8bit(str, wc);
+*/
 
   length= to_printable_8bit(tmp, wc);
   str0= str;
   for (i= 0; i < length; i++)
   {
-    if (cs->cs.ha->wc_mb(cs, tmp[i], str, end) != (int) mbminlen)
+    if (cs->ha->wc_mb(cs, tmp[i], str, end) != (int) mbminlen)
     {
       DBUG_ASSERT(0);
       return MY_CS_ILSEQ;
@@ -1112,7 +1115,7 @@ my_convert_using_func(char *to, size_t to_length,
 
   while (1)
   {
-    if ((cnvres= (*mb_wc)(from_cs, &wc, (uchar*) from, from_end)) > 0)
+    if ((cnvres= (*mb_wc)(&from_cs->cs, &wc, (uchar*) from, from_end)) > 0)
       from+= cnvres;
     else if (cnvres == MY_CS_ILSEQ)
     {
@@ -1141,7 +1144,7 @@ my_convert_using_func(char *to, size_t to_length,
     }
 
 outp:
-    if ((cnvres= (*wc_mb)(to_cs, wc, (uchar*) to, to_end)) > 0)
+    if ((cnvres= (*wc_mb)(&to_cs->cs, wc, (uchar*) to, to_end)) > 0)
       to+= cnvres;
     else if (cnvres == MY_CS_ILUNI && wc != '?')
     {
@@ -1257,7 +1260,7 @@ my_convert_fix(CHARSET_INFO *to_cs, char *to, size_t to_length,
   for ( ; nchars; nchars--)
   {
     const char *from_prev= from;
-    if ((cnvres= (*mb_wc)(from_cs, &wc, (uchar*) from, from_end)) > 0)
+    if ((cnvres= (*mb_wc)(&from_cs->cs, &wc, (uchar*) from, from_end)) > 0)
       from+= cnvres;
     else if (cnvres == MY_CS_ILSEQ)
     {
@@ -1288,7 +1291,7 @@ my_convert_fix(CHARSET_INFO *to_cs, char *to, size_t to_length,
       wc= '?';
     }
 outp:
-    if ((cnvres= (*wc_mb)(to_cs, wc, (uchar*) to, to_end)) > 0)
+    if ((cnvres= (*wc_mb)(&to_cs->cs, wc, (uchar*) to, to_end)) > 0)
       to+= cnvres;
     else if (cnvres == MY_CS_ILUNI && wc != '?')
     {

@@ -671,7 +671,7 @@ MY_FUNCTION_NAME(strnxfrm)(CHARSET_INFO *cs,
   */
 
   if (flags & MY_STRXFRM_PAD_WITH_SPACE)
-    srclen= cs->cs.ha->lengthsp(cs, (const char*) src, srclen);
+    srclen= cs->cs.ha->lengthsp(&cs->cs, (const char*) src, srclen);
   dst= MY_FUNCTION_NAME(strnxfrm_onelevel)(cs, &cs->uca->level[0],
                                            dst, de, nweights,
                                            src, srclen, flags);

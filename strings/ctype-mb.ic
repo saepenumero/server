@@ -48,11 +48,11 @@
   @return   >0                  if a valid character was found
 */
 static int
-MY_FUNCTION_NAME(charlen)(CHARSET_INFO *cs __attribute__((unused)),
+MY_FUNCTION_NAME(charlen)(const my_charset_t *cs __attribute__((unused)),
                           const uchar *b, const uchar *e)
 {
-  DBUG_ASSERT(my_mbminlen(cs) == 1);
-  DBUG_ASSERT(my_mbmaxlen(cs) <= 4);
+  DBUG_ASSERT(cs->ha->mbminlen(cs) == 1);
+  DBUG_ASSERT(cs->ha->mbmaxlen(cs) <= 4);
 
   if (b >= e)
     return MY_CS_TOOSMALL;
@@ -105,7 +105,7 @@ MY_FUNCTION_NAME(charlen)(CHARSET_INFO *cs __attribute__((unused)),
   Version for character sets that define IS_MB?_CHAR(), e.g. big5.
 */
 static size_t
-MY_FUNCTION_NAME(well_formed_char_length)(CHARSET_INFO *cs __attribute__((unused)),
+MY_FUNCTION_NAME(well_formed_char_length)(const my_charset_t *cs __attribute__((unused)),
                                           const char *b, const char *e,
                                           size_t nchars,
                                           MY_STRCOPY_STATUS *status)
@@ -175,7 +175,7 @@ MY_FUNCTION_NAME(well_formed_char_length)(CHARSET_INFO *cs __attribute__((unused
   - MY_CS_TOOSMALLxx if the incoming sequence is incomplete
 */
 static size_t
-MY_FUNCTION_NAME(well_formed_char_length)(CHARSET_INFO *cs __attribute__((unused)),
+MY_FUNCTION_NAME(well_formed_char_length)(const my_charset_t *cs __attribute__((unused)),
                                           const char *b, const char *e,
                                           size_t nchars,
                                           MY_STRCOPY_STATUS *status)
@@ -241,7 +241,7 @@ my_native_to_mb_fixed3(my_wc_t wc, uchar *s, uchar *e)
 */
 
 static int
-MY_FUNCTION_NAME(native_to_mb)(CHARSET_INFO *cs __attribute__((unused)),
+MY_FUNCTION_NAME(native_to_mb)(const my_charset_t *cs __attribute__((unused)),
                                my_wc_t wc, uchar *s, uchar *e)
 {
   if (s >= e)

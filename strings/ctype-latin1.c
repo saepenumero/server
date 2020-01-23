@@ -357,7 +357,7 @@ NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 };
 
 static
-int my_mb_wc_latin1(CHARSET_INFO *cs  __attribute__((unused)),
+int my_mb_wc_latin1(const my_charset_t *cs  __attribute__((unused)),
 		    my_wc_t *wc,
 		    const uchar *str,
 		    const uchar *end __attribute__((unused)))
@@ -375,7 +375,7 @@ int my_mb_wc_latin1(CHARSET_INFO *cs  __attribute__((unused)),
 }
 
 static
-int my_wc_mb_latin1(CHARSET_INFO *cs  __attribute__((unused)),
+int my_wc_mb_latin1(const my_charset_t *cs  __attribute__((unused)),
 		    my_wc_t wc,
 		    uchar *str,
 		    uchar *end __attribute__((unused)))

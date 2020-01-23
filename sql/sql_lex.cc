@@ -973,7 +973,7 @@ extern "C" {
   @param end    - the end of the destination string
   @returns      - a code according to the wc_mb() convension.
 */
-int my_wc_mb_utf8mb3_with_escape(CHARSET_INFO *cs, my_wc_t escape, my_wc_t wc,
+int my_wc_mb_utf8mb3_with_escape(const my_charset_t *cs, my_wc_t escape, my_wc_t wc,
                                  uchar *str, uchar *end)
 {
   DBUG_ASSERT(escape > 0);
@@ -1002,7 +1002,7 @@ int my_wc_mb_utf8mb3_with_escape(CHARSET_INFO *cs, my_wc_t escape, my_wc_t wc,
   @param end    - the end of the destination string
   @returns      - a code according to the wc_mb() conversion.
 */
-int my_wc_mb_utf8mb3_opt_escape(CHARSET_INFO *cs,
+int my_wc_mb_utf8mb3_opt_escape(const my_charset_t *cs,
                                 my_wc_t wc, my_wc_t escape, my_wc_t ewc,
                                 uchar *str, uchar *end)
 {
@@ -1026,7 +1026,7 @@ int my_wc_mb_utf8mb3_opt_escape(CHARSET_INFO *cs,
   @param escape    - the escape character (backslash, or 0)
   @returns         - a code according to the wc_mb() convension.
 */
-int my_wc_mb_utf8mb3_escape(CHARSET_INFO *cs, my_wc_t wc,
+int my_wc_mb_utf8mb3_escape(const my_charset_t *cs, my_wc_t wc,
                             uchar *str, uchar *end,
                             my_wc_t sep, my_wc_t escape)
 {
@@ -1048,7 +1048,7 @@ int my_wc_mb_utf8mb3_escape(CHARSET_INFO *cs, my_wc_t wc,
 
 
 /** wc_mb() compatible routines for all sql_mode and delimiter combinations */
-int my_wc_mb_utf8mb3_escape_single_quote_and_backslash(CHARSET_INFO *cs,
+int my_wc_mb_utf8mb3_escape_single_quote_and_backslash(const my_charset_t *cs,
                                                     my_wc_t wc,
                                                     uchar *str, uchar *end)
 {
@@ -1056,7 +1056,7 @@ int my_wc_mb_utf8mb3_escape_single_quote_and_backslash(CHARSET_INFO *cs,
 }
 
 
-int my_wc_mb_utf8mb3_escape_double_quote_and_backslash(CHARSET_INFO *cs,
+int my_wc_mb_utf8mb3_escape_double_quote_and_backslash(const my_charset_t *cs,
                                                     my_wc_t wc,
                                                     uchar *str, uchar *end)
 {
@@ -1064,14 +1064,14 @@ int my_wc_mb_utf8mb3_escape_double_quote_and_backslash(CHARSET_INFO *cs,
 }
 
 
-int my_wc_mb_utf8mb3_escape_single_quote(CHARSET_INFO *cs, my_wc_t wc,
+int my_wc_mb_utf8mb3_escape_single_quote(const my_charset_t *cs, my_wc_t wc,
                                       uchar *str, uchar *end)
 {
   return my_wc_mb_utf8mb3_escape(cs, wc, str, end, '\'', 0);
 }
 
 
-int my_wc_mb_utf8mb3_escape_double_quote(CHARSET_INFO *cs, my_wc_t wc,
+int my_wc_mb_utf8mb3_escape_double_quote(const my_charset_t *cs, my_wc_t wc,
                                       uchar *str, uchar *end)
 {
   return my_wc_mb_utf8mb3_escape(cs, wc, str, end, '"', 0);

@@ -20,27 +20,27 @@
 #ifdef USE_MB
 
 
-uint my_mblen_mb2(CHARSET_INFO *cs)
+uint my_mblen_mb2(const my_charset_t *cs)
 {
   return 2;
 }
 
 
-uint my_mblen_mb3(CHARSET_INFO *cs)
+uint my_mblen_mb3(const my_charset_t *cs)
 {
   return 3;
 }
 
 
-uint my_mblen_mb4(CHARSET_INFO *cs)
+uint my_mblen_mb4(const my_charset_t *cs)
 {
   return 4;
 }
 
 
-uint my_mblen_mb5(CHARSET_INFO *cs)
+uint my_mblen_mb5(const my_charset_t *cs)
 {
-  return 4;
+  return 5;
 }
 
 
@@ -341,21 +341,21 @@ int my_wildcmp_mb(CHARSET_INFO *cs,
 }
 
 
-size_t my_numchars_mb(CHARSET_INFO *cs __attribute__((unused)),
+size_t my_numchars_mb(const my_charset_t *cs __attribute__((unused)),
 		      const char *pos, const char *end)
 {
   register size_t count= 0;
   while (pos < end) 
   {
     uint mb_len;
-    pos+= (mb_len= my_ismbchar(cs,pos,end)) ? mb_len : 1;
+    pos+= (mb_len= my_ismbchar_cs(cs,pos,end)) ? mb_len : 1;
     count++;
   }
   return count;
 }
 
 
-size_t my_charpos_mb(CHARSET_INFO *cs __attribute__((unused)),
+size_t my_charpos_mb(const my_charset_t *cs __attribute__((unused)),
 		     const char *pos, const char *end, size_t length)
 {
   const char *start= pos;
@@ -363,7 +363,7 @@ size_t my_charpos_mb(CHARSET_INFO *cs __attribute__((unused)),
   while (length && pos < end)
   {
     uint mb_len;
-    pos+= (mb_len= my_ismbchar(cs, pos, end)) ? mb_len : 1;
+    pos+= (mb_len= my_ismbchar_cs(cs, pos, end)) ? mb_len : 1;
     length--;
   }
   return (size_t) (length ? end+2-start : pos-start);
@@ -384,7 +384,7 @@ size_t my_charpos_mb(CHARSET_INFO *cs __attribute__((unused)),
                    full source string.
 */
 static size_t
-my_append_fix_badly_formed_tail(CHARSET_INFO *cs,
+my_append_fix_badly_formed_tail(const my_charset_t *cs,
                                 char *to, char *to_end,
                                 const char *from, const char *from_end,
                                 size_t nchars,
@@ -395,11 +395,11 @@ my_append_fix_badly_formed_tail(CHARSET_INFO *cs,
   for ( ; nchars; nchars--)
   {
     int chlen;
-    if ((chlen= cs->cs.ha->charlen(cs, (const uchar*) from,
-                                       (const uchar *) from_end)) > 0)
+    if ((chlen= cs->ha->charlen(cs, (const uchar*) from,
+                                    (const uchar *) from_end)) > 0)
     {
       /* Found a valid character */         /* chlen == 1..MBMAXLEN  */
-      DBUG_ASSERT(chlen <= (int) my_mbmaxlen(cs));
+      DBUG_ASSERT(chlen <= (int) cs->ha->mbmaxlen(cs));
       if (to + chlen > to_end)
         goto end;                           /* Does not fit to "to" */
       memcpy(to, from, (size_t) chlen);
@@ -422,7 +422,7 @@ bad:
     if (!status->m_well_formed_error_pos)
       status->m_well_formed_error_pos= from;
 
-    if ((chlen= cs->cs.ha->wc_mb(cs, '?', (uchar*) to, (uchar *) to_end)) <= 0)
+    if ((chlen= cs->ha->wc_mb(cs, '?', (uchar*) to, (uchar *) to_end)) <= 0)
       break; /* Question mark does not fit into the destination */
     to+= chlen;
     from++;
@@ -434,7 +434,7 @@ end:
 
 
 size_t
-my_copy_fix_mb(CHARSET_INFO *cs,
+my_copy_fix_mb(const my_charset_t *cs,
                char *dst, size_t dst_length,
                const char *src, size_t src_length,
                size_t nchars, MY_STRCOPY_STATUS *status)
@@ -444,9 +444,9 @@ my_copy_fix_mb(CHARSET_INFO *cs,
   size_t fixed_length;
 
   set_if_smaller(src_length, dst_length);
-  well_formed_nchars= cs->cs.ha->well_formed_char_length(cs,
-                                                         src, src + src_length,
-                                                         nchars, status);
+  well_formed_nchars= cs->ha->well_formed_char_length(cs,
+                                                      src, src + src_length,
+                                                      nchars, status);
   DBUG_ASSERT(well_formed_nchars <= nchars);
   memmove(dst, src, (well_formed_length= status->m_source_end_pos - src));
   if (!status->m_well_formed_error_pos)
@@ -701,7 +701,7 @@ my_hash_sort_mb_bin(CHARSET_INFO *cs __attribute__((unused)),
 static void pad_max_char(CHARSET_INFO *cs, char *str, char *end)
 {
   char buf[10];
-  char buflen= cs->cs.ha->native_to_mb(cs, cs->max_sort_char, (uchar*) buf,
+  char buflen= cs->cs.ha->native_to_mb(&cs->cs, cs->max_sort_char, (uchar*) buf,
                                        (uchar*) buf + sizeof(buf));
   DBUG_ASSERT(buflen > 0);
   do
@@ -916,7 +916,7 @@ my_like_range_generic(CHARSET_INFO *cs,
   {
     my_wc_t wc, wc2;
     int res;
-    if ((res= cs->cs.ha->mb_wc(cs, &wc, (uchar*) ptr, (uchar*) end)) <= 0)
+    if ((res= cs->cs.ha->mb_wc(&cs->cs, &wc, (uchar*) ptr, (uchar*) end)) <= 0)
     {
       if (res == MY_CS_ILSEQ) /* Bad sequence */
         return TRUE; /* min_length and max_length are not important */
@@ -926,7 +926,7 @@ my_like_range_generic(CHARSET_INFO *cs,
 
     if (wc == (my_wc_t) escape)
     {
-      if ((res= cs->cs.ha->mb_wc(cs, &wc, (uchar*) ptr, (uchar*) end)) <= 0)
+      if ((res= cs->cs.ha->mb_wc(&cs->cs, &wc, (uchar*) ptr, (uchar*) end)) <= 0)
       {
         if (res == MY_CS_ILSEQ)
           return TRUE; /* min_length and max_length are not important */
@@ -940,12 +940,12 @@ my_like_range_generic(CHARSET_INFO *cs,
         ptr+= res;
 
       /* Put escape character to min_str and max_str  */
-      if ((res= cs->cs.ha->wc_mb(cs, wc,
+      if ((res= cs->cs.ha->wc_mb(&cs->cs, wc,
                                  (uchar*) min_str, (uchar*) min_end)) <= 0)
         goto pad_set_lengths; /* No space */
       min_str+= res;
 
-      if ((res= cs->cs.ha->wc_mb(cs, wc,
+      if ((res= cs->cs.ha->wc_mb(&cs->cs, wc,
                                  (uchar*) max_str, (uchar*) max_end)) <= 0)
         goto pad_set_lengths; /* No space */
       max_str+= res;
@@ -953,12 +953,12 @@ my_like_range_generic(CHARSET_INFO *cs,
     }
     else if (wc == (my_wc_t) w_one)
     {
-      if ((res= cs->cs.ha->wc_mb(cs, cs->min_sort_char,
+      if ((res= cs->cs.ha->wc_mb(&cs->cs, cs->min_sort_char,
                                  (uchar*) min_str, (uchar*) min_end)) <= 0)
         goto pad_set_lengths;
       min_str+= res;
 
-      if ((res= cs->cs.ha->wc_mb(cs, cs->max_sort_char,
+      if ((res= cs->cs.ha->wc_mb(&cs->cs, cs->max_sort_char,
                                 (uchar*) max_str, (uchar*) max_end)) <= 0)
         goto pad_set_lengths;
       max_str+= res;
@@ -980,7 +980,7 @@ my_like_range_generic(CHARSET_INFO *cs,
 
     if (contractions &&
         my_uca_can_be_contraction_head(contractions, wc) &&
-        (res= cs->cs.ha->mb_wc(cs, &wc2, (uchar*) ptr, (uchar*) end)) > 0)
+        (res= cs->cs.ha->mb_wc(&cs->cs, &wc2, (uchar*) ptr, (uchar*) end)) > 0)
     {
       const uint16 *weight;
       if ((wc2 == (my_wc_t) w_one || wc2 == (my_wc_t) w_many))
@@ -1005,12 +1005,12 @@ my_like_range_generic(CHARSET_INFO *cs,
         charlen--;
 
         /* Put contraction head */
-        if ((res= cs->cs.ha->wc_mb(cs, wc,
+        if ((res= cs->cs.ha->wc_mb(&cs->cs, wc,
                                    (uchar*) min_str, (uchar*) min_end)) <= 0)
           goto pad_set_lengths;
         min_str+= res;
 
-        if ((res= cs->cs.ha->wc_mb(cs, wc,
+        if ((res= cs->cs.ha->wc_mb(&cs->cs, wc,
                                    (uchar*) max_str, (uchar*) max_end)) <= 0)
           goto pad_set_lengths;
         max_str+= res;
@@ -1019,11 +1019,11 @@ my_like_range_generic(CHARSET_INFO *cs,
     }
 
     /* Normal character, or contraction tail */
-    if ((res= cs->cs.ha->wc_mb(cs, wc,
+    if ((res= cs->cs.ha->wc_mb(&cs->cs, wc,
                                (uchar*) min_str, (uchar*) min_end)) <= 0)
       goto pad_set_lengths;
     min_str+= res;
-    if ((res= cs->cs.ha->wc_mb(cs, wc,
+    if ((res= cs->cs.ha->wc_mb(&cs->cs, wc,
                                (uchar*) max_str, (uchar*) max_end)) <= 0)
       goto pad_set_lengths;
     max_str+= res;
@@ -1041,9 +1041,9 @@ pad_min_max:
     Make sure to call fill() with proper "length" argument.
   */
   res_length_diff= res_length % my_mbminlen(cs);
-  cs->cs.ha->fill(cs, min_str, min_end - min_str - res_length_diff,
+  cs->cs.ha->fill(&cs->cs, min_str, min_end - min_str - res_length_diff,
                   cs->min_sort_char);
-  cs->cs.ha->fill(cs, max_str, max_end - max_str - res_length_diff,
+  cs->cs.ha->fill(&cs->cs, max_str, max_end - max_str - res_length_diff,
                   cs->max_sort_char);
 
   /* In case of incomplete characters set the remainder to 0x00's */
@@ -1386,7 +1386,7 @@ static const struct {int page; const char *p;} utr11_data[256]=
 };
 
 
-size_t my_numcells_mb(CHARSET_INFO *cs, const char *b, const char *e)
+size_t my_numcells_mb(const my_charset_t *cs, const char *b, const char *e)
 {
   my_wc_t wc;
   size_t clen= 0;
@@ -1395,7 +1395,7 @@ size_t my_numcells_mb(CHARSET_INFO *cs, const char *b, const char *e)
   {
     int mb_len;
     uint pg;
-    if ((mb_len= cs->cs.ha->mb_wc(cs, &wc, (uchar*) b, (uchar*) e)) <= 0)
+    if ((mb_len= cs->ha->mb_wc(cs, &wc, (uchar*) b, (uchar*) e)) <= 0)
     {
       mb_len= 1; /* Let's think a wrong sequence takes 1 dysplay cell */
       b++;
@@ -1418,11 +1418,11 @@ size_t my_numcells_mb(CHARSET_INFO *cs, const char *b, const char *e)
 }
 
 
-int my_mb_ctype_mb(CHARSET_INFO *cs, int *ctype,
+int my_mb_ctype_mb(const my_charset_t *cs, int *ctype,
                    const uchar *s, const uchar *e)
 {
   my_wc_t wc;
-  int res= cs->cs.ha->mb_wc(cs, &wc, s, e);
+  int res= cs->ha->mb_wc(cs, &wc, s, e);
   if (res <= 0 || wc > 0xFFFF)
     *ctype= 0;
   else

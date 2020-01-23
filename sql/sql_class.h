@@ -4447,7 +4447,7 @@ private:
                 sql_errno == ER_WRONG_VALUE);
     char buff[MYSQL_ERRMSG_SIZE];
     CHARSET_INFO *cs= &my_charset_latin1;
-    cs->cs.ha->snprintf(cs, buff, sizeof(buff),
+    cs->cs.ha->snprintf(&cs->cs, buff, sizeof(buff),
                         ER_THD(this, sql_errno), type_str, val);
     /*
       Note: the format string can vary between ER_TRUNCATED_WRONG_VALUE
@@ -4489,7 +4489,7 @@ public:
       db_name= "";
     if (!table_name)
       table_name= "";
-    cs->cs.ha->snprintf(cs, buff, sizeof(buff),
+    cs->cs.ha->snprintf(&cs->cs, buff, sizeof(buff),
                         ER_THD(this, ER_TRUNCATED_WRONG_VALUE_FOR_FIELD),
                         type_str, val, db_name, table_name, name,
                         (ulong) get_stmt_da()->current_row_for_warning());

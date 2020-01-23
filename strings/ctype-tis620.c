@@ -613,7 +613,7 @@ my_strnxfrm_tis620(CHARSET_INFO *cs,
   if ((flags & MY_STRXFRM_PAD_TO_MAXLEN) && len < dstlen0)
   {
     size_t fill_length= dstlen0 - len;
-    cs->cs.ha->fill(cs, (char*) dst + len, fill_length, my_pad_char(cs));
+    cs->cs.ha->fill(&cs->cs, (char*) dst + len, fill_length, my_pad_char(cs));
     len= dstlen0;
   }
   return len;
@@ -828,7 +828,7 @@ NULL,NULL,NULL,NULL,NULL,NULL,NULL,plFF
 
 
 static
-int my_mb_wc_tis620(CHARSET_INFO *cs  __attribute__((unused)),
+int my_mb_wc_tis620(const my_charset_t *cs  __attribute__((unused)),
 		  my_wc_t *wc,
 		  const uchar *str,
 		  const uchar *end __attribute__((unused)))
@@ -841,7 +841,7 @@ int my_mb_wc_tis620(CHARSET_INFO *cs  __attribute__((unused)),
 }
 
 static
-int my_wc_mb_tis620(CHARSET_INFO *cs  __attribute__((unused)),
+int my_wc_mb_tis620(const my_charset_t *cs  __attribute__((unused)),
 		  my_wc_t wc,
 		  uchar *str,
 		  uchar *end __attribute__((unused)))

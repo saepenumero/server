@@ -33884,7 +33884,7 @@ static uint16 unicode_to_sjis[65536]=
   @retval   MY_CS_ILSEQ    If a wrong byte sequence was found
 */
 static int
-my_mb_wc_sjis(CHARSET_INFO *cs  __attribute__((unused)),
+my_mb_wc_sjis(const my_charset_t *cs  __attribute__((unused)),
 	      my_wc_t *pwc, const uchar *s, const uchar *e){
   int hi;
 
@@ -33928,7 +33928,7 @@ my_mb_wc_sjis(CHARSET_INFO *cs  __attribute__((unused)),
   @retval   MY_CS_ILUNI    If the Unicode character does not exist in SJIS
 */
 static int
-my_wc_mb_sjis(CHARSET_INFO *cs __attribute__((unused)),
+my_wc_mb_sjis(const my_charset_t *cs __attribute__((unused)),
 	      my_wc_t wc, uchar *s, uchar *e)
 {
   int code;
@@ -33977,7 +33977,7 @@ mb:
 
 
 static
-size_t my_numcells_sjis(CHARSET_INFO *cs __attribute__((unused)),
+size_t my_numcells_sjis(const my_charset_t *cs __attribute__((unused)),
                       const char *str, const char *str_end)
 {
   size_t clen;
@@ -34006,7 +34006,8 @@ size_t my_numcells_sjis(CHARSET_INFO *cs __attribute__((unused)),
 }
 
 
-static my_bool my_escape_with_backslash_is_dangerous_sjis(CHARSET_INFO *cs)
+static my_bool
+my_escape_with_backslash_is_dangerous_sjis(const my_charset_t *cs)
 {
   return TRUE;
 }

@@ -87,7 +87,7 @@ static int my_strnncoll_binary(CHARSET_INFO * cs __attribute__((unused)),
 }
 
 
-size_t my_lengthsp_binary(CHARSET_INFO *cs __attribute__((unused)),
+size_t my_lengthsp_binary(const my_charset_t *cs __attribute__((unused)),
                           const char *ptr __attribute__((unused)),
                           size_t length)
 {
@@ -95,7 +95,7 @@ size_t my_lengthsp_binary(CHARSET_INFO *cs __attribute__((unused)),
 }
 
 
-uchar my_pad_char_bin(CHARSET_INFO *cs)
+uchar my_pad_char_bin(const my_charset_t *cs)
 {
   return 0x00;
 }
@@ -240,7 +240,7 @@ static int my_strcasecmp_bin(CHARSET_INFO * cs __attribute__((unused)),
 }
 
 
-static int my_mb_wc_bin(CHARSET_INFO *cs __attribute__((unused)),
+static int my_mb_wc_bin(const my_charset_t *cs __attribute__((unused)),
 			my_wc_t *wc,
 			const uchar *str,
 			const uchar *end __attribute__((unused)))
@@ -253,7 +253,7 @@ static int my_mb_wc_bin(CHARSET_INFO *cs __attribute__((unused)),
 }
 
 
-int my_wc_mb_bin(CHARSET_INFO *cs __attribute__((unused)),
+int my_wc_mb_bin(const my_charset_t *cs __attribute__((unused)),
                  my_wc_t wc, uchar *s, uchar *e)
 {
   if (s >= e)

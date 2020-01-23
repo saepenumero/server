@@ -60,7 +60,7 @@ class Well_formed_prefix_status: public String_copy_status
 public:
   Well_formed_prefix_status(CHARSET_INFO *cs,
                             const char *str, const char *end, size_t nchars)
-  { cs->cs.ha->well_formed_char_length(cs, str, end, nchars, this); }
+  { cs->cs.ha->well_formed_char_length(&cs->cs, str, end, nchars, this); }
 };
 
 
@@ -147,15 +147,15 @@ public:
 
   size_t numchars(const char *str, const char *end) const
   {
-    return m_charset->cs.ha->numchars(m_charset, str, end);
+    return m_charset->cs.ha->numchars(&m_charset->cs, str, end);
   }
   size_t lengthsp(const char *str, size_t length) const
   {
-    return m_charset->cs.ha->lengthsp(m_charset, str, length);
+    return m_charset->cs.ha->lengthsp(&m_charset->cs, str, length);
   }
   size_t charpos(const char *str, const char *end, size_t pos) const
   {
-    return m_charset->cs.ha->charpos(m_charset, str, end, pos);
+    return m_charset->cs.ha->charpos(&m_charset->cs, str, end, pos);
   }
   void set_charset(CHARSET_INFO *charset_arg)
   {
@@ -1067,7 +1067,7 @@ static inline bool check_if_only_end_space(CHARSET_INFO *cs,
                                            const char *str,
                                            const char *end)
 {
-  return str+ cs->cs.ha->scan(cs, str, end, MY_SEQ_SPACES) == end;
+  return str+ cs->cs.ha->scan(&cs->cs, str, end, MY_SEQ_SPACES) == end;
 }
 
 int append_query_string(CHARSET_INFO *csinfo, String *to,

@@ -277,12 +277,12 @@ void Type_handler_var_string::show_binlog_type(const Conv_source &src,
                                                const Field &dst,
                                                String *str) const
 {
-  CHARSET_INFO *cs= str->charset();
+  const my_charset_t *cs= &str->charset()->cs;
   const char* fmt= dst.cmp_type() != STRING_RESULT || dst.has_charset()
     ? "char(%u octets)" : "binary(%u)";
-  size_t length= cs->cs.ha->snprintf(cs, (char*) str->ptr(),
-                                    str->alloced_length(),
-                                    fmt, src.metadata());
+  size_t length= cs->ha->snprintf(cs, (char*) str->ptr(),
+                                  str->alloced_length(),
+                                  fmt, src.metadata());
   str->length(length);
 }
 
@@ -291,12 +291,12 @@ void Type_handler_varchar::show_binlog_type(const Conv_source &src,
                                             const Field &dst,
                                             String *str) const
 {
-  CHARSET_INFO *cs= str->charset();
+  const my_charset_t *cs= &str->charset()->cs;
   const char* fmt= dst.cmp_type() != STRING_RESULT || dst.has_charset()
     ? "varchar(%u octets)" : "varbinary(%u)";
-  size_t length= cs->cs.ha->snprintf(cs, (char*) str->ptr(),
-                                    str->alloced_length(),
-                                    fmt, src.metadata());
+  size_t length= cs->ha->snprintf(cs, (char*) str->ptr(),
+                                  str->alloced_length(),
+                                  fmt, src.metadata());
   str->length(length);
 }
 
@@ -305,23 +305,23 @@ void Type_handler_varchar_compressed::show_binlog_type(const Conv_source &src,
                                                        const Field &dst,
                                                        String *str) const
 {
-  CHARSET_INFO *cs= str->charset();
+  const my_charset_t *cs= &str->charset()->cs;
   const char* fmt= dst.cmp_type() != STRING_RESULT || dst.has_charset()
     ? "varchar(%u octets) compressed" : "varbinary(%u) compressed";
-  size_t length= cs->cs.ha->snprintf(cs, (char*) str->ptr(),
-                                    str->alloced_length(),
-                                    fmt, src.metadata());
+  size_t length= cs->ha->snprintf(cs, (char*) str->ptr(),
+                                  str->alloced_length(),
+                                  fmt, src.metadata());
   str->length(length);
 }
 
 void Type_handler_bit::show_binlog_type(const Conv_source &src, const Field &,
                                         String *str) const
 {
-  CHARSET_INFO *cs= str->charset();
+  const my_charset_t *cs= &str->charset()->cs;
   int bit_length= 8 * (src.metadata() >> 8) + (src.metadata() & 0xFF);
   size_t length=
-    cs->cs.ha->snprintf(cs, (char*) str->ptr(), str->alloced_length(),
-                       "bit(%d)", bit_length);
+    cs->ha->snprintf(cs, (char*) str->ptr(), str->alloced_length(),
+                     "bit(%d)", bit_length);
   str->length(length);
 }
 
@@ -330,10 +330,10 @@ void Type_handler_olddecimal::show_binlog_type(const Conv_source &src,
                                                const Field &,
                                                String *str) const
 {
-  CHARSET_INFO *cs= str->charset();
+  const my_charset_t *cs= &str->charset()->cs;
   size_t length=
-    cs->cs.ha->snprintf(cs, (char*) str->ptr(), str->alloced_length(),
-                       "decimal(%d,?)/*old*/", src.metadata());
+    cs->ha->snprintf(cs, (char*) str->ptr(), str->alloced_length(),
+                     "decimal(%d,?)/*old*/", src.metadata());
   str->length(length);
 
 }
@@ -343,11 +343,11 @@ void Type_handler_newdecimal::show_binlog_type(const Conv_source &src,
                                                const Field &,
                                                String *str) const
 {
-  CHARSET_INFO *cs= str->charset();
+  const my_charset_t *cs= &str->charset()->cs;
   size_t length=
-    cs->cs.ha->snprintf(cs, (char*) str->ptr(), str->alloced_length(),
-                       "decimal(%d,%d)",
-                       src.metadata() >> 8, src.metadata() & 0xff);
+    cs->ha->snprintf(cs, (char*) str->ptr(), str->alloced_length(),
+                     "decimal(%d,%d)",
+                     src.metadata() >> 8, src.metadata() & 0xff);
   str->length(length);
 }
 
@@ -387,14 +387,14 @@ void Type_handler_string::show_binlog_type(const Conv_source &src,
   /*
     This is taken from Field_string::unpack.
   */
-  CHARSET_INFO *cs= str->charset();
+  const my_charset_t *cs= &str->charset()->cs;
   uint bytes= (((src.metadata() >> 4) & 0x300) ^ 0x300) +
               (src.metadata() & 0x00ff);
   const char* fmt= dst.cmp_type() != STRING_RESULT || dst.has_charset()
     ? "char(%u octets)" : "binary(%u)";
-  size_t length= cs->cs.ha->snprintf(cs, (char*) str->ptr(),
-                                    str->alloced_length(),
-                                    fmt, bytes);
+  size_t length= cs->ha->snprintf(cs, (char*) str->ptr(),
+                                  str->alloced_length(),
+                                  fmt, bytes);
   str->length(length);
 }
 

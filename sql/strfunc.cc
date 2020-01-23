@@ -50,7 +50,7 @@ ulonglong find_set(const TYPELIB *lib,
                    char **err_pos, uint *err_len, bool *set_warning)
 {
   CHARSET_INFO *strip= cs ? cs : &my_charset_latin1;
-  const char *end= str + strip->cs.ha->lengthsp(strip, str, length);
+  const char *end= str + strip->cs.ha->lengthsp(&strip->cs, str, length);
   ulonglong found= 0;
   *err_pos= 0;                  // No error yet
   *err_len= 0;
@@ -68,7 +68,7 @@ ulonglong find_set(const TYPELIB *lib,
         for ( ; pos < end; pos+= mblen)
         {
           my_wc_t wc;
-          if ((mblen= cs->cs.ha->mb_wc(cs, &wc, (const uchar *) pos, 
+          if ((mblen= cs->cs.ha->mb_wc(&cs->cs, &wc, (const uchar *) pos, 
                                                (const uchar *) end)) < 1)
             mblen= 1; // Not to hang on a wrong multibyte sequence
           if (wc == (my_wc_t) field_separator)
@@ -281,7 +281,7 @@ uint strconvert(CHARSET_INFO *from_cs, const char *from, size_t from_length,
 
   while (1)
   {
-    if ((cnvres= (*mb_wc)(from_cs, &wc,
+    if ((cnvres= (*mb_wc)(&from_cs->cs, &wc,
                           (uchar*) from, from_end)) > 0)
     {
       if (!wc)
@@ -299,7 +299,7 @@ uint strconvert(CHARSET_INFO *from_cs, const char *from, size_t from_length,
 
 outp:
 
-    if ((cnvres= (*wc_mb)(to_cs, wc, (uchar*) to, to_end)) > 0)
+    if ((cnvres= (*wc_mb)(&to_cs->cs, wc, (uchar*) to, to_end)) > 0)
       to+= cnvres;
     else if (cnvres == MY_CS_ILUNI && wc != '?')
     {

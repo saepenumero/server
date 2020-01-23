@@ -1717,7 +1717,7 @@ public:
       return 0;                                 /* Null value */
     cs= res->charset();
     end= (char*) res->ptr()+res->length();
-    return cs->cs.ha->strtoll10(cs, res->ptr(), &end, &err_not_used);
+    return cs->cs.ha->strtoll10(&cs->cs, res->ptr(), &end, &err_not_used);
   }
   my_decimal *val_decimal(my_decimal *dec);
   const Type_handler *type_handler() const { return string_type_handler(); }

@@ -523,7 +523,7 @@ int append_query_string(CHARSET_INFO *csinfo, String *to,
 
   beg= (char*) to->ptr() + to->length();
   ptr= beg;
-  if (my_escape_with_backslash_is_dangerous(csinfo))
+  if (my_cs_escape_with_backslash_is_dangerous(&csinfo->cs))
     ptr= str_to_hex(ptr, str, len);
   else
   {

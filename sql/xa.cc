@@ -766,7 +766,7 @@ static uint get_sql_xid(XID *xid, char *buf)
   if (xid->formatID != 1)
   {
     *buf++= ',';
-    buf+= my_longlong10_to_str_8bit(&my_charset_bin, buf,
+    buf+= my_longlong10_to_str_8bit(&my_charset_bin.cs, buf,
             MY_INT64_NUM_DECIMAL_DIGITS, -10, xid->formatID);
   }
 

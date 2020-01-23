@@ -5271,13 +5271,13 @@ static void test_lc_time_sz()
     for (const char **month= (*loc)->month_names->type_names; *month; month++)
     {
       set_if_bigger(max_month_len,
-                    my_numchars_mb(&my_charset_utf8mb3_general_ci,
+                    my_numchars_mb(&my_charset_utf8mb3_general_ci.cs,
                                    *month, *month + strlen(*month)));
     }
     for (const char **day= (*loc)->day_names->type_names; *day; day++)
     {
       set_if_bigger(max_day_len,
-                    my_numchars_mb(&my_charset_utf8mb3_general_ci,
+                    my_numchars_mb(&my_charset_utf8mb3_general_ci.cs,
                                    *day, *day + strlen(*day)));
     }
     if ((*loc)->max_month_name_length != max_month_len ||

@@ -48,7 +48,7 @@ void json_string_set_cs(json_string_t *s, CHARSET_INFO *i_cs);
 void json_string_set_str(json_string_t *s,
                          const uchar *str, const uchar *end);
 #define json_next_char(j) \
-  (j)->wc((j)->cs, &(j)->c_next, (j)->c_str, (j)->str_end)
+  (j)->wc(&(j)->cs->cs, &(j)->c_next, (j)->c_str, (j)->str_end)
 #define json_eos(j) ((j)->c_str >= (j)->str_end)
 /*
   read_string_const_chr() reads the next character of the string constant

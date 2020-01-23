@@ -6059,7 +6059,7 @@ String *Type_handler::
 
   buf.append('_');
   buf.append(result->charset()->csname);
-  if (my_escape_with_backslash_is_dangerous(cs))
+  if (my_cs_escape_with_backslash_is_dangerous(&cs->cs))
     buf.append(' ');
   append_query_string(cs, &buf, result->ptr(), result->length(),
                      thd->variables.sql_mode & MODE_NO_BACKSLASH_ESCAPES);

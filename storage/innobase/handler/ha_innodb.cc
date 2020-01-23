@@ -6524,7 +6524,7 @@ innobase_mysql_fts_get_token(
 		int	ctype;
 
 		mbl = cs->cs.ha->ctype(
-			cs, &ctype, doc, (const uchar*) end);
+			&cs->cs, &ctype, doc, (const uchar*) end);
 
 		if (true_word_char(ctype, *doc)) {
 			break;
@@ -6543,7 +6543,7 @@ innobase_mysql_fts_get_token(
 		int	ctype;
 
 		mbl = cs->cs.ha->ctype(
-			cs, &ctype, (uchar*) doc, (uchar*) end);
+			&cs->cs, &ctype, (uchar*) doc, (uchar*) end);
 		if (true_word_char(ctype, *doc)) {
 			mwc = 0;
 		} else if (!misc_word_char(*doc) || mwc) {

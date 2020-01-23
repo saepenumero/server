@@ -392,7 +392,7 @@ MY_FUNCTION_NAME(strnxfrm_internal)(CHARSET_INFO *cs,
       continue;
     }
 #endif
-    if ((res= MY_MB_WC(cs, &wc, src, se)) <= 0)
+    if ((res= MY_MB_WC(&cs->cs, &wc, src, se)) <= 0)
       break;
     src+= res;
     if (wc <= UNICASE_MAXCHAR)

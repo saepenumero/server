@@ -159,7 +159,7 @@ void key_copy(uchar *to_key, const uchar *from_record, KEY *key_info,
       CHARSET_INFO *cs= field->charset();
       uint bytes= field->get_key_image(to_key, length, Field::itRAW);
       if (bytes < length)
-        cs->cs.ha->fill(cs, (char*) to_key + bytes, length - bytes, ' ');
+        cs->cs.ha->fill(&cs->cs, (char*) to_key + bytes, length - bytes, ' ');
     }
   }
 }

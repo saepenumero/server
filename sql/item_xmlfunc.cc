@@ -1442,14 +1442,14 @@ my_xpath_lex_scan(MY_XPATH *xpath,
   }
 
   // Check ident, or a function call, or a keyword
-  if ((length= xpath->cs->cs.ha->ctype(xpath->cs, &ctype,
+  if ((length= xpath->cs->cs.ha->ctype(&xpath->cs->cs, &ctype,
                                       (const uchar*) beg,
                                       (const uchar*) end)) > 0 &&
       ((ctype & (_MY_L | _MY_U)) || *beg == '_'))
   {
     // scan untill the end of the idenfitier
     for (beg+= length; 
-         (length= xpath->cs->cs.ha->ctype(xpath->cs, &ctype,
+         (length= xpath->cs->cs.ha->ctype(&xpath->cs->cs, &ctype,
                                          (const uchar*) beg,
                                          (const uchar*) end)) > 0 &&
          ((ctype & (_MY_L | _MY_U | _MY_NMR)) ||

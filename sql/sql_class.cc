@@ -3386,11 +3386,11 @@ int select_export::send_data(List<Item> &items)
         CHARSET_INFO *character_set_client= thd->variables.
                                             character_set_client;
         bool check_second_byte= (res_charset == &my_charset_bin) &&
-                                 my_escape_with_backslash_is_dangerous(
-                                   character_set_client);
+                                 my_cs_escape_with_backslash_is_dangerous(
+                                   &character_set_client->cs);
         DBUG_ASSERT(my_mbmaxlen(character_set_client) == 2 ||
-                    !my_escape_with_backslash_is_dangerous(
-                      character_set_client));
+                    !my_cs_escape_with_backslash_is_dangerous(
+                      &character_set_client->cs));
 	for (start=pos=(char*) res->ptr(),end=pos+used_length ;
 	     pos != end ;
 	     pos++)
