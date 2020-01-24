@@ -200,6 +200,8 @@ inline bool mtr_t::write(const buf_block_t &block, void *ptr, V val)
     p--;
   }
   ::memcpy(ptr, buf, l);
+  m_last= &block.page;
+  m_last_offset= ut_align_offset(end, srv_page_size);
   memcpy_low(block.page.id, static_cast<uint16_t>
              (ut_align_offset(p, srv_page_size)), p, end - p);
   return true;
@@ -217,6 +219,8 @@ inline void mtr_t::memset(const buf_block_t &b, ulint ofs, ulint len, byte val)
   if (m_log_mode != MTR_LOG_ALL)
     return;
 
+  m_last= &b.page;
+  m_last_offset= static_cast<uint16_t>(ofs + len);
   static_assert(MIN_4BYTE > UNIV_PAGE_SIZE_MAX, "consistency");
   size_t lenlen= (len < MIN_2BYTE ? 1 + 1 : len < MIN_3BYTE ? 2 + 1 : 3 + 1);
   byte *l= log_write<MEMSET>(b.page.id, lenlen, true, ofs);
@@ -248,6 +252,8 @@ inline void mtr_t::memcpy(const buf_block_t &b, ulint offset, ulint len)
   ut_ad(len);
   ut_ad(offset <= ulint(srv_page_size));
   ut_ad(offset + len <= ulint(srv_page_size));
+  m_last= &b.page;
+  m_last_offset= static_cast<uint16_t>(offset + len);
   memcpy_low(b.page.id, uint16_t(offset), &b.frame[offset], len);
 }
 
@@ -295,6 +301,8 @@ inline void mtr_t::memmove(const buf_block_t &b, ulint d, ulint s, ulint len)
   set_modified();
   if (m_log_mode != MTR_LOG_ALL)
     return;
+  m_last= &b.page;
+  m_last_offset= static_cast<uint16_t>(d + len);
   static_assert(MIN_4BYTE > UNIV_PAGE_SIZE_MAX, "consistency");
   size_t lenlen= (len < MIN_2BYTE ? 1 : len < MIN_3BYTE ? 2 : 3);
   /* The source offset is encoded relative to the destination offset,

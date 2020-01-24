@@ -534,6 +534,11 @@ private:
   bool m_commit= false;
 #endif
 
+  /** The page of the most recent m_log record written, or NULL */
+  const buf_page_t* m_last;
+  /** The current byte offset in m_last, or 0 */
+  uint16_t m_last_offset;
+
 	/** memo stack for locks etc. */
 	mtr_buf_t	m_memo;
 

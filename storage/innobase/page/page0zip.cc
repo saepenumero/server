@@ -372,6 +372,8 @@ inline void mtr_t::zmemcpy(const buf_page_t &b, ulint offset, ulint len)
   ut_ad(page_zip_simple_validate(&b.zip));
   ut_ad(offset + len <= page_zip_get_size(&b.zip));
 
+  m_last= &b;
+  m_last_offset= static_cast<uint16_t>(offset + len);
   memcpy_low(b.id, uint16_t(offset), &b.zip.data[offset], len);
 }
 
