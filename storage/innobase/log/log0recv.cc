@@ -2820,7 +2820,7 @@ recv_recovery_from_checkpoint_start(lsn_t flush_lsn)
 {
 	ulint		max_cp_field;
 	lsn_t		checkpoint_lsn;
-	bool		rescan;
+	bool		rescan = false;
 	ib_uint64_t	checkpoint_no;
 	lsn_t		contiguous_lsn;
 	byte*		buf;
@@ -2939,7 +2939,6 @@ recv_recovery_from_checkpoint_start(lsn_t flush_lsn)
 		}
 
 		log_sys.log.scanned_lsn = checkpoint_lsn;
-		rescan = false;
 	} else {
 		contiguous_lsn = checkpoint_lsn;
 		rescan = recv_group_scan_log_recs(
